@@ -76,8 +76,12 @@ export type Product = {
     return products.filter(product => product.featured);
   }
   
+  
   export function getNewProducts(): Product[] {
     return products.filter(product => product.new);
+  }
+  export function getProductsBySubCategory(subCategory: Product['subCategory']): Product[] {
+    return products.filter(product => product.subCategory === subCategory);
   }
   
   export function getProductsByCategory(category: Product['category']): Product[] {

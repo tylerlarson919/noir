@@ -46,13 +46,13 @@ export default function RootLayout({
           <HeaderModalProvider>
             <CartModal />
             <HeaderModal />
-            <div className="relative flex flex-col h-screen">
-              <Navbar />
-              <main className="container mx-auto max-w-7xl pt-12 px-6 flex-grow">
-                {children}
-              </main>
-              <Footer/>
-            </div>
+              <div className="relative flex flex-col min-h-screen">
+                <Navbar />
+                <main className="w-full flex-grow pt-0">
+                  {children}
+                </main>
+                <Footer/>
+              </div>
           </HeaderModalProvider>
         </Providers>
       </body>

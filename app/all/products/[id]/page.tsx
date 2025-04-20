@@ -82,16 +82,16 @@ export default function ProductPage({ params }: ProductPageProps) {
   };
 
   return (
-    <div className="container mx-auto relative">
-      <Breadcrumbs className='absolute left-0 top-0 z-[15]'>
-        <BreadcrumbItem className="capitalize" href={`/${product.category}`}>{product.category}</BreadcrumbItem>
-        <BreadcrumbItem className="capitalize" href={`/${product.subCategory}`}>{product.subCategory}</BreadcrumbItem>
-        <BreadcrumbItem className="capitalize">{product.name}</BreadcrumbItem>
-      </Breadcrumbs>
+    <div className="mx-4 relative flex flex-col justify-start items-center">
 
-      <div className="flex flex-col md:flex-row w-full h-full gap-12">
+      <div className="flex flex-col md:flex-row w-full h-full items-start justify-center mt-28 gap-4">
         {/* Product Images */}
-        <div className="w-full md:w-1/2 flex flex-col">
+        <div className="w-full md:w-1/2 flex flex-col relative">
+          <Breadcrumbs className='absolute left-0 top-0 z-[15]'>
+            <BreadcrumbItem className="capitalize" href={`/${product.category}`}>{product.category}</BreadcrumbItem>
+            <BreadcrumbItem className="capitalize" href={`/${product.subCategory}`}>{product.subCategory}</BreadcrumbItem>
+            <BreadcrumbItem className="capitalize">{product.name}</BreadcrumbItem>
+          </Breadcrumbs>
           <div className="relative aspect-square bg-transparent w-full">
             {/* Previous image */}
             {isTransitioning && (
@@ -151,7 +151,7 @@ export default function ProductPage({ params }: ProductPageProps) {
         </div>
         {/* Product Details */}
         <div>
-          <div className='flex flex-col gap-1'>
+          <div className='flex flex-col gap-1 mt-16'>
             <h1 className="text-xl font-medium">{product.name}</h1>
             <p className="text-xl font-light">${product.price.toFixed(2)}</p>
             <p className="text-textaccentdarker dark:text-textaccent text-[14px] pt-2 pb-6">
@@ -259,7 +259,7 @@ export default function ProductPage({ params }: ProductPageProps) {
               </Select>
             </div>
             <div className='w-full'>
-              <button onClick={addToBagClick} className='w-full py-2 px-4 bg-dark1 dark:bg-white button-grow-subtle text-white dark:text-black transition-color duration-300'>
+              <button onClick={addToBagClick} className='w-full py-2 px-6 bg-dark1 dark:bg-white button-grow-subtle text-white dark:text-black transition-color duration-300'>
                 Add to bag
               </button>
             </div>

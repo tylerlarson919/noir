@@ -2,37 +2,56 @@ import Hero from '@/components/ui/Hero';
 import FeaturedProducts from '@/components/sections/FeaturedProducts';
 import CategoryPreview from '@/components/sections/CategoryPreview';
 import Newsletter from '@/components/sections/Newsletter';
-import { getFeaturedProducts } from '@/lib/products';
+import { getFeaturedProducts, getProductsBySubCategory } from '@/lib/products';
 
 export default function Home() {
   const featuredProducts = getFeaturedProducts();
-  
+  const denimProducts = getProductsBySubCategory('jeans');
   return (
-    <>
-      <Hero 
-        title="Elegance in Every Detail"
-        subtitle="Discover our new collection of timeless, sustainable fashion pieces."
-        ctaText="Shop Now"
-        ctaLink="/all"
-        imageSrc="/images/hero.jpg"
-      />
+    <div className='flex flex-col w-full h-full'>
+      <Hero />
       
       <FeaturedProducts 
         products={featuredProducts} 
-        title="Featured Collection"
+        title="NEW ARRIVIALS"
       />
       
       
-      <CategoryPreview 
-        title="Men's Collection"
-        description="Our men's collection combines classic styles with modern details, offering versatile wardrobe essentials crafted from premium materials."
-        imageSrc="/images/men-category.jpg"
-        ctaText="Shop Men"
-        ctaLink="/all?category=men"
-        imagePosition="right"
+      <div className="relative h-[80vh] flex flex-row w-full items-center justify-start flex-grow">
+        <button className='z-[5] absolute bottom-8 left-8 w-fit py-2 px-6 bg-dark1 dark:bg-white button-grow-subtle text-white dark:text-black transition-color duration-300'>
+          Tops
+        </button>
+        <button className='z-[5] absolute bottom-8 left-1/2 ml-8 w-fit py-2 px-6 bg-dark1 dark:bg-white button-grow-subtle text-white dark:text-black transition-color duration-300'>
+          Bottoms
+        </button>
+        <div 
+          style={{ 
+            backgroundImage: `url('https://res.cloudinary.com/dyujm1mtq/image/upload/v1745163797/TOPS_fcv680.webp')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            width: '50%',
+            height: '100%'
+          }}
+          className='relative cursor-pointer image-grow'
+        >
+
+        </div>
+        <div 
+          style={{ 
+            backgroundImage: `url('https://res.cloudinary.com/dyujm1mtq/image/upload/v1745163798/BOTTOMS__lk5qla.webp')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            width: '50%',
+            height: '100%'
+          }}
+          className='relative cursor-pointer image-grow'
+        >
+        </div>
+      </div>
+      <FeaturedProducts 
+        products={denimProducts} 
+        title="DENIM"
       />
-      
-      <Newsletter />
-    </>
+    </div>
   );
 }

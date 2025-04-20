@@ -7,8 +7,8 @@ const Footer: React.FC = () => {
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <h3 className="text-lg font-bold mb-4">ELEGANCE</h3>
-            <p className="text-gray-600 mb-4">
+            <h3 className="text-sm uppercase tracking-wider mb-2">ELEGANCE</h3>
+            <p className="text-gray-600 mb-4 text-xs">
               Timeless fashion for the modern individual. Quality craftsmanship and sustainable practices.
             </p>
             <div className="flex space-x-4">
@@ -31,39 +31,39 @@ const Footer: React.FC = () => {
           </div>
           
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider mb-4">Shop</h3>
-            <ul className="space-y-2">
-              <li><Link href="/all?category=men" className="text-gray-600 hover:text-black">Men</Link></li>
-              <li><Link href="/all?category=women" className="text-gray-600 hover:text-black">Women</Link></li>
-              <li><Link href="/all?category=accessories" className="text-gray-600 hover:text-black">Accessories</Link></li>
-              <li><Link href="/all" className="text-gray-600 hover:text-black">New Arrivals</Link></li>
+            <h3 className="text-sm uppercase tracking-wider mb-2">Shop</h3>
+            <ul className="space-y-1">
+              <li><Link href="/all?category=men" className="text-gray-600 hover:text-black text-xs">Men</Link></li>
+              <li><Link href="/all?category=women" className="text-gray-600 hover:text-black text-xs">Women</Link></li>
+              <li><Link href="/all?category=accessories" className="text-gray-600 hover:text-black text-xs">Accessories</Link></li>
+              <li><Link href="/all" className="text-gray-600 hover:text-black text-xs">New Arrivals</Link></li>
             </ul>
           </div>
           
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider mb-4">About</h3>
-            <ul className="space-y-2">
-              <li><a href="#" className="text-gray-600 hover:text-black">Our Story</a></li>
-              <li><a href="#" className="text-gray-600 hover:text-black">Sustainability</a></li>
-              <li><a href="#" className="text-gray-600 hover:text-black">Careers</a></li>
-              <li><a href="#" className="text-gray-600 hover:text-black">Press</a></li>
+            <h3 className="text-sm uppercase tracking-wider mb-2">About</h3>
+            <ul className="space-y-1">
+              <li><a href="#" className="text-gray-600 hover:text-black text-xs">Our Story</a></li>
+              <li><a href="#" className="text-gray-600 hover:text-black text-xs">Sustainability</a></li>
+              <li><a href="#" className="text-gray-600 hover:text-black text-xs">Careers</a></li>
+              <li><a href="#" className="text-gray-600 hover:text-black text-xs">Press</a></li>
             </ul>
           </div>
           
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider mb-4">Customer Service</h3>
-            <ul className="space-y-2">
-              <li><a href="#" className="text-gray-600 hover:text-black">Contact Us</a></li>
-              <li><a href="#" className="text-gray-600 hover:text-black">Shipping & Returns</a></li>
-              <li><a href="#" className="text-gray-600 hover:text-black">FAQ</a></li>
-              <li><a href="#" className="text-gray-600 hover:text-black">Size Guide</a></li>
+            <h3 className="text-sm uppercase tracking-wider mb-2">Support</h3>
+            <ul className="space-y-1">
+              <li><a href="#" className="text-gray-600 hover:text-black text-xs">Contact Us</a></li>
+              <li><a href="#" className="text-gray-600 hover:text-black text-xs">Shipping & Returns</a></li>
+              <li><a href="#" className="text-gray-600 hover:text-black text-xs">FAQ</a></li>
+              <li><a href="#" className="text-gray-600 hover:text-black text-xs">Size Guide</a></li>
             </ul>
           </div>
         </div>
         
         <div className="mt-12 pt-8 border-t border-gray-200">
           <p className="text-gray-500 text-sm text-center">
-            © {new Date().getFullYear()} ELEGANCE. All rights reserved.
+            © {new Date().getFullYear()} NOIR. All rights reserved.
           </p>
         </div>
       </div>

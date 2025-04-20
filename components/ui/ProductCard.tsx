@@ -21,7 +21,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   return (
     <div className="group">
       <Link href={`/all/products/${product.id}`}>
-        <div className="relative overflow-hidden aspect-square mb-4 rounded-xl">
+        <div className="relative overflow-hidden aspect-square rounded-xl">
           <div className="relative w-full h-full">
             {/* Primary image */}
             <Image
@@ -39,25 +39,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
             />
           </div>
-          {product.new && (
-            <div className="absolute top-2 right-2 bg-black text-white text-xs px-2 py-1">
-              NEW
-            </div>
-          )}
         </div>
-        <h3 className="text-lg font-medium">{product.name}</h3>
-        <div className='flex flex-row justify-between items-center'>
-          <p className="text-gray-800 dark:text-textcolor">${product.price.toFixed(2)}</p>
-          <div className="mr-3 flex gap-1">
-            {product.colors.map((color) => (
-              <div 
-                key={color.name} 
-                className="w-[16px] h-[16px] rounded-full border border-gray-300" 
-                style={{ backgroundColor: color.hex }}
-                title={color.name}
-              />
-            ))}
-          </div>
+        <div className='flex flex-col justify-center items-center gap-1'>
+          <h3 className="text-sm uppercase tracking-wide">{product.name}</h3>
+          <p className="text-gray-800 dark:text-textaccent text-sm">${product.price.toFixed(2)}</p>
         </div>
       </Link>
     </div>

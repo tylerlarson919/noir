@@ -18,25 +18,23 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
   linkUrl = "/all" 
 }) => {
   return (
-    <section className="py-16">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold">{title}</h2>
-          {linkText && linkUrl && (
-            <Link href={linkUrl}>
-              <Button text={linkText} variant="outline" size="sm" />
-            </Link>
-          )}
+    <section className="py-10">
+      <div className="px-4 w-full flex flex-col gap-6 items-center justify-center">
+        <div className="flex justify-center items-center">
+          <h2 className="text-2xl md:text-2xl font-medium tracking-wider">{title}</h2>
         </div>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full px-4">
           {products.map(product => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
+        <button className='w-fit py-2 px-6 bg-dark1 dark:bg-white button-grow-subtle text-white dark:text-black transition-color duration-300'>
+          View All
+        </button>
       </div>
     </section>
   );
 };
 
 export default FeaturedProducts;
+
