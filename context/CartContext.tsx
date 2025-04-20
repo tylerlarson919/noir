@@ -8,7 +8,7 @@ export type CartItem = {
   price: number;
   quantity: number;
   size: string;
-  color: { name: string; hex: string, image: number };
+  color: { name: string; hex: string, images: number[] };
   image: string;
 };
 

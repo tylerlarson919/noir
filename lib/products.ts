@@ -13,7 +13,7 @@ export type Product = {
   colors: {
     name: string;
     hex: string;
-    image: number; // Product image index of the image for this color
+    images: number[]; // Product image index of the image for this color
   }[];
   featured?: boolean;
   new?: boolean;
@@ -45,27 +45,27 @@ export type Product = {
         { 
           name: "Black", 
           hex: "#17161b",
-          image: 0, 
+          images: [0, 1],
         },
         { 
           name: "Grey", 
           hex: "#cac8c6",
-          image: 1, 
+          images: [2, 3],
         },
         { 
           name: "Green", 
           hex: "#527267",
-          image: 2, 
+          images: [4,], 
         },
         { 
           name: "Navy Blue", 
           hex: "#514d67",
-          image: 3, 
+          images: [4,],
         },
         { 
           name: "Red", 
           hex: "#953b32",
-          image: 4, 
+          images: [4,], 
         },
       ],
       featured: true

@@ -1,5 +1,5 @@
 "use client";
-import { useState, use, useEffect } from 'react';
+import { useState, use, useEffect, useRef } from 'react';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { getProductById } from '@/lib/products';
@@ -9,6 +9,12 @@ import {Select, SelectItem} from "@heroui/select";
 import {Breadcrumbs, BreadcrumbItem} from "@heroui/breadcrumbs";
 import {Accordion, AccordionItem} from "@heroui/accordion";
 import { useCart } from '@/context/CartContext';
+// Replace useSwipeable import with Swiper imports
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination } from 'swiper/modules';
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/pagination';
 
 interface ProductPageProps {
   params: {
@@ -20,7 +26,8 @@ export default function ProductPage({ params }: ProductPageProps) {
   // Use type assertion to properly type the unwrapped params
   const unwrappedParams = use(params as any) as { id: string };
   const product = getProductById(unwrappedParams.id);
-  
+  const swiperRef = useRef<any>(null);
+
   if (!product) {
     notFound();
   }
@@ -29,39 +36,31 @@ export default function ProductPage({ params }: ProductPageProps) {
   const featuredProducts = getFeaturedProducts().filter(p => p.id !== product.id).slice(0, 4);
   const [selectedSize, setSelectedSize] = useState<string>(product.sizes[0] || '');
   const [selectedColor, setSelectedColor] = useState(product.colors[0]);
-  const { addItem } = useCart();
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [previousImageIndex, setPreviousImageIndex] = useState(0);
+  const { addItem } = useCart();  
+  const [previousColor, setPreviousColor] = useState(product.colors[0]);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  
-  // Update the nextImage and prevImage functions:
-  const nextImage = () => {
-    if (isTransitioning) return;
-    setPreviousImageIndex(currentImageIndex);
-    setIsTransitioning(true);
-    setCurrentImageIndex((prev) => 
-      prev === product.images.length - 1 ? 0 : prev + 1
-    );
-  };
-  
-  const prevImage = () => {
-    if (isTransitioning) return;
-    setPreviousImageIndex(currentImageIndex);
-    setIsTransitioning(true);
-    setCurrentImageIndex((prev) => 
-      prev === 0 ? product.images.length - 1 : prev - 1
-    );
-  };
-  
-  // Add an effect to handle the transition end
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+
+  // Add this useEffect to handle transition timing
   useEffect(() => {
     if (isTransitioning) {
       const timer = setTimeout(() => {
         setIsTransitioning(false);
-      }, 300); // Match the animation duration
+      }, 300); // Match animation duration
       return () => clearTimeout(timer);
     }
   }, [isTransitioning]);
+
+  useEffect(() => {
+    // Reset current slide when color changes
+    setCurrentSlide(0);
+    
+    // Use the swiperRef to access the Swiper instance
+    if (swiperRef.current && swiperRef.current.swiper) {
+      swiperRef.current.swiper.slideTo(0);
+    }
+  }, [selectedColor]);
 
   const addToBagClick = () => {
     if (!selectedSize) {
@@ -77,7 +76,7 @@ export default function ProductPage({ params }: ProductPageProps) {
       quantity: 1,
       size: selectedSize,
       color: selectedColor,
-      image: product.images[selectedColor.image] || product.images[0] || '/images/placeholder.jpg',
+      image: product.images[selectedColor.images[0]] || product.images[0] || '/images/placeholder.jpg',
     });
   };
 
@@ -86,72 +85,85 @@ export default function ProductPage({ params }: ProductPageProps) {
 
       <div className="flex flex-col md:flex-row w-full h-full items-start justify-center mt-28 gap-4">
         {/* Product Images */}
-        <div className="w-full md:w-1/2 flex flex-col relative">
-          <Breadcrumbs className='absolute left-0 top-0 z-[15]'>
+        <div className="w-full md:w-2/3 flex flex-col relative">
+          <Breadcrumbs className='absolute left-0 -top-5 z-[15]'>
             <BreadcrumbItem className="capitalize" href={`/${product.category}`}>{product.category}</BreadcrumbItem>
             <BreadcrumbItem className="capitalize" href={`/${product.subCategory}`}>{product.subCategory}</BreadcrumbItem>
             <BreadcrumbItem className="capitalize">{product.name}</BreadcrumbItem>
           </Breadcrumbs>
-          <div className="relative aspect-square bg-transparent w-full">
-            {/* Previous image */}
+
+          <div className="w-full h-full relative">
+            {/* Previous color images - positioned absolutely over the current images */}
             {isTransitioning && (
-              <Image
-                src={product.images[previousImageIndex] || '/images/placeholder.jpg'}
-                alt={product.name}
-                fill
-                className="object-contain absolute z-10 animate-fade-out"
-                priority
-              />
-            )}
-            {/* Current image */}
-            <Image
-              src={product.images[currentImageIndex] || '/images/placeholder.jpg'}
-              alt={product.name}
-              fill
-              className={`object-contain absolute ${isTransitioning ? 'animate-cross-fade-in' : ''}`}
-              priority
-              onTransitionEnd={() => setIsTransitioning(false)}
-            />
-            <button className='absolute top-0 bottom-0 right-0 py-auto button-grow' onClick={nextImage}>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-8">
-                <path fillRule="evenodd" d="M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z" clipRule="evenodd" />
-              </svg>
-            </button>
-            <button className='absolute top-0 bottom-0 left-0 py-auto button-grow' onClick={prevImage}>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-8">
-                <path fillRule="evenodd" d="M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z" clipRule="evenodd" />
-              </svg>
-            </button>
-          </div>
-          
-          {product.images.length > 1 && (
-            <div className="flex flex-row justify-center items-center gap-2 h-full max-w-[512px] overflow-y-auto">
-              {product.images.map((image, index) => {
-                // Only render thumbnails that are actually needed to reduce DOM elements
-                return (
-                  <div 
-                    key={index} 
-                    className={`relative aspect-square bg-transparent w-[80px] h-[80px] cursor-pointer ${
-                      currentImageIndex === index ? 'border-1 border-textaccentdarker dark:border-textaccent' : ''
-                    }`}
-                    onClick={() => setCurrentImageIndex(index)}
-                  >
+              <div className="w-full h-full grid grid-cols-1 md:grid-cols-2 absolute inset-0 z-10 hidden md:grid">
+                {previousColor.images.map((imageIndex, index) => (
+                  <div key={`prev-${index}`} className="relative aspect-square bg-transparent w-full">
                     <Image
-                      src={image}
-                      alt={`${product.name} view ${index + 1}`}
+                      src={product.images[imageIndex] || '/images/placeholder.jpg'}
+                      alt={`${product.name} - ${previousColor.name} - View ${index + 1}`}
                       fill
-                      className="object-contain"
-                      loading="lazy" // Add lazy loading for thumbnails
+                      className="object-contain animate-fade-out"
+                      priority={index === 0}
                     />
                   </div>
-                );
-              })}
+                ))}
+              </div>
+            )}
+
+            {/* Mobile version - Swiper slider (only shows below md breakpoint) */}
+              <div className="w-full md:hidden">
+                <Swiper
+                  ref={swiperRef}
+                  modules={[Pagination]}
+                  spaceBetween={0}
+                  slidesPerView={1}
+                  pagination={{ 
+                    clickable: true,
+                    bulletActiveClass: 'swiper-pagination-bullet-active bg-black dark:bg-white',
+                    bulletClass: 'swiper-pagination-bullet bg-gray-300 dark:bg-gray-600' 
+                  }}
+                  onSlideChange={(swiper) => setCurrentSlide(swiper.activeIndex)}
+                  className="w-full"
+                  grabCursor={true}
+                >
+                  {selectedColor.images.map((imageIndex, index) => (
+                    <SwiperSlide key={`mobile-${index}`}>
+                      <div className="relative aspect-square w-full">
+                        <Image
+                          src={product.images[imageIndex] || '/images/placeholder.jpg'}
+                          alt={`${product.name} - ${selectedColor.name} - View ${index + 1}`}
+                          fill
+                          className="object-contain"
+                          priority={index === 0}
+                          loading={index === 0 ? "eager" : "lazy"}
+                        />
+                      </div>
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+              </div>
+
+            {/* Desktop version - grid layout (only shows at md breakpoint and above) */}
+            <div className={`w-full h-full grid grid-cols-2 ${isTransitioning ? 'z-0' : 'z-10'} hidden md:grid`}>
+              {selectedColor.images.map((imageIndex, index) => (
+                <div key={`current-${index}`} className="relative aspect-square bg-transparent w-full">
+                  <Image
+                    src={product.images[imageIndex] || '/images/placeholder.jpg'}
+                    alt={`${product.name} - ${selectedColor.name} - View ${index + 1}`}
+                    fill
+                    className={`object-contain ${isTransitioning ? 'animate-cross-fade-in' : ''}`}
+                    priority={index === 0}
+                    loading={index === 0 ? "eager" : "lazy"}
+                    onTransitionEnd={index === 0 ? () => setIsTransitioning(false) : undefined}
+                  />
+                </div>
+              ))}
             </div>
-          )}
+          </div>
         </div>
         {/* Product Details */}
-        <div>
-          <div className='flex flex-col gap-1 mt-16'>
+        <div className='w-full md:w-1/3 '>
+          <div className='flex flex-col gap-1'>
             <h1 className="text-xl font-medium">{product.name}</h1>
             <p className="text-xl font-light">${product.price.toFixed(2)}</p>
             <p className="text-textaccentdarker dark:text-textaccent text-[14px] pt-2 pb-6">
@@ -177,18 +189,13 @@ export default function ProductPage({ params }: ProductPageProps) {
                 }
                 items={product.colors.map(color => ({ id: color.name, label: color.name, color }))}
                 onSelectionChange={(keys) => {
-                  // Convert keys (Set) to Array and get the first item
                   const selectedKey = Array.from(keys)[0];
                   if (selectedKey) {
                     const newColor = product.colors.find(c => c.name === selectedKey);
-                    if (newColor) {
+                    if (newColor && newColor.name !== selectedColor.name) {
+                      setPreviousColor(selectedColor);
+                      setIsTransitioning(true);
                       setSelectedColor(newColor);
-                      // If the color has an associated image index, update the current image with transition
-                      if (newColor.image !== undefined && newColor.image !== currentImageIndex) {
-                        setPreviousImageIndex(currentImageIndex);
-                        setIsTransitioning(true);
-                        setCurrentImageIndex(newColor.image);
-                      }
                     }
                   }
                 }}
@@ -227,7 +234,6 @@ export default function ProductPage({ params }: ProductPageProps) {
                 radius='none'
                 defaultSelectedKeys={[product.sizes[0]]}
                 items={product.sizes.map(size => ({ id: size, label: size }))}
-                // Update the onSelectionChange handler in the Color Select component:
                 onSelectionChange={(keys) => {
                   // Convert keys (Set) to Array and get the first item
                   const selectedKey = Array.from(keys)[0];
@@ -239,7 +245,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                 }}
 
                 classNames={{
-                  trigger: "bg-transparent border-1 border-textaccentdarker dark:border-textaccent",
+                  trigger: "bg-transparent border-1 border-textaccentdarker dark:border-textaccent !overflow-visible",
                   popoverContent: "rounded-none",
                 }}
                 listboxProps={{
