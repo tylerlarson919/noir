@@ -5,6 +5,7 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import ProductCard from '@/components/ui/ProductCard';
 import { products, Product } from '@/lib/products';
 import FilterMenu from '@/components/FilterMenu';
+import {Breadcrumbs, BreadcrumbItem} from "@heroui/breadcrumbs";
 
 
 const XIcon = () => {
@@ -120,11 +121,18 @@ export default function ProductsPage() {
   const applyFilters = () => {
     let filtered = [...products];
     
-    // Apply category filters
+    // Apply category filters with special handling for 'featured'
     if (activeFilters.category.length > 0) {
-      filtered = filtered.filter(product => 
-        activeFilters.category.includes(product.category)
-      );
+      filtered = filtered.filter(product => {
+        // Check if 'featured' is one of the active category filters
+        const hasFeatured = activeFilters.category.includes('featured');
+        // Get the regular categories (excluding 'featured')
+        const regularCategories = activeFilters.category.filter(cat => cat !== 'featured');
+        
+        // If 'featured' is selected and product is featured, or if product's category matches any other selected category
+        return (hasFeatured && product.featured) || 
+               (regularCategories.length > 0 && regularCategories.includes(product.category));
+      });
     }
     
     // Apply subCategory filters
@@ -183,51 +191,63 @@ export default function ProductsPage() {
   ];
   
   return (
-    <div className="container mx-auto px-4 pb-14 flex flex-col gap-4">
-      <h1 className="text-3xl font-bold mb-4">Shop Collection</h1>
-      
-      <div className="flex flex-wrap gap-2">
-        <button 
-          onClick={openFilterMenu}
-          className={`tracking-wider px-4 py-2 text-sm border border-1 rounded ${
-            isFilterMenuOpen ? 'border-black bg-black text-white dark:border-white dark:bg-white dark:text-black' : 
-              'border-black/60 dark:border-textaccent/60'
-          }`}
+    <div className="mx-4 relative flex flex-col justify-start items-center">
+      <div className="flex flex-col w-full h-full items-start justify-center mt-28 gap-8">
+        <div className='w-full h-full flex flex-col items-start justify-end p-8'
+          style={{ 
+            backgroundImage: `url('https://res.cloudinary.com/dyujm1mtq/image/upload/v1745184139/TAFT_WEB_CollectionBanner_Mens-Lowtop_kkpuaq.webp')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            width: '100%',
+            height: '300px'
+          }}
         >
-          All Filters
-        </button>
+          <h1 className='text-white font-normal tracking-wide text-4xl'>Shop All</h1>
+          <p className='text-white font-light tracking-wide text-lg'>Shop the latest collection.</p>
+        </div>        
+        <div className="flex flex-wrap gap-2">
+          <button 
+            onClick={openFilterMenu}
+            className={`tracking-wider px-4 py-2 text-sm border border-1 rounded ${
+              isFilterMenuOpen ? 'border-black bg-black text-white dark:border-white dark:bg-white dark:text-black' : 
+                'border-black/60 dark:border-textaccent/60'
+            }`}
+          >
+            Filter
+          </button>
 
-        {/* Display active filters with option to remove */}
-        {allActiveFilters.map(filter => {
-          let filterType = '';
-          if (activeFilters.category.includes(filter)) filterType = 'category';
-          else if (activeFilters.subCategory.includes(filter)) filterType = 'subCategory';
-          else if (activeFilters.colors.includes(filter)) filterType = 'colors';
-          else if (activeFilters.sizes.includes(filter)) filterType = 'sizes';
-          
-          return filterButton(filterType, filter);
-        })}
-      </div>
-      
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {filteredProducts.map(product => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div>
-      
-      {filteredProducts.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-gray-500">No products found.</p>
+          {/* Display active filters with option to remove */}
+          {allActiveFilters.map(filter => {
+            let filterType = '';
+            if (activeFilters.category.includes(filter)) filterType = 'category';
+            else if (activeFilters.subCategory.includes(filter)) filterType = 'subCategory';
+            else if (activeFilters.colors.includes(filter)) filterType = 'colors';
+            else if (activeFilters.sizes.includes(filter)) filterType = 'sizes';
+            
+            return filterButton(filterType, filter);
+          })}
         </div>
-      )}
+        
+        <div className="w-full h-full grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 pb-10">
+          {filteredProducts.map(product => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+        
+        {filteredProducts.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-500">No products found.</p>
+          </div>
+        )}
 
-      <FilterMenu
-        isOpen={isFilterMenuOpen}
-        onClose={() => setIsFilterMenuOpen(false)}
-        onFilterChange={toggleFilter}
-        activeFilters={activeFilters}
-        numberOfResults={filteredProducts.length}
-      />
+        <FilterMenu
+          isOpen={isFilterMenuOpen}
+          onClose={() => setIsFilterMenuOpen(false)}
+          onFilterChange={toggleFilter}
+          activeFilters={activeFilters}
+          numberOfResults={filteredProducts.length}
+        />
+      </div>
     </div>
   );
 }

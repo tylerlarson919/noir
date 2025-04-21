@@ -15,145 +15,146 @@ export default function CartPage() {
   };
 
   return (
-    <div className="container mx-auto px-4  max-w-6xl">
-      <h1 className="text-2xl font-bold mb-6">Shopping Bag</h1>
-      
-      {items.length === 0 ? (
-        <div className="py-12 text-center">
-          <h2 className="text-xl mb-2">Your shopping bag is empty</h2>
-          <p className="text-textaccentdarker dark:text-textaccent mb-8">
-            Add some products to your bag and come back here to complete your purchase.
-          </p>
-          <Link 
-            href="/all" 
-            className="inline-flex items-center px-6 py-3 bg-dark1 dark:bg-white text-white dark:text-black button-grow-subtle"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-4 mr-2">
-                <path fillRule="evenodd" d="M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z" clipRule="evenodd" />
-            </svg>
-            Continue Shopping
-          </Link>
-        </div>
-      ) : (
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Cart Items */}
-          <div className="lg:w-2/3">
-            <div className="bg-white dark:bg-darkaccent rounded-lg shadow-sm p-6">
-              <div className="mb-4 flex justify-between items-center">
-                <h2 className="text-lg font-medium">Items ({items.length})</h2>
-                <button 
-                  onClick={clearCart} 
-                  className="text-sm text-red-600 hover:underline"
-                >
-                  Clear All
-                </button>
-              </div>
-              
-              <div className="divide-y">
-                {items.map((item, index) => (
-                  <div key={`${item.id}-${item.size}-${item.color.name}-${index}`} className="py-6 flex flex-col sm:flex-row gap-4">
-                    <div className="relative h-32 w-32 flex-shrink-0">
-                      <Image 
-                        src={item.image}
-                        alt={item.name}
-                        fill
-                        className="object-contain"
-                      />
-                    </div>
-                    <div className="flex-grow space-y-2">
-                      <h3 className="font-medium text-lg">{item.name}</h3>
-                      <p className="text-lg font-semibold">${item.price.toFixed(2)}</p>
-                      <div className="text-sm text-textaccentdarker dark:text-textaccent grid grid-cols-2 sm:grid-cols-3 gap-2">
-                        <p>Size: {item.size}</p>
-                        <div className="flex items-center">
-                          <span>Color: </span>
-                          <div 
-                            className="ml-1 w-3 h-3 rounded-full" 
-                            style={{ backgroundColor: item.color.hex }}
-                          ></div>
-                          <span className="ml-1">{item.color.name}</span>
-                        </div>
-                      </div>
-                      
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2">
-                        <div className="flex items-center border rounded-md">
-                          <button 
-                            onClick={() => handleQuantityChange(item.id, item.size, item.color.name, item.quantity - 1)}
-                            className="px-3 py-1 border-r hover:bg-gray-100 dark:hover:bg-darkbackground transition"
-                            aria-label="Decrease quantity"
-                          >
-                            -
-                          </button>
-                          <span className="px-4 py-1">{item.quantity}</span>
-                          <button 
-                            onClick={() => handleQuantityChange(item.id, item.size, item.color.name, item.quantity + 1)}
-                            className="px-3 py-1 border-l hover:bg-gray-100 dark:hover:bg-darkbackground transition"
-                            aria-label="Increase quantity"
-                          >
-                            +
-                          </button>
-                        </div>
-                        
-                        <button 
-                          onClick={() => removeItem(item.id, item.size, item.color.name)}
-                          className="text-sm text-red-600 hover:underline"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+    <div className="mx-4 relative flex flex-col justify-start items-center">
+      <div className="flex flex-col w-full h-full items-center justify-start mt-28 gap-8 max-w-[1200px]">   
+        <h1 className="text-4xl w-full text-left">Shopping Bag</h1>     
+        {items.length === 0 ? (
+          <div className="py-12 text-center">
+            <h2 className="text-xl mb-2">Your shopping bag is empty</h2>
+            <p className="text-textaccentdarker dark:text-textaccent mb-8">
+              Add some products to your bag and come back here to complete your purchase.
+            </p>
+            <Link 
+              href="/all" 
+              className="inline-flex items-center px-6 py-3 bg-dark1 dark:bg-white text-white dark:text-black button-grow-subtle"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-4 mr-2">
+                  <path fillRule="evenodd" d="M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z" clipRule="evenodd" />
+              </svg>
+              Continue Shopping
+            </Link>
           </div>
-          
-          {/* Order Summary */}
-          <div className="lg:w-1/3">
-            <div className="bg-white dark:bg-darkaccent rounded-lg shadow-sm p-6 sticky top-24">
-              <h2 className="text-lg font-medium mb-4">Order Summary</h2>
-              
-              <div className="space-y-3 mb-6">
-                <div className="flex justify-between">
-                  <span>Subtotal</span>
-                  <span>${totalPrice.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Shipping</span>
-                  <span>Calculated at checkout</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Tax</span>
-                  <span>Calculated at checkout</span>
-                </div>
-              </div>
-              
-              <div className="border-t pt-4">
-                <div className="flex justify-between font-semibold text-lg mb-6">
-                  <span>Total</span>
-                  <span>${totalPrice.toFixed(2)}</span>
+        ) : (
+          <div className="flex flex-col lg:flex-row gap-8 w-full ">
+            {/* Cart Items */}
+            <div className="lg:w-2/3">
+              <div className=" p-6">
+                <div className="mb-4 flex justify-between items-center">
+                  <h2 className="text-sm font-medium">YOUR SELECTION ({items.length})</h2>
+                  <button 
+                    onClick={clearCart} 
+                    className="text-sm text-red-600/50 hover:underline"
+                  >
+                    Clear All
+                  </button>
                 </div>
                 
-                <div className="space-y-3">
-                  <Link 
-                    href="/checkout" 
-                    className="block w-full py-3 px-4 bg-dark1 dark:bg-white text-white dark:text-black text-center font-medium button-grow-subtle"
-                  >
-                    Proceed to Checkout
-                  </Link>
+                <div className="">
+                  {items.map((item, index) => (
+                    <div key={`${item.id}-${item.size}-${item.color.name}-${index}`} className="py-6 flex flex-col sm:flex-row gap-4 border-b">
+                      <div className="relative h-32 w-32 flex-shrink-0">
+                        <Image 
+                          src={item.image}
+                          alt={item.name}
+                          fill
+                          className="object-contain"
+                        />
+                      </div>
+                      <div className="flex-grow space-y-2">
+                        <h3 className="font-medium text-lg">{item.name}</h3>
+                        <p className="text-lg font-semibold">${item.price.toFixed(2)}</p>
+                        <div className="text-sm text-textaccentdarker dark:text-textaccent grid grid-cols-2 sm:grid-cols-3 gap-2">
+                          <p>Size: {item.size}</p>
+                          <div className="flex items-center">
+                            <span>Color: </span>
+                            <div 
+                              className="ml-1 w-3 h-3 rounded-full" 
+                              style={{ backgroundColor: item.color.hex }}
+                            ></div>
+                            <span className="ml-1">{item.color.name}</span>
+                          </div>
+                        </div>
+                        
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2">
+                          <div className="flex items-center border rounded-md">
+                            <button 
+                              onClick={() => handleQuantityChange(item.id, item.size, item.color.name, item.quantity - 1)}
+                              className="px-3 py-1 border-r hover:bg-gray-100 dark:hover:bg-darkbackground transition"
+                              aria-label="Decrease quantity"
+                            >
+                              -
+                            </button>
+                            <span className="px-4 py-1">{item.quantity}</span>
+                            <button 
+                              onClick={() => handleQuantityChange(item.id, item.size, item.color.name, item.quantity + 1)}
+                              className="px-3 py-1 border-l hover:bg-gray-100 dark:hover:bg-darkbackground transition"
+                              aria-label="Increase quantity"
+                            >
+                              +
+                            </button>
+                          </div>
+                          
+                          <button 
+                            onClick={() => removeItem(item.id, item.size, item.color.name)}
+                            className="text-sm text-red-600/50 hover:underline"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            
+            {/* Order Summary */}
+            <div className="lg:w-1/3">
+              <div className="border-1 border-gray-400 dark:border-textaccent shadow-sm p-6 sticky top-24">
+                <h2 className="text-lg font-medium mb-4">Order Summary</h2>
+                
+                <div className="space-y-3 mb-6">
+                  <div className="flex justify-between">
+                    <span>Subtotal</span>
+                    <span>${totalPrice.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Shipping</span>
+                    <span>Calculated at checkout</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Tax</span>
+                    <span>Calculated at checkout</span>
+                  </div>
+                </div>
+                
+                <div className="border-t pt-4">
+                  <div className="flex justify-between font-semibold text-lg mb-6">
+                    <span>Total</span>
+                    <span>${totalPrice.toFixed(2)}</span>
+                  </div>
                   
-                  <Link 
-                    href="/" 
-                    className="block w-full py-3 px-4 border border-textaccentdarker dark:border-textaccent text-center button-grow-subtle"
-                  >
-                    Continue Shopping
-                  </Link>
+                  <div className="space-y-3">
+                    <Link 
+                      href="/checkout" 
+                      className="block w-full py-3 px-4 bg-dark1 dark:bg-white text-white dark:text-black text-center font-medium button-grow-subtle"
+                    >
+                      Proceed to Checkout
+                    </Link>
+                    
+                    <Link 
+                      href="/" 
+                      className="block w-full py-3 px-4 border border-textaccentdarker dark:border-textaccent text-center button-grow-subtle"
+                    >
+                      Continue Shopping
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

@@ -1,35 +1,11 @@
-import localFont from 'next/font/local';
+import { Montserrat } from 'next/font/google';
 import { Fira_Code as FontMono } from "next/font/google";
 
-// Define the Futura font family using local font files
-export const fontSans = localFont({
-  src: [
-    {
-      path: '../public/fonts/futura/futura medium bt.ttf',
-      weight: '400',
-      style: 'normal',
-    },
-    {
-      path: '../public/fonts/futura/Futura Medium Italic font.ttf',
-      weight: '400',
-      style: 'italic',
-    },
-    {
-      path: '../public/fonts/futura/Futura Bold font.ttf',
-      weight: '700',
-      style: 'normal',
-    },
-    {
-      path: '../public/fonts/futura/Futura Bold Italic font.ttf',
-      weight: '700',
-      style: 'italic',
-    },
-    {
-      path: '../public/fonts/futura/Futura Light font.ttf',
-      weight: '300',
-      style: 'normal',
-    },
-  ],
+// Define Montserrat font family from Google Fonts
+export const fontSans = Montserrat({
+  subsets: ['latin'],
+  weight: ['300', '400', '700'],
+  style: ['normal', 'italic'],
   variable: '--font-sans',
   display: 'swap',
 });

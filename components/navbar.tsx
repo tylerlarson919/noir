@@ -9,12 +9,25 @@ import { usePathname } from 'next/navigation';
 
 export const Navbar = () => {
   const { openCart, totalItems } = useCart();
-  const { openHeaderMenu } = useHeaderModal();
+  const { openHeaderMenu, isHeaderOpen } = useHeaderModal();
   const [isScrollingDown, setIsScrollingDown] = useState(false);
   const [isAtTop, setIsAtTop] = useState(true);
   const [prevScrollY, setPrevScrollY] = useState(0);
   const pathname = usePathname();
   const isMainPage = pathname === '/';
+
+
+  useEffect(() => {
+    if (isHeaderOpen) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+    
+    return () => {
+      document.body.classList.remove('modal-open');
+    };
+  }, [isHeaderOpen]);
 
   useEffect(() => {
     const handleScroll = () => {

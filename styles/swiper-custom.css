@@ -1,0 +1,23 @@
+/* Light mode (default) */
+.swiper-pagination-bullet {
+    background-color: #333;
+    width: 10px;
+    height: 10px;
+  }
+  
+  .swiper-pagination-bullet-active {
+    background-color: #000;
+  }
+  
+
+  
+  /* For class-based dark mode (if you're using Tailwind's dark mode) */
+  .dark .swiper-pagination-bullet {
+    background-color: #888;
+    width: 10px;
+    height: 10px;
+  }
+  
+  .dark .swiper-pagination-bullet-active {
+    background-color: #fff;
+  }

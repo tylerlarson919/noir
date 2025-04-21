@@ -11,10 +11,11 @@ import {Accordion, AccordionItem} from "@heroui/accordion";
 import { useCart } from '@/context/CartContext';
 // Replace useSwipeable import with Swiper imports
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination } from 'swiper/modules';
+import { Pagination } from 'swiper/modules';
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/pagination';
+import '@/styles/swiper-custom.css';
 
 interface ProductPageProps {
   params: {
@@ -87,8 +88,8 @@ export default function ProductPage({ params }: ProductPageProps) {
         {/* Product Images */}
         <div className="w-full md:w-2/3 flex flex-col relative">
           <Breadcrumbs className='absolute left-0 -top-5 z-[15]'>
-            <BreadcrumbItem className="capitalize" href={`/${product.category}`}>{product.category}</BreadcrumbItem>
-            <BreadcrumbItem className="capitalize" href={`/${product.subCategory}`}>{product.subCategory}</BreadcrumbItem>
+            <BreadcrumbItem className="capitalize" href={`/all?category=${product.category}`}>{product.category}</BreadcrumbItem>
+            <BreadcrumbItem className="capitalize" href={`/all?subCategory=${product.subCategory}`}>{product.subCategory}</BreadcrumbItem>
             <BreadcrumbItem className="capitalize">{product.name}</BreadcrumbItem>
           </Breadcrumbs>
 
@@ -119,8 +120,8 @@ export default function ProductPage({ params }: ProductPageProps) {
                   slidesPerView={1}
                   pagination={{ 
                     clickable: true,
-                    bulletActiveClass: 'swiper-pagination-bullet-active bg-black dark:bg-white',
-                    bulletClass: 'swiper-pagination-bullet bg-gray-300 dark:bg-gray-600' 
+                    bulletActiveClass: 'swiper-pagination-bullet-active',
+                    bulletClass: 'swiper-pagination-bullet' 
                   }}
                   onSlideChange={(swiper) => setCurrentSlide(swiper.activeIndex)}
                   className="w-full"

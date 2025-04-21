@@ -21,26 +21,38 @@ const XIcon = () => {
             <path fillRule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
         </svg>
     );
-};
+}; 
 
 export default function FilterMenu({ isOpen, onClose, onFilterChange, activeFilters, numberOfResults  }: FilterMenuProps) {
-    if (!isOpen) return null;
-    const [isClosing, setIsClosing] = useState(false);
-
-  const categories = ['men', 'women', 'accessories'];
+  const categories = ['featured', 'men', 'women', 'accessories'];
   const subCategories = ['pants', 'shirts', 'hoodies', 'shoes', 'jackets', 'accessories'];
   const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
-  const colors = Object.keys(COLORS).map(key => COLORS[key as keyof typeof COLORS].name);
   const menuRef = useRef<HTMLDivElement>(null);
+  const [isClosing, setIsClosing] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
-
+  useEffect(() => {
+    if (isOpen) {
+      // Small delay to trigger fade-in animation
+      setTimeout(() => setIsVisible(true), 10);
+    } else {
+      setIsVisible(false);
+    }
+  }, [isOpen]);
+  
+  // Update handleClose function
   const handleClose = () => {
+    setIsVisible(false);
     setIsClosing(true);
     setTimeout(() => {
       setIsClosing(false);
       onClose();
-    }, 300); // Same duration as the animation
+    }, 300);
   };
+  
+  if (!isOpen) return null;
+
+
 
   const FilterSection = ({ title, items, type }: { title: string, items: string[], type: string }) => (
     <div className="mb-6">
@@ -93,8 +105,11 @@ export default function FilterMenu({ isOpen, onClose, onFilterChange, activeFilt
   );
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-[100] flex justify-start transition-all duration-500 ease-in-out"
-        onClick={handleClose}
+    <div 
+      className={`fixed inset-0 bg-black z-[100] flex justify-start transition-opacity duration-300 ease-in-out ${
+        isVisible ? 'bg-opacity-50 opacity-100' : 'bg-opacity-0 opacity-0'
+      }`}
+      onClick={handleClose}
     >
       <div 
         ref={menuRef} 

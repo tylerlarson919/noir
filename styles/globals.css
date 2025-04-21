@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+.modal-open {
+  overflow: hidden !important;
+}
 
   .button-grow {
     transform: scale(1);

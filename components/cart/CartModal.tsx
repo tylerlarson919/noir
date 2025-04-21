@@ -9,13 +9,17 @@ export default function CartModal() {
   const { items, isOpen, totalPrice, closeCart, removeItem, updateQuantity } = useCart();
   const [isClosing, setIsClosing] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
 
   // Prevent scrolling when modal is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      // Small delay to trigger fade-in animation
+      setTimeout(() => setIsVisible(true), 10);
     } else {
       document.body.style.overflow = 'auto';
+      setIsVisible(false);
     }
     
     return () => {
@@ -23,9 +27,8 @@ export default function CartModal() {
     };
   }, [isOpen]);
 
-
-
   const handleClose = () => {
+    setIsVisible(false);
     setIsClosing(true);
     setTimeout(() => {
       setIsClosing(false);
@@ -33,12 +36,13 @@ export default function CartModal() {
     }, 300); // Same duration as the animation
   };
   
-
   if (!isOpen) return null;
 
   return (
     <div 
-      className="fixed inset-0 bg-black z-[100] flex justify-end transition-opacity duration-500 ease-in-out bg-opacity-50"
+      className={`fixed inset-0 bg-black z-[100] flex justify-end transition-opacity duration-300 ease-in-out ${
+        isVisible ? 'bg-opacity-50 opacity-100' : 'bg-opacity-0 opacity-0'
+      }`}
       onClick={handleClose}
     >
       {/* Modal Content */}
@@ -76,7 +80,7 @@ export default function CartModal() {
                     />
                   </div>
                   <div className="flex-grow relative">
-                    <h3 className="font-medium">{item.name}</h3>
+                    <h3 className="font-medium uppercase">{item.name}</h3>
                     <p className='text-sm'>${item.price.toFixed(2)}</p>
                     <div className="text-sm text-textaccentdarker dark:text-textaccent">
                       <p>Size: {item.size}</p>
@@ -110,29 +114,22 @@ export default function CartModal() {
                 <span>${totalPrice.toFixed(2)}</span>
               </div>
               
-              <div className="space-y-3">
+              <div className="space-y-3 absolute left-6 right-6 bottom-8 text-sm text-textaccentdarker dark:text-textaccent flex flex-col items-center">
+                Taxes & shipping calculated at checkout.
+                <Link 
+                  href="/cart" 
+                  className="block w-full py-2 px-4 mt-2 border border-textaccentdarker dark:border-textaccent text-center button-grow-subtle"
+                  onClick={handleClose}
+                >
+                  VIEW SHOPPING BAG
+                </Link>
                 <Link 
                   href="/checkout" 
                   className="block w-full py-2 px-4 bg-dark1 dark:bg-white text-white dark:text-black text-center button-grow-subtle"
                   onClick={handleClose}
                 >
-                  Checkout
+                  CHECKOUT
                 </Link>
-                
-                <Link 
-                  href="/cart" 
-                  className="block w-full py-2 px-4 border border-textaccentdarker dark:border-textaccent text-center button-grow-subtle"
-                  onClick={handleClose}
-                >
-                  View Shopping Bag
-                </Link>
-                
-                <button 
-                  onClick={handleClose}
-                  className="block w-full text-center py-2 underline"
-                >
-                  Continue Shopping
-                </button>
               </div>
             </div>
           </>
