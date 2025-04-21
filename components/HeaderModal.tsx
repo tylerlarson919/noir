@@ -101,14 +101,19 @@ export default function HeaderModal() {
       }`}
       role="dialog"
       onClick={handleClose}
+      onKeyDown={(e) => e.key === 'Escape' && handleClose()}
+      tabIndex={0}
     >
       {/* Modal content */}
       <div
         ref={menuRef}
+        role="dialog"
         className={`relative z-[100] w-full h-full p-6 overflow-y-auto bg-white border-r dark:bg-darkaccent md:max-w-md border-gray-600 dark:border-darkaccent2/60 ${
           isClosing ? "drawer-animation-exit" : "drawer-animation"
         }`}
         onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.stopPropagation()}
+        tabIndex={0}
       >
         <div className="relative flex items-center justify-between mb-4">
           {activeView === "shopAll" ? (

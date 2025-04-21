@@ -141,6 +141,11 @@ export default function FilterMenu({
         isVisible ? "bg-opacity-50 opacity-100" : "bg-opacity-0 opacity-0"
       }`}
       onClick={handleClose}
+      onKeyDown={(e) => e.key === 'Escape' && handleClose()}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Filter options"
+      tabIndex={0}
     >
       <div
         ref={menuRef}
@@ -148,6 +153,9 @@ export default function FilterMenu({
           isClosing ? "drawer-animation-exit" : "drawer-animation"
         }`}
         onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.stopPropagation()}
+        role="dialog"
+        tabIndex={0}
       >
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-2xl font-semibold">Filters</h2>

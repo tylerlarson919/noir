@@ -45,7 +45,6 @@ export default function ProductPage({ params }: ProductPageProps) {
   const { addItem } = useCart();
   const [previousColor, setPreviousColor] = useState(product.colors[0]);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [currentSlide, setCurrentSlide] = useState(0);
 
   // Add this useEffect to handle transition timing
   useEffect(() => {
@@ -60,7 +59,6 @@ export default function ProductPage({ params }: ProductPageProps) {
 
   useEffect(() => {
     // Reset current slide when color changes
-    setCurrentSlide(0);
 
     // Use the swiperRef to access the Swiper instance
     if (swiperRef.current && swiperRef.current.swiper) {
@@ -150,7 +148,6 @@ export default function ProductPage({ params }: ProductPageProps) {
                 }}
                 slidesPerView={1}
                 spaceBetween={0}
-                onSlideChange={(swiper) => setCurrentSlide(swiper.activeIndex)}
               >
                 {selectedColor.images.map((imageIndex, index) => (
                   <SwiperSlide key={`mobile-${index}`}>

@@ -28,7 +28,6 @@ export default function ProductsPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const category = searchParams.get("category") as Product["category"] | null;
 
   // Initialize active filters from URL parameters
   const initialFilters = {

@@ -7,7 +7,7 @@ import { useEffect, useState, useRef } from "react";
 import { useCart } from "@/context/CartContext";
 
 export default function CartModal() {
-  const { items, isOpen, totalPrice, closeCart, removeItem, updateQuantity } =
+  const { items, isOpen, totalPrice, closeCart, removeItem } =
     useCart();
   const [isClosing, setIsClosing] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -46,14 +46,22 @@ export default function CartModal() {
         isVisible ? "bg-opacity-50 opacity-100" : "bg-opacity-0 opacity-0"
       }`}
       onClick={handleClose}
+      onKeyDown={(e) => e.key === 'Escape' && handleClose()}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Shopping cart"
+      tabIndex={0}
     >
       {/* Modal Content */}
       <div
         ref={menuRef}
+        role="dialog"
         className={`bg-white dark:bg-darkaccent w-full max-w-md h-full overflow-y-auto p-6 relative ${
           isClosing ? "drawer-right-animation-exit" : "drawer-right-animation"
         }`}
-        onClick={(e) => e.stopPropagation()} // Prevent clicks inside from closing
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.stopPropagation()}
+        tabIndex={0}
       >
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-medium">Shopping Bag ({items.length})</h2>
