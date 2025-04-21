@@ -145,7 +145,6 @@ export default function FilterMenu({
       role="presentation"
       aria-modal="true"
       aria-label="Filter options"
-      tabIndex={0}
     >
       <div
         ref={menuRef}

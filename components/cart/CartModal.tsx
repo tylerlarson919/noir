@@ -50,7 +50,6 @@ export default function CartModal() {
       role="presentation"
       aria-modal="true"
       aria-label="Shopping cart"
-      tabIndex={0}
     >
       {/* Modal Content */}
       <div

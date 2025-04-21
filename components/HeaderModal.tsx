@@ -99,29 +99,27 @@ export default function HeaderModal() {
       className={`fixed inset-0 z-[98] flex justify-start bg-black transition-opacity duration-300 ease-in-out ${
         isVisible ? "bg-opacity-50 opacity-100" : "bg-opacity-0 opacity-0"
       }`}
-      role="dialog"
+      role="presentation"
       onClick={handleClose}
       onKeyDown={(e) => e.key === 'Escape' && handleClose()}
-      tabIndex={0}
     >
       {/* Modal content */}
       <div
         ref={menuRef}
-        role="dialog"
+        role="region"
         className={`relative z-[100] w-full h-full p-6 overflow-y-auto bg-white border-r dark:bg-darkaccent md:max-w-md border-gray-600 dark:border-darkaccent2/60 ${
           isClosing ? "drawer-animation-exit" : "drawer-animation"
         }`}
         onClick={(e) => e.stopPropagation()}
         onKeyDown={(e) => e.stopPropagation()}
-        tabIndex={0}
       >
         <div className="relative flex items-center justify-between mb-4">
           {activeView === "shopAll" ? (
             <div className="absolute z-[101] flex items-center gap-2 -top-1 -left-2">
               <button
                 aria-label="Back to main menu"
-                className="flex text-gray-600 transition-colors duration-300 dark:text-textaccent hover:text-black dark:hover:text-white button-grow"
                 onClick={switchToMain}
+                className="flex text-gray-600 transition-colors duration-300 dark:text-textaccent hover:text-black dark:hover:text-white button-grow"
               >
                 <svg
                   className="size-6"
