@@ -12,7 +12,6 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   // Get primary image - this should be the image associated with the first color
   const primaryColor = product.colors[0];
-  const primaryImageIndex = primaryColor ? primaryColor.images[0] : 0;
   const [isHovering, setIsHovering] = useState(false);
 
   // Get both images

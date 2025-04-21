@@ -6,15 +6,11 @@ import { Product } from "@/lib/products";
 interface FeaturedProductsProps {
   products: Product[];
   title: string;
-  linkText?: string;
-  linkUrl?: string;
 }
 
 const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
   products,
   title,
-  linkText = "View All",
-  linkUrl = "/all",
 }) => {
   return (
     <section className="py-10">
