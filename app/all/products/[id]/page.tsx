@@ -2,15 +2,16 @@ import ProductDetails from "@/components/ProductDetails";
 import { notFound } from "next/navigation";
 import { getProductById, getFeaturedProducts } from "@/lib/products";
 
-// Add this line to ignore TypeScript errors for this specific component
-// @ts-ignore
 type Props = {
-  params: { id: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
+  params: Promise<{ id: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 export default async function ProductPage({ params, searchParams }: Props) {
-  const { id } = params;
+   // await the async params/searchParams
+  const { id } = await params;
+  const resolvedSearch = searchParams ? await searchParams : {};
+
   const product = await getProductById(id);
 
   if (!product) {
