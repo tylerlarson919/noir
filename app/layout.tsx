@@ -1,14 +1,15 @@
 import "@/styles/globals.css";
 import { Metadata, Viewport } from "next";
 import clsx from "clsx";
+
 import { Providers } from "./providers";
+
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import { Navbar } from "@/components/navbar";
 import Footer from "@/components/layout/Footer";
-import CartModal from '@/components/cart/CartModal';
-import HeaderModal, { HeaderModalProvider } from '@/components/HeaderModal';
-
+import CartModal from "@/components/cart/CartModal";
+import HeaderModal, { HeaderModalProvider } from "@/components/HeaderModal";
 
 export const metadata: Metadata = {
   title: {
@@ -46,13 +47,11 @@ export default function RootLayout({
           <HeaderModalProvider>
             <CartModal />
             <HeaderModal />
-              <div className="relative flex flex-col min-h-screen">
-                <Navbar />
-                <main className="w-full flex-grow pt-0">
-                  {children}
-                </main>
-                <Footer/>
-              </div>
+            <div className="relative flex flex-col min-h-screen">
+              <Navbar />
+              <main className="w-full flex-grow pt-0">{children}</main>
+              <Footer />
+            </div>
           </HeaderModalProvider>
         </Providers>
       </body>
