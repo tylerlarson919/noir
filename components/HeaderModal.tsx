@@ -85,25 +85,29 @@ export default function HeaderModal() {
 
   return (
     <div 
-      className={`fixed inset-0 bg-black z-[98] flex justify-start transition-opacity duration-300 ease-in-out ${
+      className={`fixed inset-0 z-[98] flex justify-start bg-black transition-opacity duration-300 ease-in-out ${
         isVisible ? 'bg-opacity-50 opacity-100' : 'bg-opacity-0 opacity-0'
       }`}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Navigation menu"
       onClick={handleClose}
     >
       {/* Modal content */}
       <div 
         ref={menuRef}
-        className={`z-[100] bg-white dark:bg-darkaccent w-full md:max-w-md h-full overflow-y-auto p-6 relative border-r border-gray-600 dark:border-darkaccent2/60 ${
+        className={`relative z-[100] w-full h-full p-6 overflow-y-auto bg-white border-r dark:bg-darkaccent md:max-w-md border-gray-600 dark:border-darkaccent2/60 ${
           isClosing ? 'drawer-animation-exit' : 'drawer-animation'
         }`}
         onClick={(e) => e.stopPropagation()}
       >
-      <div className="flex justify-between items-center mb-4 relative">
+      <div className="relative flex items-center justify-between mb-4">
         {activeView === 'shopAll' ? (
-          <div className="absolute -top-1 -left-2 flex items-center gap-2 z-[101]">
+          <div className="absolute z-[101] flex items-center gap-2 -top-1 -left-2">
             <button 
               onClick={switchToMain} 
-              className="text-gray-600 dark:text-textaccent hover:text-black dark:hover:text-white button-grow transition-colors duration-300 flex"
+              className="flex text-gray-600 transition-colors duration-300 dark:text-textaccent hover:text-black dark:hover:text-white button-grow"
+              aria-label="Back to main menu"
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
                 <path fillRule="evenodd" d="M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z" clipRule="evenodd" />
@@ -114,7 +118,11 @@ export default function HeaderModal() {
         ) : (
           <div></div> 
         )}
-        <button onClick={handleClose} className="absolute -top-1 right-0 z-[101] text-gray-600 dark:text-textaccent hover:text-black dark:hover:text-white button-grow transition-colors duration-300">
+        <button 
+          onClick={handleClose} 
+          className="absolute text-gray-600 transition-colors duration-300 z-[101] dark:text-textaccent hover:text-black dark:hover:text-white button-grow -top-1 right-0"
+          aria-label="Close menu"
+        >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -123,24 +131,22 @@ export default function HeaderModal() {
         
         {/* Main Menu Content */}
         <div 
-          className={`flex flex-col items-start justify-start gap-6 transition-all duration-300 absolute inset-0 p-6 pt-16 ${
+          className={`absolute inset-0 p-6 pt-16 flex flex-col transition-all duration-300 items-start justify-start gap-6 ${
             activeView === 'main' ? 'opacity-100 transform translate-x-0' : 'opacity-0 transform -translate-x-full'
           } ${isTransitioning ? 'pointer-events-none' : ''}`}
-          >
-          <Link
-            href="#" 
-            onClick={(e) => {
-              e.preventDefault();
-              switchToShopAll();
-            }}
+          role="menu"
+        >
+          <button
+            onClick={switchToShopAll}
             className='group relative w-full text-gray-600 dark:text-textaccent hover:text-black dark:hover:text-white transition-all duration-300 text-xl flex items-center justify-start hover-underline'
+            aria-label="Shop All Categories"
           >
-            <p>Shop All</p>
+            <span>Shop All</span>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" 
                 className="size-5 absolute right-2 top-0 bottom-0 mx-auto opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               <path fillRule="evenodd" d="M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z" clipRule="evenodd" />
             </svg>
-          </Link>
+          </button>
           <Link href="/all?category=featured" className='w-full text-gray-600 dark:text-textaccent hover:text-black dark:hover:text-white transition-all duration-300 text-xl hover-underline'>
             New In
           </Link>
@@ -157,19 +163,18 @@ export default function HeaderModal() {
 
         {/* Shop All Content */}
         <div 
-          className={`flex flex-col transition-all duration-300 absolute inset-0 p-6 pt-16 ${
+          className={`absolute inset-0 p-6 pt-16 flex flex-col transition-all duration-300 ${
             activeView === 'shopAll' ? 'opacity-100 transform translate-x-0' : 'opacity-0 transform translate-x-full'
           } ${isTransitioning ? 'pointer-events-none' : ''}`}
+          role="menu"
         >
           <div className="flex flex-col items-start justify-start gap-6">
             <Link 
               key="all"
-              href={`/all`} 
+              href="/all" 
               className='group relative w-full text-gray-600 dark:text-textaccent hover:text-black dark:hover:text-white transition-all duration-300 text-xl flex items-center justify-start hover-underline'
-              onClick={(e) => {
-                e.preventDefault();
+              onClick={() => {
                 handleClose();
-                window.location.href = `/all`;
               }}
             >
               <p>All</p>
@@ -183,10 +188,8 @@ export default function HeaderModal() {
                 key={type}
                 href={`/all?type=${type}`} 
                 className='group relative w-full text-gray-600 dark:text-textaccent hover:text-black dark:hover:text-white transition-all duration-300 text-xl flex items-center justify-start hover-underline'
-                onClick={(e) => {
-                  e.preventDefault();
+                onClick={() => {
                   handleClose();
-                  window.location.href = `/all?type=${type}`;
                 }}
               >
                 <p>{type.charAt(0).toUpperCase() + type.slice(1)}</p>

@@ -33,14 +33,12 @@ export default function FilterMenu({ isOpen, onClose, onFilterChange, activeFilt
 
   useEffect(() => {
     if (isOpen) {
-      // Small delay to trigger fade-in animation
       setTimeout(() => setIsVisible(true), 10);
     } else {
       setIsVisible(false);
     }
   }, [isOpen]);
   
-  // Update handleClose function
   const handleClose = () => {
     setIsVisible(false);
     setIsClosing(true);
@@ -52,11 +50,9 @@ export default function FilterMenu({ isOpen, onClose, onFilterChange, activeFilt
   
   if (!isOpen) return null;
 
-
-
   const FilterSection = ({ title, items, type }: { title: string, items: string[], type: string }) => (
     <div className="mb-6">
-      <h3 className="text-lg font-semibold mb-2">{title}</h3>
+      <h3 className="mb-2 text-lg font-semibold">{title}</h3>
       <div className="flex flex-wrap gap-2">
         {items.map(item => {
           const isActive = activeFilters[type as keyof typeof activeFilters].includes(item);
@@ -64,7 +60,7 @@ export default function FilterMenu({ isOpen, onClose, onFilterChange, activeFilt
             <button
               key={item}
               onClick={() => onFilterChange(type, item)}
-              className={`px-3 py-1 rounded text-sm flex flex-row items-center ${
+              className={`flex items-center px-3 py-1 text-sm rounded ${
                 isActive
                   ? 'bg-black text-white dark:bg-white dark:text-black'
                   : 'bg-gray-100 text-gray-800 dark:bg-darkaccent3 dark:text-gray-200'
@@ -79,10 +75,9 @@ export default function FilterMenu({ isOpen, onClose, onFilterChange, activeFilt
     </div>
   );
 
-  // For color filters, show color swatches
   const ColorFilterSection = () => (
     <div className="mb-6">
-      <h3 className="text-lg font-semibold mb-2">Colors</h3>
+      <h3 className="mb-2 text-lg font-semibold">Colors</h3>
       <div className="flex flex-wrap gap-2">
         {Object.entries(COLORS).map(([key, color]) => {
           const isActive = activeFilters.colors.includes(color.name);
@@ -90,7 +85,7 @@ export default function FilterMenu({ isOpen, onClose, onFilterChange, activeFilt
             <button
               key={key}
               onClick={() => onFilterChange('colors', color.name)}
-              className={`w-8 h-8 rounded-full flex items-center justify-center border ${
+              className={`flex items-center justify-center w-8 h-8 rounded-full border ${
                 isActive ? 'border-black dark:border-textaccent' : 'border-transparent'
               }`}
               style={{ backgroundColor: color.hex }}
@@ -106,22 +101,22 @@ export default function FilterMenu({ isOpen, onClose, onFilterChange, activeFilt
 
   return (
     <div 
-      className={`fixed inset-0 bg-black z-[100] flex justify-start transition-opacity duration-300 ease-in-out ${
+      className={`fixed inset-0 flex justify-start z-[100] bg-black transition-opacity duration-300 ease-in-out ${
         isVisible ? 'bg-opacity-50 opacity-100' : 'bg-opacity-0 opacity-0'
       }`}
       onClick={handleClose}
     >
       <div 
         ref={menuRef} 
-        className={`bg-white dark:bg-darkaccent w-full max-w-md h-full overflow-y-auto p-6 relative ${
+        className={`relative p-6 w-full h-full overflow-y-auto transition-all duration-300 bg-white dark:bg-darkaccent max-w-md ${
             isClosing ? 'drawer-animation-exit' : 'drawer-animation'
           }`}
-        onClick={(e) => e.stopPropagation()} // Prevent clicks inside from closing
+        onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex items-center justify-between mb-8">
           <h2 className="text-2xl font-semibold">Filters</h2>
-          <button onClick={handleClose} className="text-gray-600 dark:text-textaccent hover:text-black dark:hover:text-white button-grow transition-colors duration-300">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <button onClick={handleClose} className="transition-colors duration-300 dark:text-textaccent hover:text-black dark:hover:text-white button-grow text-gray-600">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -132,7 +127,7 @@ export default function FilterMenu({ isOpen, onClose, onFilterChange, activeFilt
         <ColorFilterSection />
         <FilterSection title="Sizes" items={sizes} type="sizes" />
 
-        <div className="absolute bottom-6 right-6 left-6 flex flex-row justify-end items-center gap-4">
+        <div className="absolute flex items-center justify-end gap-4 bottom-6 right-6 left-6">
           <button
             onClick={() => {
               // Clear all filters
@@ -142,13 +137,13 @@ export default function FilterMenu({ isOpen, onClose, onFilterChange, activeFilt
                 });
               });
             }}
-            className="px-4 py-2 border border-textaccent rounded-md dark:border-gray-600"
+            className="px-4 py-2 rounded-md border dark:border-gray-600 border-textaccent"
           >
             Clear All
           </button>
           <button
             onClick={handleClose}
-            className="px-4 py-2 bg-black text-white dark:bg-white dark:text-black rounded-md"
+            className="px-4 py-2 rounded-md dark:bg-white dark:text-black text-white bg-black"
           >
             Show {numberOfResults} results
           </button>
