@@ -137,25 +137,27 @@ export default function FilterMenu({
 
   return (
     <div
+      aria-label="Filter options"
       className={`fixed inset-0 flex justify-start z-[100] bg-black transition-opacity duration-300 ease-in-out ${
         isVisible ? "bg-opacity-50 opacity-100" : "bg-opacity-0 opacity-0"
       }`}
       role="dialog"
-      aria-label="Filter options"
     >
       <button
         className="fixed inset-0 w-full h-full cursor-default bg-transparent border-none"
-        onClick={handleClose}
-        onKeyDown={(e) => e.key === "Escape" && handleClose()}
         aria-label="Close filter menu"
+        onKeyDown={(e) => e.key === "Escape" && handleClose()}
+        onClick={handleClose}
       />
       <div
-        ref={menuRef}
+        aria-modal="true"
         className={`relative p-6 w-full h-full overflow-y-auto transition-all duration-300 bg-white dark:bg-darkaccent max-w-md ${
           isClosing ? "drawer-animation-exit" : "drawer-animation"
         }`}
         onClick={(e) => e.stopPropagation()}
-        aria-modal="true"
+        onKeyDown={(e) => e.stopPropagation()}
+        ref={menuRef}
+        role="dialog"
       >
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-2xl font-semibold">Filters</h2>
