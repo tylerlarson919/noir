@@ -4,12 +4,12 @@ import { getProductById, getFeaturedProducts } from "@/lib/products";
 
 // Add this line to ignore TypeScript errors for this specific component
 // @ts-ignore
-export default async function ProductPage({
-  params,
-}: {
+type Props = {
   params: { id: string };
   searchParams?: { [key: string]: string | string[] | undefined };
-}) {
+};
+
+export default async function ProductPage({ params, searchParams }: Props) {
   const { id } = params;
   const product = await getProductById(id);
 
