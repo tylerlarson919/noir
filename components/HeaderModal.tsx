@@ -93,7 +93,7 @@ export default function HeaderModal() {
   if (!isHeaderOpen) return null;
 
   return (
-<div
+    <div
       aria-label="Navigation menu"
       className={`fixed inset-0 z-[98] flex justify-start bg-black transition-opacity duration-300 ease-in-out ${
         isVisible ? "bg-opacity-50 opacity-100" : "bg-opacity-0 opacity-0"
@@ -101,6 +101,7 @@ export default function HeaderModal() {
       role="dialog"
       onClick={handleClose}
       onKeyDown={(e) => e.key === "Escape" && handleClose()}
+      tabIndex={0}
     >
       {/* Modal content */}
       <div
