@@ -146,19 +146,16 @@ export default function FilterMenu({
       <button
         className="fixed inset-0 w-full h-full cursor-default bg-transparent border-none"
         aria-label="Close filter menu"
-        onKeyDown={(e) => e.key === "Escape" && handleClose()}
         onClick={handleClose}
+        onKeyDown={(e) => e.key === "Escape" && handleClose()}
       />
       <div
         aria-modal="true"
         className={`relative p-6 w-full h-full overflow-y-auto transition-all duration-300 bg-white dark:bg-darkaccent max-w-md ${
           isClosing ? "drawer-animation-exit" : "drawer-animation"
         }`}
-        onClick={(e) => e.stopPropagation()}
-        onKeyDown={(e) => e.stopPropagation()}
         ref={menuRef}
         role="dialog"
-        tabIndex={0}
       >
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-2xl font-semibold">Filters</h2>

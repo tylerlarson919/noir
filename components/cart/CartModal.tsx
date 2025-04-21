@@ -50,19 +50,16 @@ export default function CartModal() {
       <button
         aria-label="Close shopping cart"
         className="fixed inset-0 w-full h-full cursor-default bg-transparent border-none"
-        onKeyDown={(e) => e.key === "Escape" && handleClose()}
         onClick={handleClose}
+        onKeyDown={(e) => e.key === "Escape" && handleClose()}
       />
       <div
         aria-modal="true"
         className={`bg-white dark:bg-darkaccent w-full max-w-md h-full overflow-y-auto p-6 relative ${
           isClosing ? "drawer-right-animation-exit" : "drawer-right-animation"
         }`}
-        onClick={(e) => e.stopPropagation()}
-        onKeyDown={(e) => e.stopPropagation()}
         ref={menuRef}
         role="dialog"
-        tabIndex={0}
       >
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-medium">Shopping Bag ({items.length})</h2>

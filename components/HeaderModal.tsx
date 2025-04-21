@@ -101,19 +101,19 @@ export default function HeaderModal() {
       role="dialog"
     >
       <button
+        aria-label="Close navigation menu"
         className="fixed inset-0 w-full h-full cursor-default bg-transparent border-none"
         onClick={handleClose}
         onKeyDown={(e) => e.key === "Escape" && handleClose()}
-        aria-label="Close navigation menu"
       />
       {/* Modal content */}
       <div
-        ref={menuRef}
+        aria-modal="true"
         className={`relative z-[100] w-full h-full p-6 overflow-y-auto bg-white border-r dark:bg-darkaccent md:max-w-md border-gray-600 dark:border-darkaccent2/60 ${
           isClosing ? "drawer-animation-exit" : "drawer-animation"
         }`}
+        ref={menuRef}
         role="dialog"
-        aria-modal="true"
       >
         <div className="relative flex items-center justify-between mb-4">
           {activeView === "shopAll" ? (
