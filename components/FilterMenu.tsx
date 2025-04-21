@@ -158,6 +158,7 @@ export default function FilterMenu({
         onKeyDown={(e) => e.stopPropagation()}
         ref={menuRef}
         role="dialog"
+        tabIndex={0}
       >
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-2xl font-semibold">Filters</h2>

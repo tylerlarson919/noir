@@ -41,31 +41,34 @@ export default function CartModal() {
 
   return (
     <div
+      aria-label="Shopping cart"
       className={`fixed inset-0 bg-black z-[100] flex justify-end transition-opacity duration-300 ease-in-out ${
         isVisible ? "bg-opacity-50 opacity-100" : "bg-opacity-0 opacity-0"
       }`}
       role="dialog"
-      aria-label="Shopping cart"
     >
       <button
-        className="fixed inset-0 w-full h-full cursor-default bg-transparent border-none"
-        onClick={handleClose}
-        onKeyDown={(e) => e.key === "Escape" && handleClose()}
         aria-label="Close shopping cart"
+        className="fixed inset-0 w-full h-full cursor-default bg-transparent border-none"
+        onKeyDown={(e) => e.key === "Escape" && handleClose()}
+        onClick={handleClose}
       />
       <div
-        ref={menuRef}
+        aria-modal="true"
         className={`bg-white dark:bg-darkaccent w-full max-w-md h-full overflow-y-auto p-6 relative ${
           isClosing ? "drawer-right-animation-exit" : "drawer-right-animation"
         }`}
         onClick={(e) => e.stopPropagation()}
-        aria-modal="true"
+        onKeyDown={(e) => e.stopPropagation()}
+        ref={menuRef}
+        role="dialog"
+        tabIndex={0}
       >
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-medium">Shopping Bag ({items.length})</h2>
           <button
-            onClick={handleClose}
             className="text-gray-600 dark:text-textaccent hover:text-black dark:hover:text-white button-grow transition-colors duration-300"
+            onClick={handleClose}
           >
             <svg
               className="h-6 w-6"
