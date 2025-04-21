@@ -2,6 +2,7 @@ import React from "react";
 
 import ProductCard from "@/components/ui/ProductCard";
 import { Product } from "@/lib/products";
+import { useRouter } from "next/navigation";
 
 interface FeaturedProductsProps {
   products: Product[];
@@ -12,6 +13,8 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
   products,
   title,
 }) => {
+  const router = useRouter();
+
   return (
     <section className="py-10">
       <div className="px-4 w-full flex flex-col gap-6 items-center justify-center">
@@ -25,7 +28,7 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
-        <button className="w-fit py-2 px-6 bg-dark1 dark:bg-white button-grow-subtle text-white dark:text-black transition-color duration-300">
+        <button className="w-fit py-2 px-6 bg-dark1 dark:bg-white button-grow-subtle text-white dark:text-black transition-color duration-300" onClick={() => router.push("/all")}>
           View All
         </button>
       </div>

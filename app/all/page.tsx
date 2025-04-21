@@ -22,9 +22,7 @@ const XIcon = () => {
     </svg>
   );
 };
-
-export default function ProductsPage() {
-  function ProductsPageContent() {
+function ProductsPageContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const pathname = usePathname();
@@ -83,25 +81,31 @@ export default function ProductsPage() {
     const updateURL = () => {
       // Build the URL search params based on active filters
       const params = new URLSearchParams();
-
+  
       activeFilters.category.forEach((category) => {
         params.append("category", category);
       });
-
+  
       activeFilters.subCategory.forEach((subCategory) => {
         params.append("subCategory", subCategory);
       });
-
+  
       activeFilters.colors.forEach((color) => {
         params.append("colors", color);
       });
-
+  
       activeFilters.sizes.forEach((size) => {
         params.append("sizes", size);
       });
-
-      // Update the URL without refreshing the page
-      router.push(`${pathname}?${params.toString()}`);
+  
+      const newUrl = `${pathname}?${params.toString()}`;
+      const currentUrl = `${pathname}?${searchParams.toString()}`;
+      
+      // Only update if the URL actually changed
+      if (newUrl !== currentUrl) {
+        // Use replace instead of push to avoid adding to browser history
+        router.replace(newUrl, { scroll: false });
+      }
     };
 
     const toggleFilter = (type: string, value: string) => {
@@ -275,10 +279,11 @@ export default function ProductsPage() {
         </div>
       </div>
     );
-  } 
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <ProductsPageContent />
-    </Suspense>
-  );
 }
+  export default function ProductsPage() {
+    return (
+      <Suspense fallback={<div>Loading...</div>}>
+        <ProductsPageContent />
+      </Suspense>
+    );
+  }

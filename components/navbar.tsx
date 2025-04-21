@@ -101,6 +101,7 @@ export const Navbar = () => {
               height={32}
               src="/noir-logo-full.svg"
               width={100}
+              priority={true}
             />
           </Link>
         </div>
