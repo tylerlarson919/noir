@@ -93,7 +93,7 @@ export default function HeaderModal() {
   if (!isHeaderOpen) return null;
 
   return (
-    <button
+    <div
       aria-label="Navigation menu backdrop"
       className={`fixed inset-0 z-[98] flex justify-start bg-black transition-opacity duration-300 ease-in-out ${
         isVisible ? "bg-opacity-50 opacity-100" : "bg-opacity-0 opacity-0"
@@ -282,6 +282,6 @@ export default function HeaderModal() {
           </div>
         </div>
       </div>
-    </button>
+    </div>
   );
 }
