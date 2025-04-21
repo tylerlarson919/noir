@@ -64,7 +64,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             />
           </div>
         </div>
-        <div className="flex flex-col justify-center items-center gap-1">
+        <div className="flex flex-col justify-center items-start sm:items-center gap-1">
           <h3 className="text-sm uppercase tracking-wide">{product.name}</h3>
           <p className="text-gray-800 dark:text-textaccent text-sm">
             ${product.price.toFixed(2)}

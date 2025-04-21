@@ -85,9 +85,9 @@ export default function CartPage() {
                             src={item.image}
                           />
                         </div>
-                        <div className="flex-grow space-y-2">
+                        <div className="flex-grow space-y-1">
                           <h3 className="font-medium text-md">{item.name}</h3>
-                          <p className="text-lg font-medium">
+                          <p className="text-md font-light">
                             ${item.price.toFixed(2)}
                           </p>
                           <div className="text-sm text-textaccentdarker dark:text-textaccent grid grid-cols-2 sm:grid-cols-3 gap-2">

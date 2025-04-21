@@ -13,6 +13,9 @@ import { Product } from "@/lib/products";
 import "swiper/css";
 import "swiper/css/pagination";
 import "@/styles/swiper-custom.css";
+import Lightbox from "yet-another-react-lightbox";
+import Zoom from "yet-another-react-lightbox/plugins/zoom";
+import "yet-another-react-lightbox/styles.css";
 
 export default function ProductDetails({ 
     product, 
@@ -29,7 +32,8 @@ export default function ProductDetails({
       const { addItem } = useCart();
       const [previousColor, setPreviousColor] = useState(product.colors[0]);
       const [isTransitioning, setIsTransitioning] = useState(false);
-    
+      const [open, setOpen] = useState(false);
+      const [slideIndex, setSlideIndex] = useState(0);
       // Add this useEffect to handle transition timing
       useEffect(() => {
         if (isTransitioning) {
@@ -72,6 +76,12 @@ export default function ProductDetails({
         });
       };
     
+
+      const lightboxSlides = selectedColor.images.map((imageIndex) => ({
+        src: product.images[imageIndex] || "/images/placeholder.jpg",
+        alt: `${product.name} - ${selectedColor.name}`,
+      }));
+
       return (
         <div className="mx-4 relative flex flex-col justify-start items-center">
           <div className="flex flex-col md:flex-row w-full h-full items-start justify-center mt-28 gap-4">
@@ -134,7 +144,14 @@ export default function ProductDetails({
                     spaceBetween={0}
                   >
                     {selectedColor.images.map((imageIndex, index) => (
-                      <SwiperSlide key={`mobile-${index}`}>
+                        <SwiperSlide 
+                        key={`mobile-${index}`}
+                        onClick={() => {
+                          setSlideIndex(index);
+                          setOpen(true);
+                        }}
+                        className="cursor-zoom-in"
+                      >
                         <div className="relative aspect-square w-full">
                           <Image
                             fill
@@ -160,7 +177,11 @@ export default function ProductDetails({
                   {selectedColor.images.map((imageIndex, index) => (
                     <div
                       key={`current-${index}`}
-                      className="relative aspect-square bg-transparent w-full"
+                      className="relative aspect-square bg-transparent w-full cursor-zoom-in"
+                      onClick={() => {
+                        setSlideIndex(index);
+                        setOpen(true);
+                      }}
                     >
                       <Image
                         fill
@@ -168,12 +189,8 @@ export default function ProductDetails({
                         className={`object-contain ${isTransitioning ? "animate-cross-fade-in" : ""}`}
                         loading={index === 0 ? "eager" : "lazy"}
                         priority={index === 0}
-                        src={
-                          product.images[imageIndex] || "/images/placeholder.jpg"
-                        }
-                        onTransitionEnd={
-                          index === 0 ? () => setIsTransitioning(false) : undefined
-                        }
+                        src={product.images[imageIndex] || "/images/placeholder.jpg"}
+                        onTransitionEnd={index === 0 ? () => setIsTransitioning(false) : undefined}
                       />
                     </div>
                   ))}
@@ -353,6 +370,20 @@ export default function ProductDetails({
               title="You Might Also Like"
             />
           </div>
+          <Lightbox
+            open={open}
+            close={() => setOpen(false)}
+            slides={lightboxSlides}
+            index={slideIndex}
+            plugins={[Zoom]}
+            zoom={{
+              maxZoomPixelRatio: 3,
+              zoomInMultiplier: 2,
+              doubleTapDelay: 300,
+              doubleClickDelay: 300,
+              keyboardMoveDistance: 50,
+            }}
+          />
         </div>
       );
     }
