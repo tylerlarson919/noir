@@ -96,7 +96,7 @@ export default function CartModal() {
                   key={`${item.id}-${item.size}-${item.color.name}-${index}`}
                   className="flex gap-4 py-3 border-b"
                 >
-                  <Link 
+                  <Link
                     href={`/all/products/${item.id}`}
                     className="flex gap-4 flex-grow cursor-pointer"
                   >
@@ -157,7 +157,12 @@ export default function CartModal() {
                 >
                   <div className="flex justify-center items-center gap-3 font-medium">
                     <p>CHECKOUT</p>
-                    <svg width="4" height="4" viewBox="0 0 4 4" className="fill-current">
+                    <svg
+                      width="4"
+                      height="4"
+                      viewBox="0 0 4 4"
+                      className="fill-current"
+                    >
                       <circle cx="2" cy="2" r="2" />
                     </svg>
                     <p>${totalPrice.toFixed(2)}</p>

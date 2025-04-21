@@ -73,7 +73,7 @@ export default function CartPage() {
                       key={`${item.id}-${item.size}-${item.color.name}-${index}`}
                       className="py-4 flex flex-col sm:flex-row gap-0 sm:gap-4 border-b"
                     >
-                      <Link 
+                      <Link
                         href={`/all/products/${item.id}`}
                         className="flex flex-row gap-4 flex-grow cursor-pointer"
                       >
@@ -164,11 +164,15 @@ export default function CartPage() {
                   </div>
                   <div className="flex justify-between">
                     <span>Shipping</span>
-                    <span className="text-black/40 dark:text-white/30">Calculated at checkout</span>
+                    <span className="text-black/40 dark:text-white/30">
+                      Calculated at checkout
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span>Tax</span>
-                    <span className="text-black/40 dark:text-white/30">Calculated at checkout</span>
+                    <span className="text-black/40 dark:text-white/30">
+                      Calculated at checkout
+                    </span>
                   </div>
                 </div>
 

@@ -18,8 +18,7 @@ export default async function ProductPage({
     .filter((p) => p.id !== product.id)
     .slice(0, 4);
 
-  return <ProductDetails product={product} featuredProducts={featuredProducts} />;
+  return (
+    <ProductDetails product={product} featuredProducts={featuredProducts} />
+  );
 }
-
-
-  
