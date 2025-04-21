@@ -191,7 +191,7 @@ function ProductsPageContent() {
           className={`tracking-wider px-4 py-2 text-sm border border-1 rounded flex flex-row items-center capitalize ${
             isActive
               ? "border-black bg-black text-white dark:border-white dark:bg-white dark:text-black"
-              : "border-black/60 dark:border-textaccent/60"
+              : "border-black/30 dark:border-textaccent/30"
           }`}
           onClick={() => toggleFilter(type, filter)}
         >
@@ -234,7 +234,7 @@ function ProductsPageContent() {
               className={`tracking-wider px-4 py-2 text-sm border border-1 rounded ${
                 isFilterMenuOpen
                   ? "border-black bg-black text-white dark:border-white dark:bg-white dark:text-black"
-                  : "border-black/60 dark:border-textaccent/60"
+                  : "border-black/30 dark:border-textaccent/30"
               }`}
               onClick={openFilterMenu}
             >

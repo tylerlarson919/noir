@@ -28,7 +28,7 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
-        <button className="w-fit py-2 px-6 bg-dark1 dark:bg-white button-grow-subtle text-white dark:text-black transition-color duration-300" onClick={() => router.push("/all")}>
+        <button className="w-fit py-2 px-6 bg-dark1 dark:bg-white button-grow-subtle text-white dark:text-black transition-color duration-300  rounded-sm" onClick={() => router.push("/all")}>
           View All
         </button>
       </div>

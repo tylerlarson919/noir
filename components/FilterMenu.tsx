@@ -120,7 +120,7 @@ export default function FilterMenu({
               key={key}
               className={`flex items-center justify-center w-8 h-8 rounded-full border ${
                 isActive
-                  ? "border-black dark:border-textaccent"
+                  ? "border-black/30 dark:border-textaccent/30"
                   : "border-transparent"
               }`}
               style={{ backgroundColor: color.hex }}
@@ -191,7 +191,7 @@ export default function FilterMenu({
 
         <div className="absolute flex items-center justify-end gap-4 bottom-6 right-6 left-6">
           <button
-            className="px-4 py-2 rounded-md border dark:border-gray-600 border-textaccent"
+            className="px-4 py-2 rounded-md border dark:border-white/30 border-textaccent/30"
             onClick={() => {
               // Clear all filters
               Object.keys(activeFilters).forEach((key) => {

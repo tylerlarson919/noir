@@ -176,7 +176,7 @@ export default function HeaderModal() {
         >
           <button
             aria-label="Shop All Categories"
-            className="group relative w-full text-gray-600 dark:text-textaccent hover:text-black dark:hover:text-white transition-all duration-300 text-xl flex items-center justify-start hover-underline"
+            className="text-left group relative w-full text-gray-600 dark:text-textaccent hover:text-black dark:hover:text-white transition-all duration-300 text-xl flex items-center justify-start hover-underline"
             onClick={switchToShopAll}
           >
             <span>Shop All</span>

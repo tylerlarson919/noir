@@ -4,7 +4,7 @@ import { Fira_Code as FontMono } from "next/font/google";
 // Define Montserrat font family from Google Fonts
 export const fontSans = Montserrat({
   subsets: ["latin"],
-  weight: ["300", "400", "700"],
+  weight: ["300", "400", "500", "600", "700"],
   style: ["normal", "italic"],
   variable: "--font-sans",
   display: "swap",

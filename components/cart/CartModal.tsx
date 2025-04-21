@@ -96,66 +96,72 @@ export default function CartModal() {
                   key={`${item.id}-${item.size}-${item.color.name}-${index}`}
                   className="flex gap-4 py-3 border-b"
                 >
-                  <div className="relative h-20 w-20 flex-shrink-0">
-                    <Image
-                      fill
-                      alt={item.name}
-                      className="object-contain"
-                      src={item.image}
-                    />
-                  </div>
-                  <div className="flex-grow relative">
-                    <h3 className="font-medium uppercase">{item.name}</h3>
-                    <p className="text-sm">${item.price.toFixed(2)}</p>
-                    <div className="text-sm text-textaccentdarker dark:text-textaccent">
-                      <p>Size: {item.size}</p>
-                      <div className="flex items-center">
-                        <span>Color: </span>
-                        <div
-                          className="ml-1 w-3 h-3 rounded-full"
-                          style={{ backgroundColor: item.color.hex }}
-                        />
-                        <span className="ml-1">{item.color.name}</span>
+                  <Link 
+                    href={`/all/products/${item.id}`}
+                    className="flex gap-4 flex-grow cursor-pointer"
+                  >
+                    <div className="relative h-20 w-20 flex-shrink-0">
+                      <Image
+                        fill
+                        alt={item.name}
+                        className="object-contain"
+                        src={item.image}
+                      />
+                    </div>
+                    <div className="flex-grow relative">
+                      <h3 className="font-medium uppercase">{item.name}</h3>
+                      <p className="text-sm">${item.price.toFixed(2)}</p>
+                      <div className="text-xs text-textaccentdarker dark:text-textaccent">
+                        <p>Size: {item.size}</p>
+                        <div className="flex items-center">
+                          <span>Color: </span>
+                          <div
+                            className="ml-1 w-3 h-3 rounded-full"
+                            style={{ backgroundColor: item.color.hex }}
+                          />
+                          <span className="ml-1">{item.color.name}</span>
+                        </div>
+                        <p>Quantity: {item.quantity}</p>
                       </div>
-                      <p>Quantity: {item.quantity}</p>
-                    </div>
 
-                    <div className="flex justify-end items-center absolute bottom-0 right-0 left-0">
-                      <button
-                        className="text-sm underline"
-                        onClick={() =>
-                          removeItem(item.id, item.size, item.color.name)
-                        }
-                      >
-                        Remove
-                      </button>
+                      <div className="flex justify-end items-center absolute bottom-0 right-0 left-0">
+                        <button
+                          className="text-sm underline"
+                          onClick={(e) => {
+                            e.preventDefault(); // Prevent the Link from being followed
+                            removeItem(item.id, item.size, item.color.name);
+                          }}
+                        >
+                          Remove
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  </Link>
                 </div>
               ))}
             </div>
-
             <div className="pt-4">
-              <div className="flex justify-between font-medium mb-4">
-                <span>Subtotal</span>
-                <span>${totalPrice.toFixed(2)}</span>
-              </div>
-
-              <div className="space-y-3 absolute left-6 right-6 bottom-8 text-sm text-textaccentdarker dark:text-textaccent flex flex-col items-center">
+              <div className="font-medium space-y-3 absolute left-6 right-6 bottom-8 text-sm text-textaccentdarker dark:text-textaccent flex flex-col items-center">
                 Taxes & shipping calculated at checkout.
                 <Link
-                  className="block w-full py-2 px-4 mt-2 border border-textaccentdarker dark:border-textaccent text-center button-grow-subtle"
+                  className="block w-full py-2 px-4 mt-2 border border-black/30 dark:border-textaccent/30 text-center button-grow-subtle rounded-sm"
                   href="/cart"
                   onClick={handleClose}
                 >
                   VIEW SHOPPING BAG
                 </Link>
                 <Link
-                  className="block w-full py-2 px-4 bg-dark1 dark:bg-white text-white dark:text-black text-center button-grow-subtle"
+                  className="block w-full py-2 px-4 bg-dark1 dark:bg-white text-white dark:text-black text-center button-grow-subtle rounded-sm"
                   href="/checkout"
                   onClick={handleClose}
                 >
-                  CHECKOUT
+                  <div className="flex justify-center items-center gap-3 font-medium">
+                    <p>CHECKOUT</p>
+                    <svg width="4" height="4" viewBox="0 0 4 4" className="fill-current">
+                      <circle cx="2" cy="2" r="2" />
+                    </svg>
+                    <p>${totalPrice.toFixed(2)}</p>
+                  </div>
                 </Link>
               </div>
             </div>
