@@ -7,8 +7,7 @@ import { useEffect, useState, useRef } from "react";
 import { useCart } from "@/context/CartContext";
 
 export default function CartModal() {
-  const { items, isOpen, totalPrice, closeCart, removeItem } =
-    useCart();
+  const { items, isOpen, totalPrice, closeCart, removeItem } = useCart();
   const [isClosing, setIsClosing] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -45,22 +44,22 @@ export default function CartModal() {
       className={`fixed inset-0 bg-black z-[100] flex justify-end transition-opacity duration-300 ease-in-out ${
         isVisible ? "bg-opacity-50 opacity-100" : "bg-opacity-0 opacity-0"
       }`}
-      onClick={handleClose}
-      onKeyDown={(e) => e.key === 'Escape' && handleClose()}
-      role="presentation"
-      aria-modal="true"
+      role="dialog"
       aria-label="Shopping cart"
     >
-      {/* Modal Content */}
+      <button
+        className="fixed inset-0 w-full h-full cursor-default bg-transparent border-none"
+        onClick={handleClose}
+        onKeyDown={(e) => e.key === "Escape" && handleClose()}
+        aria-label="Close shopping cart"
+      />
       <div
         ref={menuRef}
         className={`bg-white dark:bg-darkaccent w-full max-w-md h-full overflow-y-auto p-6 relative ${
           isClosing ? "drawer-right-animation-exit" : "drawer-right-animation"
         }`}
         onClick={(e) => e.stopPropagation()}
-        role="dialog"
         aria-modal="true"
-        aria-label="Shopping cart"
       >
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-medium">Shopping Bag ({items.length})</h2>

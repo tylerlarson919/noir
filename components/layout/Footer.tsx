@@ -97,22 +97,34 @@ const Footer: React.FC = () => {
             <h3 className="text-sm uppercase tracking-wider mb-2">About</h3>
             <ul className="space-y-1">
               <li>
-                <Link className="text-gray-600 hover:text-black text-xs" href="/">
+                <Link
+                  className="text-gray-600 hover:text-black text-xs"
+                  href="/"
+                >
                   Our Story
                 </Link>
               </li>
               <li>
-                <Link className="text-gray-600 hover:text-black text-xs" href="/">
+                <Link
+                  className="text-gray-600 hover:text-black text-xs"
+                  href="/"
+                >
                   Sustainability
                 </Link>
               </li>
               <li>
-                <Link className="text-gray-600 hover:text-black text-xs" href="/">
+                <Link
+                  className="text-gray-600 hover:text-black text-xs"
+                  href="/"
+                >
                   Careers
                 </Link>
               </li>
               <li>
-                <Link className="text-gray-600 hover:text-black text-xs" href="/">
+                <Link
+                  className="text-gray-600 hover:text-black text-xs"
+                  href="/"
+                >
                   Press
                 </Link>
               </li>
@@ -123,22 +135,34 @@ const Footer: React.FC = () => {
             <h3 className="text-sm uppercase tracking-wider mb-2">Support</h3>
             <ul className="space-y-1">
               <li>
-                <Link className="text-gray-600 hover:text-black text-xs" href="/">
+                <Link
+                  className="text-gray-600 hover:text-black text-xs"
+                  href="/"
+                >
                   Contact Us
                 </Link>
               </li>
               <li>
-                <Link className="text-gray-600 hover:text-black text-xs" href="/">
+                <Link
+                  className="text-gray-600 hover:text-black text-xs"
+                  href="/"
+                >
                   Shipping & Returns
                 </Link>
               </li>
               <li>
-                <Link className="text-gray-600 hover:text-black text-xs" href="/">
+                <Link
+                  className="text-gray-600 hover:text-black text-xs"
+                  href="/"
+                >
                   FAQ
                 </Link>
               </li>
               <li>
-                <Link className="text-gray-600 hover:text-black text-xs" href="/">
+                <Link
+                  className="text-gray-600 hover:text-black text-xs"
+                  href="/"
+                >
                   Size Guide
                 </Link>
               </li>
