@@ -93,24 +93,23 @@ export default function HeaderModal() {
   if (!isHeaderOpen) return null;
 
   return (
-    <div
-      aria-label="Navigation menu"
+    <button
+      aria-label="Navigation menu backdrop"
       className={`fixed inset-0 z-[98] flex justify-start bg-black transition-opacity duration-300 ease-in-out ${
         isVisible ? "bg-opacity-50 opacity-100" : "bg-opacity-0 opacity-0"
       }`}
       role="dialog"
       onClick={handleClose}
       onKeyDown={(e) => e.key === "Escape" && handleClose()}
-      tabIndex={0}
     >
       {/* Modal content */}
       <div
         ref={menuRef}
-        role="dialog" 
-        aria-modal="true"
         className={`relative z-[100] w-full h-full p-6 overflow-y-auto bg-white border-r dark:bg-darkaccent md:max-w-md border-gray-600 dark:border-darkaccent2/60 ${
           isClosing ? "drawer-animation-exit" : "drawer-animation"
         }`}
+        role="dialog" 
+        aria-modal="true"
       >
         <div className="relative flex items-center justify-between mb-4">
           {activeView === "shopAll" ? (
@@ -283,6 +282,6 @@ export default function HeaderModal() {
           </div>
         </div>
       </div>
-    </div>
+    </button>
   );
 }
