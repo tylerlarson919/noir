@@ -2,11 +2,14 @@ import ProductDetails from "@/components/ProductDetails";
 import { notFound } from "next/navigation";
 import { getProductById, getFeaturedProducts } from "@/lib/products";
 
+type ProductPageProps = {
+  params: { id: string };
+  searchParams: { [key: string]: string | string[] | undefined };
+};
+
 export default async function ProductPage({
   params,
-}: {
-  params: { id: string };
-}) {
+}: ProductPageProps) {
   const { id } = params;
   const product = await getProductById(id);
 
