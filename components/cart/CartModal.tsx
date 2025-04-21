@@ -47,7 +47,7 @@ export default function CartModal() {
       }`}
       onClick={handleClose}
       onKeyDown={(e) => e.key === 'Escape' && handleClose()}
-      role="dialog"
+      role="presentation"
       aria-modal="true"
       aria-label="Shopping cart"
       tabIndex={0}
@@ -55,19 +55,19 @@ export default function CartModal() {
       {/* Modal Content */}
       <div
         ref={menuRef}
-        role="dialog"
         className={`bg-white dark:bg-darkaccent w-full max-w-md h-full overflow-y-auto p-6 relative ${
           isClosing ? "drawer-right-animation-exit" : "drawer-right-animation"
         }`}
         onClick={(e) => e.stopPropagation()}
-        onKeyDown={(e) => e.stopPropagation()}
-        tabIndex={0}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Shopping cart"
       >
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-medium">Shopping Bag ({items.length})</h2>
           <button
-            className="text-gray-600 dark:text-textaccent hover:text-black dark:hover:text-white button-grow transition-colors duration-300"
             onClick={handleClose}
+            className="text-gray-600 dark:text-textaccent hover:text-black dark:hover:text-white button-grow transition-colors duration-300"
           >
             <svg
               className="h-6 w-6"

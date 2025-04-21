@@ -142,7 +142,7 @@ export default function FilterMenu({
       }`}
       onClick={handleClose}
       onKeyDown={(e) => e.key === 'Escape' && handleClose()}
-      role="dialog"
+      role="presentation"
       aria-modal="true"
       aria-label="Filter options"
       tabIndex={0}
@@ -153,15 +153,15 @@ export default function FilterMenu({
           isClosing ? "drawer-animation-exit" : "drawer-animation"
         }`}
         onClick={(e) => e.stopPropagation()}
-        onKeyDown={(e) => e.stopPropagation()}
         role="dialog"
-        tabIndex={0}
+        aria-modal="true"
+        aria-label="Filter options"
       >
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-2xl font-semibold">Filters</h2>
           <button
-            className="transition-colors duration-300 dark:text-textaccent hover:text-black dark:hover:text-white button-grow text-gray-600"
             onClick={handleClose}
+            className="transition-colors duration-300 dark:text-textaccent hover:text-black dark:hover:text-white button-grow text-gray-600"
           >
             <svg
               className="w-6 h-6"
