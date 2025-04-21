@@ -22,12 +22,12 @@ interface ProductPageProps {
   params: {
     id: string;
   };
+  searchParams?: Record<string, string | string[] | undefined>;
 }
 
 export default function ProductPage({ params }: ProductPageProps) {
   // Use type assertion to properly type the unwrapped params
-  const unwrappedParams = use(params as any) as { id: string };
-  const product = getProductById(unwrappedParams.id);
+  const product = getProductById(params.id);
   const swiperRef = useRef<any>(null);
 
   if (!product) {
