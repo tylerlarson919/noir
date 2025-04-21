@@ -18,16 +18,13 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "@/styles/swiper-custom.css";
 
-interface ProductPageProps {
-  params: {
-    id: string;
-  };
-  searchParams?: Record<string, string | string[] | undefined>;
-}
+export default function ProductPage({ 
+    params 
+  }: { 
+    params: { id: string } 
+  }) {
+    const product = getProductById(params.id);
 
-export default function ProductPage({ params }: ProductPageProps) {
-  // Use type assertion to properly type the unwrapped params
-  const product = getProductById(params.id);
   const swiperRef = useRef<any>(null);
 
   if (!product) {
