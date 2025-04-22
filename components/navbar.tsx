@@ -106,10 +106,16 @@ export const Navbar = () => {
           </Link>
         </div>
 
-        <div className="flex flex-row items-center justify-end gap-4 z-[51]">
+        <div className="flex flex-row items-center justify-end gap-2 z-[51]">
           <ThemeSwitch
             className={`${isMainPage && isAtTop ? "text-white group-hover:text-black dark:group-hover:text-white" : ""} text-black dark:text-white transition-all duration-300`}
           />
+          <Link href="/account" className="text-white">
+          <svg className="w-8 h-8 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+            <path fillRule="evenodd" d="M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4h-4Z" clipRule="evenodd"/>
+          </svg>
+
+          </Link>
           <button
             aria-label="Open shopping cart"
             className="relative p-2"

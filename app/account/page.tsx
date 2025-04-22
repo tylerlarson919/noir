@@ -29,8 +29,6 @@ export default function AccountPage() {
     return () => unsub();
   }, [user]);
 
-  if (loading || !user) return null;
-
   useEffect(() => {
     if (!user) return;
     const ordersRef = doc(db, "users", user.uid, "data", "orders");
@@ -46,6 +44,8 @@ export default function AccountPage() {
     });
     return () => unsubOrders();
   }, [user]);
+  
+  if (loading || !user) return null;
 
   return (
     <div className="mx-4 md:mx-16 mt-24">
