@@ -7,7 +7,7 @@ export default function TermsOfServicePage() {
       <h2 className="text-xl font-medium mt-6 mb-3">GENERAL INFORMATION</h2>
       <p className="text-gray-800 dark:text-gray-400 mb-4">
         This website is operated by Noir Clothing. Throughout the site, the
-        terms "we", "us", "us" and "our" refer to Noir Clothing. Noir Clothing
+        terms {'"'}we{'"'}, {'"'}us{'"'}, {'"'}us and {'"'}our{'"'} refer to Noir Clothing. Noir Clothing
         offers this website, including all information, tools and services
         available from this site to you, the user, conditioned upon your
         acceptance of all terms, conditions, policies and notices stated here.
@@ -15,8 +15,8 @@ export default function TermsOfServicePage() {
 
       <p className="text-gray-800 dark:text-gray-400 mb-4">
         By visiting our site and/or purchasing something from us, you
-        participate in our "Service" and agree to the following terms and
-        conditions ("Terms of Service", "Terms"), including all additional terms
+        participate in our {'"'}Service{'"'} and agree to the following terms and
+        conditions ({'"'}Terms of Service{'"'}, {'"'}Terms{'"'}), including all additional terms
         and conditions and policies referenced herein and/or available through
         hyperlinks. These Terms of Service apply to all users of the Site,
         including without limitation users who are browsers, suppliers,
@@ -215,8 +215,8 @@ export default function TermsOfServicePage() {
       </p>
 
       <p className="text-gray-800 dark:text-gray-400 mb-4">
-        You acknowledge and agree that we provide access to such tools on an "as
-        is" and "as available" basis without warranties, representations or
+        You acknowledge and agree that we provide access to such tools on an {'"'}as
+        is{'"'} and {'"'}as available{'"'} basis without warranties, representations or
         conditions of any kind and without any endorsement. We shall have no
         liability whatsoever arising out of or relating to your use of tools
         provided by third parties.
@@ -269,7 +269,7 @@ export default function TermsOfServicePage() {
         If, at our request, you submit certain specific submissions (e.g.,
         contest entries) or without a request from us you submit creative ideas,
         suggestions, proposals, plans, or other materials, whether online, by
-        email, by postal mail, or otherwise (collectively, 'feedback'), you
+        email, by postal mail, or otherwise (collectively, {'\''}feedback{'\''}), you
         agree that we may, at any time, without restriction, edit, copy,
         publish, distribute, translate or otherwise use any feedback you have
         submitted to us. We do not and will not have any obligation (1) to keep
@@ -281,7 +281,7 @@ export default function TermsOfServicePage() {
         We may, but have no obligation to, monitor, edit or remove content that
         we deem to be unlawful, offensive, threatening, libelous, defamatory,
         defamatory, pornographic, obscene or objectionable or violates any
-        party's intellectual property or the Terms of Service.
+        party{'\''}s intellectual property or the Terms of Service.
       </p>
 
       <p className="text-gray-800 dark:text-gray-400 mb-4">
@@ -338,7 +338,7 @@ export default function TermsOfServicePage() {
         unlawful purpose; (b) to solicit others to perform or participate in
         unlawful acts; (c) to violate any regulations, rules, international,
         federal, provincial or state laws, or local ordinances; (d) to infringe
-        or violate our or any third party's intellectual property right; (e) to
+        or violate our or any third party{'\''}s intellectual property right; (e) to
         harass, abuse, insult, harm, defame, libel, slander, disparage,
         intimidate or discriminate on the basis of gender, sexual orientation,
         religion, ethnicity, race, age, national origin or disability; (f) to
@@ -377,7 +377,7 @@ export default function TermsOfServicePage() {
         You expressly agree that use of, or the possibility of using, the
         service is at your own risk. The service and all products and services
         provided through the service are (except as expressly stated by us)
-        provided "as is" and "as available" for your use, without any
+        provided {'"'}as is{'"'} and {'"'}as available{'"'} for your use, without any
         representations, warranties or conditions of any kind, either express or
         implied, including all implied warranties or conditions of
         merchantability, merchantable quality, fitness for a particular purpose,
@@ -412,7 +412,7 @@ export default function TermsOfServicePage() {
         parents, subsidiaries, affiliates, partners, officers, directors,
         agents, contractors, licensors, service providers, subcontractors,
         suppliers, interns and employees, harmless from any claim or demand,
-        including reasonable attorneys' fees, made by any third-party due to or
+        including reasonable attorneys{'\''} fees, made by any third-party due to or
         arising out of your breach of the Terms of Service or the documents they
         incorporate by reference, or your violation of any law or the rights of
         a third-party.

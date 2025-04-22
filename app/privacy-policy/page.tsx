@@ -11,7 +11,7 @@ export default function PrivacyPolicyPage() {
         When you purchase something from our store, as part of the buying and
         selling process, we collect the personal information you give us such as
         your name, address and email address. When you browse our store, we also
-        automatically receive your computer's internet protocol (IP) address in
+        automatically receive your computer{'\''}s internet protocol (IP) address in
         order to provide us with information that helps us learn about your
         browser and operating system. Email marketing: With your permission, we
         may send you emails about our store, new products and other updates.
@@ -47,7 +47,7 @@ export default function PrivacyPolicyPage() {
       <p className="text-gray-600 mb-4">
         Our store is hosted by Vercel. They provide us with the online
         e-commerce platform that allows us to sell our products and services to
-        you. Your data is stored through Vercel's data storage, databases, and
+        you. Your data is stored through Vercel{'\''}s data storage, databases, and
         the general Vercel application. Your data is stored on a secure server
         behind a firewall.
       </p>
@@ -136,7 +136,7 @@ export default function PrivacyPolicyPage() {
         included in the contact form and order details, so that Klarna can
         evaluate whether You meet the requirements to access your payment
         methods and to adapt said payment methods to your profile. Your personal
-        data is processed in accordance with the provisions of Klarna's privacy
+        data is processed in accordance with the provisions of Klarna{'\''}s privacy
         policy.
       </p>
 
@@ -181,7 +181,7 @@ export default function PrivacyPolicyPage() {
       <p className="text-gray-600 mb-4">
         Personalization cookies: They are those that allow the user to access
         the service with some predefined general characteristics based on a
-        series of criteria in the user's terminal, such as the language or the
+        series of criteria in the user{'\''}s terminal, such as the language or the
         type of browser through which the service is connected.
       </p>
 
