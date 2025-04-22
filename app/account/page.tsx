@@ -44,7 +44,7 @@ export default function AccountPage() {
     });
     return () => unsubOrders();
   }, [user]);
-  
+
   if (loading || !user) return null;
 
   return (
@@ -96,7 +96,7 @@ export default function AccountPage() {
               </div>
             ) : (
               <p className="text-gray-600 mb-8 text-sm">
-                You haven't placed any orders yet.
+                You haven&apos;t placed any orders yet.
               </p>
             )}
           </div>
