@@ -32,35 +32,39 @@ export const Navbar = () => {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-  
+
       // Determine scroll direction
       if (currentScrollY > prevScrollY) {
         setIsScrollingDown(true);
       } else {
         setIsScrollingDown(false);
       }
-  
+
       // Check if at the top of the page - use a small threshold for mobile
       setIsAtTop(currentScrollY <= 10); // More forgiving threshold instead of exactly 0
-  
+
       // Update previous scroll position
       setPrevScrollY(currentScrollY);
     };
-  
+
     // Ensure initial state is correct
     setIsAtTop(window.scrollY <= 10);
-  
+
     window.addEventListener("scroll", handleScroll, { passive: true });
-    
+
     // Add touch events for more reliable mobile detection
     window.addEventListener("touchmove", handleScroll, { passive: true });
-    window.addEventListener("touchend", () => {
-      // Force check at the end of touch scroll
-      setTimeout(() => {
-        setIsAtTop(window.scrollY <= 10);
-      }, 100);
-    }, { passive: true });
-  
+    window.addEventListener(
+      "touchend",
+      () => {
+        // Force check at the end of touch scroll
+        setTimeout(() => {
+          setIsAtTop(window.scrollY <= 10);
+        }, 100);
+      },
+      { passive: true },
+    );
+
     return () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("touchmove", handleScroll);
@@ -103,7 +107,7 @@ export const Navbar = () => {
                 fillRule="evenodd"
               />
             </svg>
-            <span className="tracking-wider">Menu</span>
+            <span className="tracking-wider hidden sm:relative">Menu</span>
           </button>
         </div>
 
@@ -125,10 +129,21 @@ export const Navbar = () => {
             className={`${isMainPage && isAtTop ? "text-white group-hover:text-black dark:group-hover:text-white" : ""} text-black dark:text-white transition-all duration-300`}
           />
           <Link href="/account" className="text-white">
-          <svg className="w-8 h-8 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-            <path fillRule="evenodd" d="M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4h-4Z" clipRule="evenodd"/>
-          </svg>
-
+            <svg
+              className="w-8 h-8 text-gray-800 dark:text-white"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                fillRule="evenodd"
+                d="M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4h-4Z"
+                clipRule="evenodd"
+              />
+            </svg>
           </Link>
           <button
             aria-label="Open shopping cart"

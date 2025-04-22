@@ -58,7 +58,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex flex-col justify-center items-center flex-grow min-h-[80vh] sm:min-h-[50vh]">
-      <div className="flex flex-col p-4 w-full max-w-md"> 
+      <div className="flex flex-col p-4 w-full max-w-md">
         <h1 className="text-2xl mb-4 text-center">Login</h1>
         <Input
           type="email"

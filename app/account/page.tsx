@@ -28,7 +28,6 @@ export default function AccountPage() {
     return () => unsub();
   }, [user]);
 
-
   useEffect(() => {
     if (!user) return;
     const ordersRef = doc(db, "users", user.uid, "data", "orders");
@@ -62,10 +61,8 @@ export default function AccountPage() {
       </div>
 
       <h1 className="text-2xl font-medium mb-4">
-        {user.displayName 
-          ? user.displayName.split(" ")[0] 
-          : "USER DASHBOARD"}
-    </h1>
+        {user.displayName ? user.displayName.split(" ")[0] : "USER DASHBOARD"}
+      </h1>
       <p className="text-gray-600 mb-10">
         View all your orders and manage your account information.
       </p>

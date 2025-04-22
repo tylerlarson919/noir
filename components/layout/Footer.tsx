@@ -10,7 +10,7 @@ const Footer: React.FC = () => {
             <h3 className="text-sm uppercase tracking-wider mb-2">ELEGANCE</h3>
             <p className="text-gray-600 mb-4 text-xs">
               Timeless fashion for the modern individual. Quality craftsmanship
-              and sustainable practices.
+              at good prices.
             </p>
             <div className="flex space-x-4">
               <Link
@@ -69,14 +69,6 @@ const Footer: React.FC = () => {
               <li>
                 <Link
                   className="text-gray-600 hover:text-black text-xs"
-                  href="/all?category=women"
-                >
-                  Women
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="text-gray-600 hover:text-black text-xs"
                   href="/all?category=accessories"
                 >
                   Accessories
@@ -85,7 +77,7 @@ const Footer: React.FC = () => {
               <li>
                 <Link
                   className="text-gray-600 hover:text-black text-xs"
-                  href="/all"
+                  href="/all?category=featured"
                 >
                   New Arrivals
                 </Link>
@@ -94,38 +86,30 @@ const Footer: React.FC = () => {
           </div>
 
           <div>
-            <h3 className="text-sm uppercase tracking-wider mb-2">About</h3>
+            <h3 className="text-sm uppercase tracking-wider mb-2">legal</h3>
             <ul className="space-y-1">
               <li>
                 <Link
                   className="text-gray-600 hover:text-black text-xs"
-                  href="/"
+                  href="/privacy-policy"
                 >
-                  Our Story
+                  Privacy Policy
                 </Link>
               </li>
               <li>
                 <Link
                   className="text-gray-600 hover:text-black text-xs"
-                  href="/"
+                  href="/terms-of-service"
                 >
-                  Sustainability
+                  Terms of Service
                 </Link>
               </li>
               <li>
                 <Link
                   className="text-gray-600 hover:text-black text-xs"
-                  href="/"
+                  href="/shipping-and-returns"
                 >
-                  Careers
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="text-gray-600 hover:text-black text-xs"
-                  href="/"
-                >
-                  Press
+                  Return Policy
                 </Link>
               </li>
             </ul>
@@ -137,7 +121,7 @@ const Footer: React.FC = () => {
               <li>
                 <Link
                   className="text-gray-600 hover:text-black text-xs"
-                  href="/"
+                  href="/contact"
                 >
                   Contact Us
                 </Link>
@@ -145,7 +129,7 @@ const Footer: React.FC = () => {
               <li>
                 <Link
                   className="text-gray-600 hover:text-black text-xs"
-                  href="/"
+                  href="/shipping-and-returns"
                 >
                   Shipping & Returns
                 </Link>
@@ -153,17 +137,9 @@ const Footer: React.FC = () => {
               <li>
                 <Link
                   className="text-gray-600 hover:text-black text-xs"
-                  href="/"
+                  href="/faq"
                 >
                   FAQ
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="text-gray-600 hover:text-black text-xs"
-                  href="/"
-                >
-                  Size Guide
                 </Link>
               </li>
             </ul>
