@@ -1,7 +1,6 @@
 "use client";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { useState, useEffect } from "react";
 import AddressModal from "@/components/account/AddressModal";
 import { doc, onSnapshot } from "firebase/firestore";
@@ -29,6 +28,7 @@ export default function AccountPage() {
     return () => unsub();
   }, [user]);
 
+
   useEffect(() => {
     if (!user) return;
     const ordersRef = doc(db, "users", user.uid, "data", "orders");
@@ -55,13 +55,17 @@ export default function AccountPage() {
             await logout();
             router.push("/account/login");
           }}
-          className="text-sm text-gray-500 flex items-center cursor-pointer"
+          className="text-sm text-gray-500 flex items-center cursor-pointer mb-10"
         >
           <span className="mr-2">←</span> LOGOUT
         </button>
       </div>
 
-      <h1 className="text-2xl font-medium mb-4">YOUR ACCOUNT</h1>
+      <h1 className="text-2xl font-medium mb-4">
+        {user.displayName 
+          ? user.displayName.split(" ")[0] 
+          : "USER DASHBOARD"}
+    </h1>
       <p className="text-gray-600 mb-10">
         View all your orders and manage your account information.
       </p>
