@@ -32,32 +32,46 @@ export const Navbar = () => {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-
+  
       // Determine scroll direction
       if (currentScrollY > prevScrollY) {
         setIsScrollingDown(true);
       } else {
         setIsScrollingDown(false);
       }
-
-      // Check if at the top of the page
-      setIsAtTop(currentScrollY === 0);
-
+  
+      // Check if at the top of the page - use a small threshold for mobile
+      setIsAtTop(currentScrollY <= 10); // More forgiving threshold instead of exactly 0
+  
       // Update previous scroll position
       setPrevScrollY(currentScrollY);
     };
-
+  
+    // Ensure initial state is correct
+    setIsAtTop(window.scrollY <= 10);
+  
     window.addEventListener("scroll", handleScroll, { passive: true });
-
+    
+    // Add touch events for more reliable mobile detection
+    window.addEventListener("touchmove", handleScroll, { passive: true });
+    window.addEventListener("touchend", () => {
+      // Force check at the end of touch scroll
+      setTimeout(() => {
+        setIsAtTop(window.scrollY <= 10);
+      }, 100);
+    }, { passive: true });
+  
     return () => {
       window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("touchmove", handleScroll);
+      window.removeEventListener("touchend", handleScroll);
     };
   }, [prevScrollY]);
 
   // Combine classes conditionally
   const headerClasses = `
     fixed top-0 z-50 left-0 right-0 py-6 px-4 flex flex-row items-center justify-center w-full transition-all duration-300 ease-in-out group
-    ${isScrollingDown ? "-translate-y-full" : "translate-y-0"} 
+    ${isScrollingDown && !isAtTop ? "-translate-y-full" : "translate-y-0"} 
     ${
       !isAtTop
         ? "bg-white dark:bg-darkaccent shadow-md"
