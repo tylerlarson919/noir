@@ -1,12 +1,12 @@
 "use client";
 
 import type { ThemeProviderProps } from "next-themes";
-
+import { AuthProvider } from "@/context/AuthContext";
 import * as React from "react";
 import { HeroUIProvider } from "@heroui/system";
 import { useRouter } from "next/navigation";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
-
+import { ToastProvider } from "@heroui/toast";
 import { CartProvider } from "@/context/CartContext";
 
 export interface ProvidersProps {
@@ -27,9 +27,12 @@ export function Providers({ children, themeProps }: ProvidersProps) {
 
   return (
     <HeroUIProvider navigate={router.push}>
-      <CartProvider>
-        <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
-      </CartProvider>
+      <ToastProvider placement="bottom-center" />
+      <AuthProvider>
+        <CartProvider>
+          <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
+        </CartProvider>
+      </AuthProvider>
     </HeroUIProvider>
   );
 }

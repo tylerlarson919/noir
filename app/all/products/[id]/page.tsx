@@ -8,7 +8,7 @@ type Props = {
 };
 
 export default async function ProductPage({ params, searchParams }: Props) {
-   // await the async params/searchParams
+  // await the async params/searchParams
   const { id } = await params;
   const resolvedSearch = searchParams ? await searchParams : {};
 

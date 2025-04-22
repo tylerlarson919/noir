@@ -49,7 +49,7 @@ export default function RootLayout({
             <HeaderModal />
             <div className="relative flex flex-col min-h-screen">
               <Navbar />
-              <main className="w-full flex-grow pt-0">{children}</main>
+              <main className="w-full flex-grow pt-0 relative">{children}</main>
               <Footer />
             </div>
           </HeaderModalProvider>

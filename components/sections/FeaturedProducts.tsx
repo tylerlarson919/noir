@@ -29,7 +29,7 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
           ))}
         </div>
         <button
-          className="w-fit py-2 px-6 bg-dark1 dark:bg-white button-grow-subtle text-white dark:text-black transition-color duration-300  rounded-sm"
+          className="w-fit py-2 px-6 bg-dark1 dark:bg-white button-grow-subtle text-white dark:text-black transition-color duration-300 rounded-sm"
           onClick={() => router.push("/all")}
         >
           View All

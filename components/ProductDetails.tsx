@@ -143,7 +143,7 @@ export default function ProductDetails({
                 spaceBetween={0}
               >
                 {selectedColor.images.map((imageIndex, index) => (
-                    <SwiperSlide
+                  <SwiperSlide
                     key={`mobile-${index}`}
                     onClick={() => {
                       setSlideIndex(index);
@@ -153,7 +153,7 @@ export default function ProductDetails({
                     role="button"
                     tabIndex={0}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
+                      if (e.key === "Enter" || e.key === " ") {
                         setSlideIndex(index);
                         setOpen(true);
                       }
@@ -184,22 +184,22 @@ export default function ProductDetails({
             >
               {selectedColor.images.map((imageIndex, index) => (
                 <div
-                key={`current-${index}`}
-                className="relative aspect-square bg-transparent w-full cursor-zoom-in"
-                onClick={() => {
-                  setSlideIndex(index);
-                  setOpen(true);
-                }}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
+                  key={`current-${index}`}
+                  className="relative aspect-square bg-transparent w-full cursor-zoom-in"
+                  onClick={() => {
                     setSlideIndex(index);
                     setOpen(true);
-                  }
-                }}
-                aria-label={`View larger image of ${product.name} in ${selectedColor.name}, view ${index + 1}`}
-              >
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      setSlideIndex(index);
+                      setOpen(true);
+                    }
+                  }}
+                  aria-label={`View larger image of ${product.name} in ${selectedColor.name}, view ${index + 1}`}
+                >
                   <Image
                     fill
                     alt={`${product.name} - ${selectedColor.name} - View ${index + 1}`}
