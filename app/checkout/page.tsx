@@ -11,7 +11,7 @@ import {
   useElements,
   AddressElement,
 } from "@stripe/react-stripe-js";
-
+import { useAuth } from "@/context/AuthContext";
 // Load stripe outside of component render to avoid recreating the Stripe object on every render
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -19,6 +19,7 @@ export default function CheckoutPage() {
   const { totalPrice, items } = useCart();
   const [clientSecret, setClientSecret] = useState("");
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth(); // Get current user
 
   useEffect(() => {
     // Create PaymentIntent as soon as the page loads
@@ -35,22 +36,24 @@ export default function CheckoutPage() {
             size: item.size,
             color: item.color.name
           })),
-          amount: totalPrice
+          amount: totalPrice,
+          userId: user?.uid || null,
+          cartItems: JSON.stringify(items),
         }),
       })
         .then((res) => res.json())
         .then((data) => {
-          setClientSecret(data.clientSecret);
-          setLoading(false);
+            setClientSecret(data.clientSecret);
+            setLoading(false);
         })
         .catch((error) => {
-          console.error("Error:", error);
-          setLoading(false);
+            console.error("Error:", error);
+            setLoading(false);
         });
-    } else {
-      setLoading(false);
-    }
-  }, [items, totalPrice]);
+        } else {
+        setLoading(false);
+        }
+    }, [items, totalPrice, user]);
 
   return (
     <div className="mx-4 flex flex-col justify-start items-center">
@@ -140,7 +143,7 @@ function CheckoutForm() {
       setMessage(error.message || "An unexpected error occurred.");
     } else if (paymentIntent && paymentIntent.status === "succeeded") {
       setMessage("Payment successful!");
-      clearCart();
+      clearCart(); // Clear cart immediately
       // Navigate to success page
       setTimeout(() => {
         router.push("/checkout/success");
@@ -151,7 +154,7 @@ function CheckoutForm() {
 
     setIsLoading(false);
   };
-
+  
   return (
     <form id="payment-form" onSubmit={handleSubmit}>
       <AddressElement options={{
