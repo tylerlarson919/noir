@@ -3,7 +3,7 @@ export default function ReturnPolicyPage() {
   return (
     <div className="mx-4 md:mx-16 mt-24 flex flex-col items-center justify-center">
       <h1 className="text-2xl font-medium mb-4 text-center">Return Policy</h1>
-      <div className="flex flex-col items-center justify-center leading-relaxed">
+      <div className="flex flex-col items-center justify-center leading-relaxed gap-2">
         <p className="text-gray-600 dark:text-gray-400 mb-4 text-left">
           Our policy is 30 days. If 30 days have passed since your purchase, unfortunately we are unable to offer a refund or exchange.
         </p>
@@ -27,21 +27,21 @@ export default function ReturnPolicyPage() {
           * Any item that is not in its original condition, is damaged or missing parts for reasons beyond our control.
           * Any item that is returned more than 30 days after shipment.
         </p>
-        <p className="text-gray-600 dark:text-gray-400 mb-4 text-left font-bold">
+        <p className="text-gray-600 dark:text-gray-400 text-left font-bold">
           Refunds (where applicable):
         </p>
         <p className="text-gray-600 dark:text-gray-400 mb-4 text-left">
           Once your return is received and inspected, we will send an email to notify you that we have received your return. We will also notify you of the approval or denial of your refund.
           If you are approved, then your refund will be processed and a credit will be automatically applied to your credit card or original method of payment, within a certain amount of days.
         </p>
-        <p className="text-gray-600 dark:text-gray-400 mb-4 text-left font-bold">
+        <p className="text-gray-600 dark:text-gray-400 text-left font-bold">
           Late or Missing Refunds (where applicable):
         </p>
         <p className="text-gray-600 dark:text-gray-400 mb-4 text-left">
           If you have not yet received your refund, please check your bank account again. Then contact your credit card company, it may take some time before your refund is officially posted.
           Next step, contact your bank. It often takes some time before your refund is posted. If you have followed all of these steps and still have not received your refund, please contact us at info@bm-collective.com
         </p>
-        <p className="text-gray-600 dark:text-gray-400 mb-4 text-left font-bold">
+        <p className="text-gray-600 dark:text-gray-400 text-left font-bold">
           Gifts
         </p>
         <p className="text-gray-600 dark:text-gray-400 mb-4 text-left">
@@ -50,7 +50,7 @@ export default function ReturnPolicyPage() {
         <p className="text-gray-600 dark:text-gray-400 mb-4 text-left">
           If the item was not marked as a gift when purchased, or the gift was shipped to the buyer for delivery to you at a later date, we will send a refund to the buyer and he will know about your return.
         </p>
-        <p className="text-gray-600 dark:text-gray-400 mb-4 text-left font-bold">
+        <p className="text-gray-600 dark:text-gray-400 text-left font-bold">
           Shipping
         </p>
         <p className="text-gray-600 dark:text-gray-400 mb-4 text-left">
