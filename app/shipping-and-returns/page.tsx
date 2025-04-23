@@ -1,4 +1,5 @@
 // app/return-policy/page.tsx
+import Link from "next/link";
 export default function ReturnPolicyPage() {
   return (
     <div className="mx-4 md:mx-16 mt-24 flex flex-col items-center justify-center">
@@ -11,7 +12,7 @@ export default function ReturnPolicyPage() {
           To be eligible for a return, the item must be unused and in the same condition in which you received it. It must also be in its original packaging.
         </p>
         <p className="text-gray-600 dark:text-gray-400 mb-4 text-left">
-          Fill THIS FORM and we will send you all the info about your refund or exchange.
+          Fill <Link href="/contact" className="font-bold underline">THIS FORM</Link> and we will send you all the info about your refund or exchange.
         </p>
         <p className="text-gray-600 dark:text-gray-400 mb-4 text-left">
           There are several types of goods that are exempt from being returned. 
