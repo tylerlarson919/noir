@@ -3,21 +3,17 @@
 import { useState } from "react";
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
-import ReCAPTCHA from "react-google-recaptcha";
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
-  const [captchaOK, setCaptchaOK] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleRecaptcha = (val: string | null) => setCaptchaOK(!!val);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!captchaOK) return alert("Please verify you’re human");
     // TODO: replace with real submit logic
     console.log("submit", form);
   };
@@ -65,15 +61,8 @@ export default function ContactPage() {
                 className="w-full rounded-sm border bg-transparent border-black/30 dark:border-textaccent/30 p-2 resize-none"
             />
             </div>
-            <div className="flex w-full justify-center items-center">
-                <ReCAPTCHA
-                sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
-                onChange={handleRecaptcha}
-                />
-            </div>
             <Button
             type="submit"
-            disabled={!captchaOK}
             className="w-full py-2 px-6 bg-dark1 dark:bg-white button-grow-subtle text-white dark:text-black transition-color duration-300 rounded-sm"
             >
             Send Message
