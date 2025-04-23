@@ -42,7 +42,7 @@ export default function CheckoutSuccessPage() {
           <h2 className="text-xl font-medium mb-4">What&apos;s Next?</h2>
           <p className="mb-4">
             You will receive an email confirmation with your order details and
-            tracking information once your order ships.
+            tracking information once your order ships. You can also track the status of your order <Link href={"/track-order"}>here.</Link>
           </p>
           <p className="text-sm text-gray-600 dark:text-gray-300">
             If you have any questions about your order, please contact our
