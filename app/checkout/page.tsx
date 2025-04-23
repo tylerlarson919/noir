@@ -13,7 +13,9 @@ import {
 } from "@stripe/react-stripe-js";
 import { useAuth } from "@/context/AuthContext";
 // Load stripe outside of component render to avoid recreating the Stripe object on every render
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
+);
 
 export default function CheckoutPage() {
   const { totalPrice, items } = useCart();
@@ -27,14 +29,14 @@ export default function CheckoutPage() {
       fetch("/api/create-payment-intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          items: items.map(item => ({
+        body: JSON.stringify({
+          items: items.map((item) => ({
             id: item.id,
             name: item.name,
             price: item.price,
             quantity: item.quantity,
             size: item.size,
-            color: item.color.name
+            color: item.color.name,
           })),
           amount: totalPrice,
           userId: user?.uid || null,
@@ -43,28 +45,31 @@ export default function CheckoutPage() {
       })
         .then((res) => res.json())
         .then((data) => {
-            setClientSecret(data.clientSecret);
-            setLoading(false);
+          setClientSecret(data.clientSecret);
+          setLoading(false);
         })
         .catch((error) => {
-            console.error("Error:", error);
-            setLoading(false);
+          console.error("Error:", error);
+          setLoading(false);
         });
-        } else {
-        setLoading(false);
-        }
-    }, [items, totalPrice, user]);
+    } else {
+      setLoading(false);
+    }
+  }, [items, totalPrice, user]);
 
   return (
     <div className="mx-4 flex flex-col justify-start items-center">
       <div className="flex flex-col w-full h-full items-center justify-start mt-28 gap-4 max-w-[1200px]">
         <h1 className="text-4xl w-full text-left pl-6">Checkout</h1>
-        
+
         {items.length === 0 ? (
           <div className="py-12 text-center">
             <h2 className="text-xl mb-2">Your shopping bag is empty</h2>
             <p className="mb-4">Add items to your cart before checking out</p>
-            <a href="/all" className="inline-flex items-center px-6 py-3 bg-dark1 dark:bg-white text-white dark:text-black button-grow-subtle rounded-sm">
+            <a
+              href="/all"
+              className="inline-flex items-center px-6 py-3 bg-dark1 dark:bg-white text-white dark:text-black button-grow-subtle rounded-sm"
+            >
               Continue Shopping
             </a>
           </div>
@@ -78,14 +83,20 @@ export default function CheckoutPage() {
               <h2 className="text-xl font-medium mb-6">Order Summary</h2>
               <div className="space-y-4 mb-6">
                 {items.map((item, index) => (
-                  <div key={`${item.id}-${item.size}-${item.color.name}-${index}`} className="flex justify-between border-b pb-3">
+                  <div
+                    key={`${item.id}-${item.size}-${item.color.name}-${index}`}
+                    className="flex justify-between border-b pb-3"
+                  >
                     <div className="flex-1">
                       <p className="font-medium">{item.name}</p>
                       <p className="text-sm text-gray-600 dark:text-gray-300">
-                        Size: {item.size} • Color: {item.color.name} • Qty: {item.quantity}
+                        Size: {item.size} • Color: {item.color.name} • Qty:{" "}
+                        {item.quantity}
                       </p>
                     </div>
-                    <p className="font-medium">${(item.price * item.quantity).toFixed(2)}</p>
+                    <p className="font-medium">
+                      ${(item.price * item.quantity).toFixed(2)}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -154,26 +165,33 @@ function CheckoutForm() {
 
     setIsLoading(false);
   };
-  
+
   return (
     <form id="payment-form" onSubmit={handleSubmit}>
-      <AddressElement options={{
-        mode: 'shipping',
-        allowedCountries: ['US', 'CA', 'GB'],
-      }} />
-      
+      <AddressElement
+        options={{
+          mode: "shipping",
+          allowedCountries: ["US", "CA", "GB"],
+        }}
+      />
+
       <div className="my-6">
-        <PaymentElement id="payment-element" onChange={(e) => setFormComplete(e.complete)} />
+        <PaymentElement
+          id="payment-element"
+          onChange={(e) => setFormComplete(e.complete)}
+        />
       </div>
-      
+
       <button
         disabled={isLoading || !stripe || !elements || !formComplete}
         className="w-full py-3 px-4 bg-dark1 dark:bg-white text-white dark:text-black text-center font-medium button-grow-subtle rounded-sm disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isLoading ? "Processing..." : "Pay Now"}
       </button>
-      
-      {message && <div className="mt-4 text-center text-red-600">{message}</div>}
+
+      {message && (
+        <div className="mt-4 text-center text-red-600">{message}</div>
+      )}
     </form>
   );
 }

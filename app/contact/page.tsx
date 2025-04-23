@@ -11,7 +11,6 @@ export default function ContactPage() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => setForm({ ...form, [e.target.name]: e.target.value });
 
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // TODO: replace with real submit logic
@@ -23,7 +22,7 @@ export default function ContactPage() {
       <div className="flex flex-col p-4 w-full max-w-md">
         <h1 className="text-2xl font-medium mb-4 text-center">Contact Us</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
-            <Input
+          <Input
             name="name"
             labelPlacement="inside"
             label="Name"
@@ -31,11 +30,11 @@ export default function ContactPage() {
             value={form.name}
             onChange={handleChange}
             classNames={{
-                inputWrapper:
+              inputWrapper:
                 "rounded-sm border bg-transparent border-black/30 dark:border-textaccent/30",
             }}
-            />
-            <Input
+          />
+          <Input
             name="email"
             labelPlacement="inside"
             label="Email"
@@ -43,30 +42,30 @@ export default function ContactPage() {
             value={form.email}
             onChange={handleChange}
             classNames={{
-                inputWrapper:
+              inputWrapper:
                 "rounded-sm border bg-transparent border-black/30 dark:border-textaccent/30",
             }}
-            />
-            <div>
+          />
+          <div>
             <label className="sr-only" htmlFor="message">
-                Message
+              Message
             </label>
             <textarea
-                id="message"
-                name="message"
-                rows={5}
-                placeholder="Your message..."
-                value={form.message}
-                onChange={handleChange}
-                className="w-full rounded-sm border bg-transparent border-black/30 dark:border-textaccent/30 p-2 resize-none"
+              id="message"
+              name="message"
+              rows={5}
+              placeholder="Your message..."
+              value={form.message}
+              onChange={handleChange}
+              className="w-full rounded-sm border bg-transparent border-black/30 dark:border-textaccent/30 p-2 resize-none"
             />
-            </div>
-            <Button
+          </div>
+          <Button
             type="submit"
             className="w-full py-2 px-6 bg-dark1 dark:bg-white button-grow-subtle text-white dark:text-black transition-color duration-300 rounded-sm"
-            >
+          >
             Send Message
-            </Button>
+          </Button>
         </form>
       </div>
     </div>
