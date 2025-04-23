@@ -40,7 +40,7 @@ export default function ReturnPolicyPage() {
         </p>
         <p className="text-gray-600 dark:text-gray-400 mb-4 text-left">
           If you have not yet received your refund, please check your bank account again. Then contact your credit card company, it may take some time before your refund is officially posted.
-          Next step, contact your bank. It often takes some time before your refund is posted. If you have followed all of these steps and still have not received your refund, please contact us at info@bm-collective.com
+          Next step, contact your bank. It often takes some time before your refund is posted. If you have followed all of these steps and still have not received your refund, please contact us at info@noir-clothing.com
         </p>
         <p className="text-gray-600 dark:text-gray-400 text-left font-bold">
           Gifts
