@@ -15,7 +15,7 @@ const Footer: React.FC = () => {
             <div className="flex space-x-4">
               <Link
                 aria-label="Facebook"
-                className="text-gray-600 hover:text-black"
+                className="text-gray-600 hover:text-black dark:hover:text-white"
                 href="/"
               >
                 <svg
@@ -28,7 +28,7 @@ const Footer: React.FC = () => {
               </Link>
               <Link
                 aria-label="Facebook"
-                className="text-gray-600 hover:text-black"
+                className="text-gray-600 hover:text-black dark:hover:text-white"
                 href="/"
               >
                 <svg
@@ -41,7 +41,7 @@ const Footer: React.FC = () => {
               </Link>
               <Link
                 aria-label="Facebook"
-                className="text-gray-600 hover:text-black"
+                className="text-gray-600 hover:text-black dark:hover:text-white"
                 href="/"
               >
                 <svg
@@ -60,7 +60,7 @@ const Footer: React.FC = () => {
             <ul className="space-y-1">
               <li>
                 <Link
-                  className="text-gray-600 hover:text-black text-xs"
+                  className="text-gray-600 hover:text-black dark:hover:text-white text-xs"
                   href="/all?category=men"
                 >
                   Men
@@ -68,7 +68,7 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <Link
-                  className="text-gray-600 hover:text-black text-xs"
+                  className="text-gray-600 hover:text-black dark:hover:text-white text-xs"
                   href="/all?category=accessories"
                 >
                   Accessories
@@ -76,7 +76,7 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <Link
-                  className="text-gray-600 hover:text-black text-xs"
+                  className="text-gray-600 hover:text-black dark:hover:text-white text-xs"
                   href="/all?category=featured"
                 >
                   New Arrivals
@@ -90,7 +90,7 @@ const Footer: React.FC = () => {
             <ul className="space-y-1">
               <li>
                 <Link
-                  className="text-gray-600 hover:text-black text-xs"
+                  className="text-gray-600 hover:text-black dark:hover:text-white text-xs"
                   href="/privacy-policy"
                 >
                   Privacy Policy
@@ -98,7 +98,7 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <Link
-                  className="text-gray-600 hover:text-black text-xs"
+                  className="text-gray-600 hover:text-black dark:hover:text-white text-xs"
                   href="/terms-of-service"
                 >
                   Terms of Service
@@ -106,7 +106,7 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <Link
-                  className="text-gray-600 hover:text-black text-xs"
+                  className="text-gray-600 hover:text-black dark:hover:text-white text-xs"
                   href="/shipping-and-returns"
                 >
                   Return Policy
@@ -120,7 +120,7 @@ const Footer: React.FC = () => {
             <ul className="space-y-1">
               <li>
                 <Link
-                  className="text-gray-600 hover:text-black text-xs"
+                  className="text-gray-600 hover:text-black dark:hover:text-white text-xs"
                   href="/contact"
                 >
                   Contact Us
@@ -128,7 +128,7 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <Link
-                  className="text-gray-600 hover:text-black text-xs"
+                  className="text-gray-600 hover:text-black dark:hover:text-white text-xs"
                   href="/shipping-and-returns"
                 >
                   Shipping & Returns
@@ -136,7 +136,7 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <Link
-                  className="text-gray-600 hover:text-black text-xs"
+                  className="text-gray-600 hover:text-black dark:hover:text-white text-xs"
                   href="/faq"
                 >
                   FAQ
