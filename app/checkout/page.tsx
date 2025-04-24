@@ -12,6 +12,8 @@ import {
   AddressElement,
 } from "@stripe/react-stripe-js";
 import { useAuth } from "@/context/AuthContext";
+import { useTheme } from "next-themes";
+
 // Load stripe outside of component render to avoid recreating the Stripe object on every render
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
@@ -22,6 +24,8 @@ export default function CheckoutPage() {
   const [clientSecret, setClientSecret] = useState("");
   const [loading, setLoading] = useState(true);
   const { user } = useAuth(); // Get current user
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const { resolvedTheme } = useTheme();
 
   useEffect(() => {
     // Create PaymentIntent as soon as the page loads
@@ -55,12 +59,16 @@ export default function CheckoutPage() {
     } else {
       setLoading(false);
     }
-  }, [items, totalPrice, user]);
+  }, [items, totalPrice, user?.uid]);
+
+    useEffect(() => {
+        setIsDarkMode(resolvedTheme === "dark");
+    }, [resolvedTheme]);
 
   return (
     <div className="mx-4 flex flex-col justify-start items-center">
       <div className="flex flex-col w-full h-full items-center justify-start mt-28 gap-4 max-w-[1200px]">
-        <h1 className="text-4xl w-full text-left pl-6">Checkout</h1>
+        <h1 className="text-4xl w-full text-left pl-6 font-medium">Checkout</h1>
 
         {items.length === 0 ? (
           <div className="py-12 text-center">
@@ -78,16 +86,35 @@ export default function CheckoutPage() {
             <p>Loading checkout...</p>
           </div>
         ) : (
-          <div className="flex flex-col lg:flex-row gap-8 w-full">
+          <div className="flex flex-col lg:flex-row w-full gap-4">
+            <div className="lg:w-1/2 p-6 bg-white/30 dark:bg-darkaccent backdrop-blur-md rounded-sm shadow-sm">
+              {clientSecret && (
+                <Elements 
+                    stripe={stripePromise}
+                    options={{
+                    clientSecret,
+                    appearance: { theme: isDarkMode ? "night" : "stripe" },
+                    }}
+                >                  
+              <CheckoutForm />
+                </Elements>
+              )}
+            </div>
             <div className="lg:w-1/2 p-6">
               <h2 className="text-xl font-medium mb-6">Order Summary</h2>
               <div className="space-y-4 mb-6">
                 {items.map((item, index) => (
                   <div
                     key={`${item.id}-${item.size}-${item.color.name}-${index}`}
-                    className="flex justify-between border-b pb-3"
+                    className="flex justify-start border-b pb-2 gap-4"
                   >
-                    <div className="flex-1">
+                    <img 
+                        src={item.image}
+                        alt={item.name}
+                        width={80}
+                        height={80}
+                    />
+                    <div className="flex flex-col gap-1 w-full justify-start">
                       <p className="font-medium">{item.name}</p>
                       <p className="text-sm text-gray-600 dark:text-gray-300">
                         Size: {item.size} • Color: {item.color.name} • Qty:{" "}
@@ -100,21 +127,17 @@ export default function CheckoutPage() {
                   </div>
                 ))}
               </div>
-              <div className="border-t pt-4">
+              <div className="pt-4">
                 <div className="flex justify-between font-semibold text-lg mb-2">
                   <span>Total</span>
-                  <span>${totalPrice.toFixed(2)}</span>
+                  <div className="flex gap-2 h-full items-end">
+                    <span className="text-sm font-normal">
+                      {" currency formatted like: USD"}
+                    </span>
+                    <span>${totalPrice.toFixed(2)}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-
-            <div className="lg:w-1/2 p-6 bg-white/30 dark:bg-dark1/30 backdrop-blur-md rounded-sm shadow-sm">
-              <h2 className="text-xl font-medium mb-6">Payment Details</h2>
-              {clientSecret && (
-                <Elements stripe={stripePromise} options={{ clientSecret }}>
-                  <CheckoutForm />
-                </Elements>
-              )}
             </div>
           </div>
         )}
@@ -124,74 +147,103 @@ export default function CheckoutPage() {
 }
 
 function CheckoutForm() {
-  const stripe = useStripe();
-  const elements = useElements();
-  const router = useRouter();
-  const { clearCart } = useCart();
-
-  const [message, setMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [formComplete, setFormComplete] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!stripe || !elements) {
-      return;
-    }
-
-    setIsLoading(true);
-
-    const { error, paymentIntent } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: `${window.location.origin}/checkout/success`,
-      },
-      redirect: "if_required",
-    });
-
-    if (error) {
-      setMessage(error.message || "An unexpected error occurred.");
-    } else if (paymentIntent && paymentIntent.status === "succeeded") {
-      setMessage("Payment successful!");
-      clearCart(); // Clear cart immediately
-      // Navigate to success page
-      setTimeout(() => {
-        router.push("/checkout/success");
-      }, 1000);
-    } else {
-      setMessage("An unexpected error occurred.");
-    }
-
-    setIsLoading(false);
-  };
-
-  return (
-    <form id="payment-form" onSubmit={handleSubmit}>
-      <AddressElement
-        options={{
-          mode: "shipping",
-          allowedCountries: ["US", "CA", "GB"],
-        }}
-      />
-
-      <div className="my-6">
-        <PaymentElement
-          id="payment-element"
-          onChange={(e) => setFormComplete(e.complete)}
-        />
-      </div>
-
-      <button
-        disabled={isLoading || !stripe || !elements || !formComplete}
-        className="w-full py-3 px-4 bg-dark1 dark:bg-white text-white dark:text-black text-center font-medium button-grow-subtle rounded-sm disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {isLoading ? "Processing..." : "Pay Now"}
-      </button>
-
-      {message && (
-        <div className="mt-4 text-center text-red-600">{message}</div>
-      )}
-    </form>
-  );
-}
+    const stripe = useStripe();
+    const elements = useElements();
+    const router = useRouter();
+    const { clearCart } = useCart();
+  
+    const [message, setMessage] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    const [formComplete, setFormComplete] = useState(false);
+    const [addressComplete, setAddressComplete] = useState(false);
+  
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+  
+      if (!stripe || !elements) {
+        return;
+      }
+  
+      setIsLoading(true);
+  
+      const result = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `${window.location.origin}/checkout/success`,
+        },
+        redirect: "if_required",
+      });
+  
+      if (result.error) {
+        setMessage(result.error.message || "An unexpected error occurred.");
+        } else if (result.paymentIntent?.status === "succeeded") {
+        setMessage("Payment successful!");
+        clearCart(); // Clear cart immediately
+        // Navigate to success page
+        setTimeout(() => {
+          router.push("/checkout/success");
+        }, 1000);
+      } else {
+        setMessage("An unexpected error occurred.");
+      }
+  
+      setIsLoading(false);
+    };
+  
+    return (
+      <form id="payment-form" onSubmit={handleSubmit}>
+        <div className="mb-6">
+          <label htmlFor="address-element" className="block text-xl font-medium mb-2">
+            Shipping
+          </label>
+          <AddressElement
+            id="address-element"
+            options={{
+              mode: "shipping",
+              allowedCountries: ["US", "CA", "GB"],
+              defaultValues: {
+                address: {
+                  country: "US",
+                },
+              },
+              fields: {
+                phone: "always",
+              },
+              display: {
+                name: "split",
+              },
+              validation: {
+                phone: {
+                  required: "always",
+                },
+              },
+            }}
+            onChange={(event) => {
+              setAddressComplete(event.complete);
+            }}
+          />
+        </div>
+  
+        <div className="my-6">
+          <label htmlFor="payment-element" className="block text-lg font-medium mb-2">
+            Payment
+          </label>
+          <PaymentElement
+            id="payment-element"
+            onChange={(e) => setFormComplete(e.complete)}
+          />
+        </div>
+  
+        <button
+          disabled={isLoading || !stripe || !elements || !formComplete || !addressComplete}
+          className="w-full py-3 px-4 bg-dark1 dark:bg-white text-white dark:text-black text-center font-medium button-grow-subtle rounded-sm disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isLoading ? "Processing..." : "Pay Now"}
+        </button>
+  
+        {message && (
+          <div className="mt-4 text-center text-red-600">{message}</div>
+        )}
+      </form>
+    );
+  }

@@ -3,14 +3,37 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
+import { loadStripe } from "@stripe/stripe-js";
+import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 export default function CheckoutSuccessPage() {
-  const { clearCart } = useCart();
+    const { clearCart } = useCart();
+    const searchParams = useSearchParams();
+    const clientSecret = searchParams.get("payment_intent_client_secret");
+    const router = useRouter();
 
   // Clear the cart when the success page loads
-  useEffect(() => {
-    clearCart();
-  }, [clearCart]);
+    useEffect(() => {
+      if (!clientSecret) return router.replace("/");
+      stripePromise
+        .then((stripe) => {
+        if (!stripe) throw new Error("Stripe failed to load");
+        return stripe.retrievePaymentIntent(clientSecret);
+        })
+        .then((result) => {
+        const paymentIntent = result.paymentIntent;
+        if (paymentIntent?.status !== "succeeded") {
+            router.replace("/");
+        } else {
+            clearCart();
+        }
+        })
+        .catch(() => {
+        router.replace("/");
+        });
+      }, [clientSecret]);
 
   return (
     <div className="mx-4 flex flex-col justify-start items-center">
@@ -42,7 +65,7 @@ export default function CheckoutSuccessPage() {
           <h2 className="text-xl font-medium mb-4">What&apos;s Next?</h2>
           <p className="mb-4">
             You will receive an email confirmation with your order details and
-            tracking information once your order ships. You can also track the status of your order <Link href={"/track-order"}>here.</Link>
+            tracking information once your order ships. You can also track the status of your order <Link href={"/track-order"} className="underline">here</Link>.
           </p>
           <p className="text-sm text-gray-600 dark:text-gray-300">
             If you have any questions about your order, please contact our
@@ -50,12 +73,12 @@ export default function CheckoutSuccessPage() {
           </p>
         </div>
 
-        <Link
-          href="/all"
-          className="mt-6 px-8 py-3 bg-dark1 dark:bg-white text-white dark:text-black button-grow-subtle rounded-sm inline-block"
+        <button
+          onClick={() => router.push("/")}
+          className="mt-6 px-8 py-3 bg-dark1 dark:bg-white text-white dark:text-black button-grow-subtle rounded-sm"
         >
-          Continue Shopping
-        </Link>
+          Continue
+        </button>
       </div>
     </div>
   );

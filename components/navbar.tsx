@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Link } from "@heroui/link";
+import Link from "next/link";
 
 import { ThemeSwitch } from "@/components/theme-switch";
 import { useCart } from "@/context/CartContext";
@@ -128,9 +128,9 @@ export const Navbar = () => {
           <ThemeSwitch
             className={`${isMainPage && isAtTop ? "text-white group-hover:text-black dark:group-hover:text-white" : ""} text-black dark:text-white transition-all duration-300`}
           />
-          <Link href="/account" className="text-white">
+          <Link href="/account" className="">
             <svg
-              className="w-8 h-8 text-gray-800 dark:text-white"
+              className="w-8 h-8"
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               width="24"
