@@ -1,39 +1,40 @@
 // src/app/checkout/success/page.tsx
 "use client";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 import { loadStripe } from "@stripe/stripe-js";
 import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
-export default function CheckoutSuccessPage() {
-    const { clearCart } = useCart();
-    const searchParams = useSearchParams();
-    const clientSecret = searchParams.get("payment_intent_client_secret");
-    const router = useRouter();
 
-  // Clear the cart when the success page loads
-    useEffect(() => {
-      if (!clientSecret) return router.replace("/");
-      stripePromise
-        .then((stripe) => {
+// Create a separate client component that uses useSearchParams
+function CheckoutSuccessContent() {
+  const { clearCart } = useCart();
+  const router = useRouter();
+  const { useSearchParams } = require("next/navigation");
+  const searchParams = useSearchParams();
+  const clientSecret = searchParams.get("payment_intent_client_secret");
+
+  useEffect(() => {
+    if (!clientSecret) return router.replace("/");
+    stripePromise
+      .then((stripe) => {
         if (!stripe) throw new Error("Stripe failed to load");
         return stripe.retrievePaymentIntent(clientSecret);
-        })
-        .then((result) => {
+      })
+      .then((result) => {
         const paymentIntent = result.paymentIntent;
         if (paymentIntent?.status !== "succeeded") {
-            router.replace("/");
+          router.replace("/");
         } else {
-            clearCart();
+          clearCart();
         }
-        })
-        .catch(() => {
+      })
+      .catch(() => {
         router.replace("/");
-        });
-      }, [clientSecret]);
+      });
+  }, [clientSecret, clearCart, router]);
 
   return (
     <div className="mx-4 flex flex-col justify-start items-center">
@@ -83,3 +84,12 @@ export default function CheckoutSuccessPage() {
     </div>
   );
 }
+
+
+export default function CheckoutSuccessPage() {
+    return (
+      <Suspense fallback={<div className="mx-4 flex flex-col justify-start items-center">Loading...</div>}>
+        <CheckoutSuccessContent />
+      </Suspense>
+    );
+  }
