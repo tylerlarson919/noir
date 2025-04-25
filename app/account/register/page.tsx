@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { addToast } from "@heroui/toast";
 import { useRouter } from "next/navigation";
+import { recoverGuestOrders } from "@/lib/recoverGuestOrders";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -41,6 +42,23 @@ export default function RegisterPage() {
   const handleRegister = async () => {
     try {
       await register(email, pw);
+      
+      // Get the current user from context instead of from the function return
+      if (user) {
+        const recoveredOrders = await recoverGuestOrders(
+          user.uid, 
+          email
+        );
+        
+        if (recoveredOrders.length > 0) {
+          addToast({
+            title: "Orders Recovered",
+            description: `We found ${recoveredOrders.length} previous order(s) and added them to your account.`,
+            color: "success",
+          });
+        }
+      }
+      
       addToast({
         title: "Account created",
         description: "Redirecting to your account…",
@@ -54,14 +72,30 @@ export default function RegisterPage() {
       });
     }
   };
-
+  
   const handleGoogleSignup = async () => {
     try {
       await loginWithGoogle();
+      
+      // Get the current user from context instead of from the function return
+      if (user && user.email) {
+        const recoveredOrders = await recoverGuestOrders(
+          user.uid, 
+          user.email
+        );
+        
+        if (recoveredOrders.length > 0) {
+          addToast({
+            title: "Orders Recovered",
+            description: `We found ${recoveredOrders.length} previous order(s) and added them to your account.`,
+            color: "success",
+          });
+        }
+      }
+      
       addToast({
         title: "Signed up with Google",
         description: "Redirecting to your account…",
-
         color: "success",
       });
     } catch (e: any) {

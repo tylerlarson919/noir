@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { addToast } from "@heroui/toast";
 import { useRouter } from "next/navigation";
+import { recoverGuestOrders } from "@/lib/recoverGuestOrders";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -42,6 +43,23 @@ export default function LoginPage() {
   const handleEmailLogin = async () => {
     try {
       await login(email, pw);
+      
+      // Get the current user from context instead of from the function return
+      if (user) {
+        const recoveredOrders = await recoverGuestOrders(
+          user.uid, 
+          user.email || email
+        );
+        
+        if (recoveredOrders.length > 0) {
+          addToast({
+            title: "Orders Recovered",
+            description: `We found ${recoveredOrders.length} previous order(s) and added them to your account.`,
+            color: "success",
+          });
+        }
+      }
+      
       addToast({
         title: "Log in successful",
         description: "redirecting to home.",
@@ -55,7 +73,40 @@ export default function LoginPage() {
       });
     }
   };
-
+  
+  const handleGoogleLogin = async () => {
+    try {
+      await loginWithGoogle();
+      
+      // Get the current user from context instead of from the function return
+      if (user && user.email) {
+        const recoveredOrders = await recoverGuestOrders(
+          user.uid, 
+          user.email
+        );
+        
+        if (recoveredOrders.length > 0) {
+          addToast({
+            title: "Orders Recovered",
+            description: `We found ${recoveredOrders.length} previous order(s) and added them to your account.`,
+            color: "success",
+          });
+        }
+      }
+      
+      addToast({
+        title: "Log in successful",
+        description: "redirecting to home.",
+        color: "success",
+      });
+    } catch (e: any) {
+      addToast({
+        title: "Login Failed",
+        description: getErrorMessage(e),
+        color: "danger",
+      });
+    }
+  };
   return (
     <div className="flex flex-col justify-center items-center flex-grow min-h-[80vh] sm:min-h-[50vh]">
       <div className="flex flex-col p-4 w-full max-w-md">
@@ -89,7 +140,7 @@ export default function LoginPage() {
           Login
         </Button>
         <Button
-          onPress={loginWithGoogle}
+          onPress={handleGoogleLogin}
           className="mb-2 w-full py-2 px-6 bg-dark1 dark:bg-white button-grow-subtle text-white dark:text-black transition-color duration-300 rounded-sm"
           startContent={
             <img

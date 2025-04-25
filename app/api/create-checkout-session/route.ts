@@ -37,6 +37,7 @@ export async function POST(req: NextRequest) {
       metadata: {
         userId: userId || "guest",
         checkoutId: checkoutId || "unknown",
+        userEmail: customerEmail || "",
         orderSummary: JSON.stringify({
           itemCount: items.length,
           totalAmount: amount / 100,

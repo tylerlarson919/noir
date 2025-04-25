@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { headers } from "next/headers";
 import { db } from "@/lib/firebaseConfig";
-import { collection, addDoc, doc, setDoc, writeBatch } from "firebase/firestore";
+import { collection, addDoc, doc, arrayUnion, writeBatch } from "firebase/firestore";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-03-31.basil",
@@ -94,6 +94,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       })
     );
 
+    const userEmail = session.customer_details?.email || '';
     const userId = session.metadata?.userId || "guest-user";
     const shippingAddress = (session as any).shipping_details?.address || 
                             session.customer_details?.address || {};
@@ -140,9 +141,17 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     batch.set(orderRef, orderData);
     
     // Add to user orders if authenticated
-    if (userId !== "guest-user") {
-      const userOrderRef = doc(db, `users/${userId}/data/orders/${session.id}`);
-      await setDoc(userOrderRef, orderData);
+    if (userId === "guest-user" && userEmail) {
+      // Store the order in a way we can look it up later by email
+      const guestOrderRef = doc(db, `users/guest-user/orders/${session.id}`);
+      batch.set(guestOrderRef, {...orderData, email: userEmail});
+      
+      // Also create an index by email for easy lookup during account creation
+      const emailIndexRef = doc(db, `users/guest-user/email-index/${userEmail.toLowerCase()}`);
+      batch.set(emailIndexRef, {
+        orders: arrayUnion(session.id),
+        updatedAt: new Date().toISOString()
+      }, {merge: true});
     }
     
     await batch.commit();
