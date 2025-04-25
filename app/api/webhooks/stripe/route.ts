@@ -3,8 +3,16 @@ export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { headers } from "next/headers";
-import { adminDb } from "@/lib/firebaseAdmin";
-import * as admin from 'firebase-admin';
+import { Firestore, FieldValue } from "@google-cloud/firestore";
+
+const adminDb = new Firestore({
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    credentials: {
+      client_email: process.env.FIREBASE_CLIENT_EMAIL!,
+      private_key: process.env.FIREBASE_PRIVATE_KEY!.replace(/\\n/g, "\n"),
+    },
+    fallback: true,    // HTTP/REST only, no gRPC
+  });
 
 function sanitizeData(obj: any): any {
   if (obj === null || obj === undefined) return obj;
@@ -210,7 +218,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
           // Also create an index by email for easy lookup during account creation
           const emailIndexRef = adminDb.collection('users').doc('guest-user').collection('email-index').doc(userEmail.toLowerCase());
           batch.set(emailIndexRef, {
-            orders: admin.firestore.FieldValue.arrayUnion(session.id),
+            orders: FieldValue.arrayUnion(session.id),
             updatedAt: new Date().toISOString()
           }, {merge: true});
         } else if (userId !== "guest-user") {
@@ -329,7 +337,7 @@ async function handlePaymentIntentSucceeded(pi: Stripe.PaymentIntent) {
         // In handlePaymentIntentSucceeded function
         const emailIndexRef = adminDb.collection('users').doc('guest-user').collection('email-index').doc(userEmail.toLowerCase());
         batch.set(emailIndexRef, {
-          orders: admin.firestore.FieldValue.arrayUnion(pi.id),
+          orders: FieldValue.arrayUnion(pi.id),
           updatedAt: new Date().toISOString()
         }, {merge: true});
       } else if (userId !== "guest-user") {
