@@ -50,28 +50,40 @@ function CheckoutResultContent() {
       router.replace("/checkout");
       return;
     }
-    clearCart();
     
-    // Fetch order details from Firestore
-    const fetchOrderDetails = async () => {
+    // Call clearCart only once, not on every re-render
+    const handleClearCart = async () => {
       try {
-        setLoading(true);
-        const orderDoc = await getDoc(doc(db, "orders", sessionId));
-        if (orderDoc.exists()) {
-          setOrderDetails(orderDoc.data() as OrderDetails);
-        } else {
-          setError("Order not found. Please contact customer support.");
-        }
+        clearCart();
+        await fetchOrderDetails();
       } catch (err) {
-        console.error("Error fetching order details:", err);
-        setError("There was a problem retrieving your order details.");
-      } finally {
-        setLoading(false);
+        console.error("Error in checkout success flow:", err);
+        setError("There was a problem processing your request.");
       }
     };
+  
+    handleClearCart();
     
-    fetchOrderDetails();
-  }, [sessionId, clearCart, router]);
+    // Remove clearCart from dependency array to prevent re-renders
+  }, [sessionId, router]);
+
+  const fetchOrderDetails = async () => {
+    try {
+      setLoading(true);
+      const orderDoc = await getDoc(doc(db, "orders", sessionId as string));
+      if (orderDoc.exists()) {
+        setOrderDetails(orderDoc.data() as OrderDetails);
+      } else {
+        console.log("Order not found with ID:", sessionId);
+        setError("Order not found. Please contact customer support.");
+      }
+    } catch (err) {
+      console.error("Error fetching order details:", err);
+      setError("There was a problem retrieving your order details.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (loading) {
     return (

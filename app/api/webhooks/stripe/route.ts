@@ -58,6 +58,13 @@ export async function POST(req: NextRequest) {
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   try {
+    console.log("Processing checkout session:", session.id);
+    
+    // Make sure session.id is valid
+    if (!session.id) {
+      throw new Error("Missing session ID for order");
+    }
+    
     // Retrieve line items to get complete order details
     const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
     
@@ -134,29 +141,47 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       },
     };
 
-    const batch = writeBatch(db);
-    
-    // Add to orders collection
-    const orderRef = doc(collection(db, "orders"), session.id);
-    batch.set(orderRef, orderData);
-    
-    // Add to user orders if authenticated
-    if (userId === "guest-user" && userEmail) {
-      // Store the order in a way we can look it up later by email
-      const guestOrderRef = doc(db, `users/guest-user/orders/${session.id}`);
-      batch.set(guestOrderRef, {...orderData, email: userEmail});
+    // Improve error handling and logging for Firebase operations
+    try {
+      const batch = writeBatch(db);
       
-      // Also create an index by email for easy lookup during account creation
-      const emailIndexRef = doc(db, `users/guest-user/email-index/${userEmail.toLowerCase()}`);
-      batch.set(emailIndexRef, {
-        orders: arrayUnion(session.id),
-        updatedAt: new Date().toISOString()
-      }, {merge: true});
+      // Add to orders collection with explicit ID
+      const orderRef = doc(db, "orders", session.id);
+      batch.set(orderRef, orderData);
+      
+      // Add to user orders if authenticated or has email
+      if (userId !== "guest-user" || userEmail) {
+        if (userId === "guest-user" && userEmail) {
+          // Store the order in a way we can look it up later by email
+          const guestOrderRef = doc(db, `users/guest-user/orders/${session.id}`);
+          batch.set(guestOrderRef, {...orderData, email: userEmail});
+          
+          // Also create an index by email for easy lookup during account creation
+          const emailIndexRef = doc(db, `users/guest-user/email-index/${userEmail.toLowerCase()}`);
+          batch.set(emailIndexRef, {
+            orders: arrayUnion(session.id),
+            updatedAt: new Date().toISOString()
+          }, {merge: true});
+        } else if (userId !== "guest-user") {
+          // If user is authenticated, add to their orders collection
+          const userOrderRef = doc(db, `users/${userId}/orders/${session.id}`);
+          batch.set(userOrderRef, {
+            orderId: session.id,
+            createdAt: new Date().toISOString()
+          });
+        }
+      }
+
+      // Commit with additional logging
+      console.log("Committing order batch to Firestore:", session.id);
+      await batch.commit();
+      console.log("Successfully saved order to Firestore:", session.id);
+    } catch (dbError) {
+      console.error("Firebase write failed:", dbError);
+      throw dbError;
     }
-    
-    await batch.commit();
   } catch (error) {
-    console.error("Error saving order to Firestore:", error);
+    console.error("Error processing checkout completion:", error);
     throw error;
   }
 }

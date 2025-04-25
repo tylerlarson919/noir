@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+
+/* Fix for autofill overlay issues */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+
 .modal-open {
   overflow: hidden !important;
 }
