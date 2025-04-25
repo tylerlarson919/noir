@@ -16,14 +16,24 @@ export async function POST(req: NextRequest) {
 
   console.log("Webhook received, verifying signature...");
 
-  let event: Stripe.Event;
+  if (!signature) {
+    console.error("Missing Stripe signature header");
+    return NextResponse.json({ error: "Missing signature header" }, { status: 400 });
+  }
+  
+  if (!process.env.STRIPE_WEBHOOK_SECRET) {
+    console.error("Missing STRIPE_WEBHOOK_SECRET environment variable");
+    return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
+  }
 
+  let event: Stripe.Event;
   try {
     event = stripe.webhooks.constructEvent(
       body,
       signature,
       process.env.STRIPE_WEBHOOK_SECRET!,
     );
+    console.log(`✅ Webhook verified: ${event.type}`);
   } catch (err: any) {
     console.error(`Webhook signature verification failed: ${err.message}`);
     return NextResponse.json({ error: err.message }, { status: 400 });
@@ -148,6 +158,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 
     // Improve error handling and logging for Firebase operations
     try {
+      console.log("📝 Preparing order data for Firestore:", JSON.stringify(orderData, null, 2));
       const batch = writeBatch(db);
       
       // Add to orders collection with explicit ID
