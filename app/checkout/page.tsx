@@ -31,6 +31,7 @@ export default function CheckoutPage() {
           items,
           userId: user?.uid || null,
           cartItems: JSON.stringify(items),
+          customerEmail: user?.email || undefined,
         }),
       });
       const { sessionId } = await res.json();

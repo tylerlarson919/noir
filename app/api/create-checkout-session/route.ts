@@ -17,11 +17,12 @@ type RequestBody = {
   }[];
   userId: string | null;
   cartItems: string;
+  customerEmail?: string;
 };
 
 export async function POST(req: NextRequest) {
   try {
-    const { items, userId, cartItems }: RequestBody = await req.json();
+    const { items, userId, cartItems, customerEmail }: RequestBody = await req.json();
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
@@ -40,14 +41,14 @@ export async function POST(req: NextRequest) {
       success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/checkout`,
       metadata: { userId: userId || "guest-user", cartItems },
+      customer_email: customerEmail,                    // ← have Stripe collect/confirm email
+      billing_address_collection: "required",           // ← require billing address
+      shipping_address_collection: { allowed_countries: ["US"] }, // ← require shipping address
     });
 
     return NextResponse.json({ sessionId: session.id });
   } catch (error) {
     console.error("Error creating checkout session:", error);
-    return NextResponse.json(
-      { error: "Failed to create checkout session" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to create checkout session" }, { status: 500 });
   }
 }
