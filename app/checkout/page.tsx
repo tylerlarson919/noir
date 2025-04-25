@@ -159,35 +159,24 @@ function CheckoutForm() {
   
     const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
-  
+    
       if (!stripe || !elements) {
         return;
       }
-  
+    
       setIsLoading(true);
-  
-      const result = await stripe.confirmPayment({
+    
+      const { error } = await stripe.confirmPayment({
         elements,
         confirmParams: {
           return_url: `${window.location.origin}/checkout/success`,
         },
-        redirect: "if_required",
       });
-  
-      if (result.error) {
-        setMessage(result.error.message || "An unexpected error occurred.");
-        } else if (result.paymentIntent?.status === "succeeded") {
-        setMessage("Payment successful!");
-        clearCart(); // Clear cart immediately
-        // Navigate to success page
-        setTimeout(() => {
-          router.push("/checkout/success");
-        }, 1000);
-      } else {
-        setMessage("An unexpected error occurred.");
+      // Only runs if there's an error (no redirect happened)
+      if (error) {
+        setMessage(error.message || "An unexpected error occurred.");
+        setIsLoading(false);
       }
-  
-      setIsLoading(false);
     };
   
     return (
