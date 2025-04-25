@@ -124,7 +124,7 @@ function CheckoutResultContent() {
               customer support team.
             </p>
             <p className="text-sm text-gray-600 dark:text-gray-300">
-              If your payment was processed but you're seeing this message, please email us at 
+              If your payment was processed but you&apos;re seeing this message, please email us at 
               <a href="mailto:support@yourdomain.com" className="ml-1 underline">
                 support@yourdomain.com
               </a>
@@ -174,7 +174,7 @@ function CheckoutResultContent() {
 
         <h1 className="text-3xl md:text-4xl font-semibold">Order Confirmed!</h1>
         <p className="text-lg my-4">
-          Thank you for your purchase. We've received your order and will
+          Thank you for your purchase. We&apos;ve received your order and will
           begin processing it right away.
         </p>
 
@@ -199,7 +199,7 @@ function CheckoutResultContent() {
         )}
 
         <div className="my-8 p-6 bg-white/30 dark:bg-dark1/30 backdrop-blur-md rounded-sm shadow-sm w-full">
-          <h2 className="text-xl font-medium mb-4">What's Next?</h2>
+          <h2 className="text-xl font-medium mb-4">What&apos;s Next?</h2>
           <p className="mb-4">
             You will receive an email confirmation with your order details and
             tracking information once your order ships. You can also track the status of your order{" "}
