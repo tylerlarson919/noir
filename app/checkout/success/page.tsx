@@ -33,11 +33,10 @@ interface OrderDetails {
   };
   email?: string;
   items?: OrderItem[];
-  [key: string]: any; // This allows for other properties
+  [key: string]: any; 
 }
 
 function CheckoutResultContent() {
-  const { clearCart } = useCart();
   const router = useRouter();
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
@@ -51,21 +50,21 @@ function CheckoutResultContent() {
       return;
     }
     
-    // Call clearCart only once, not on every re-render
-    const handleClearCart = async () => {
+    const fetchOrderDetails = async () => {
       try {
-        clearCart();
-        await fetchOrderDetails();
-      } catch (err) {
-        console.error("Error in checkout success flow:", err);
-        setError("There was a problem processing your request.");
+        const orderDoc = await getDoc(doc(db, "orders", sessionId!));
+        if (orderDoc.exists()) {
+          setOrderDetails(orderDoc.data() as OrderDetails);
+        } else {
+          setError("Order not found.");
+        }
+      } catch {
+        setError("Error fetching order details.");
       }
     };
-  
-    handleClearCart();
-    
-    // Remove clearCart from dependency array to prevent re-renders
-  }, [sessionId, router]);
+
+    fetchOrderDetails();
+  }, [sessionId]);
 
   const fetchOrderDetails = async () => {
     try {
