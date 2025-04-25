@@ -1,4 +1,3 @@
-// src/app/checkout/page.tsx
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -6,6 +5,7 @@ import { useCart } from "@/context/CartContext";
 import { loadStripe } from "@stripe/stripe-js";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "next-themes";
+import Image from "next/image";
 
 // Load stripe outside of component render
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
@@ -16,13 +16,21 @@ export default function CheckoutPage() {
   const { user } = useAuth();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const { resolvedTheme } = useTheme();
+  
+  // Form state
+  const [email, setEmail] = useState(user?.email || "");
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [formErrors, setFormErrors] = useState({});
 
   useEffect(() => {
     setIsDarkMode(resolvedTheme === "dark");
   }, [resolvedTheme]);
 
-  const handleCheckout = async () => {
+  const handleCheckout = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setLoading(true);
+    
     try {
       const res = await fetch("/api/create-checkout-session", {
         method: "POST",
@@ -30,7 +38,7 @@ export default function CheckoutPage() {
         body: JSON.stringify({
           items,
           userId: user?.uid || null,
-          customerEmail: user?.email || undefined,
+          customerEmail: email || user?.email,
         }),
       });
       
@@ -49,10 +57,11 @@ export default function CheckoutPage() {
       if (error) {
         throw new Error(error.message);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Checkout error:", err);
-      // Show error to user
-      alert(`Checkout error: ${err.message}`);
+      // Safely access error message
+      const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
+      alert(`Checkout error: ${errorMessage}`);
       setLoading(false);
     }
   };
@@ -75,19 +84,68 @@ export default function CheckoutPage() {
           </div>
         ) : loading ? (
           <div className="py-12 text-center">
-            <p>Loading checkout...</p>
+            <p>Processing your order...</p>
           </div>
         ) : (
           <div className="flex flex-col lg:flex-row w-full gap-4">
+            {/* Customer Information Form */}
             <div className="lg:w-1/2 p-6 bg-white/30 dark:bg-darkaccent backdrop-blur-md rounded-sm shadow-sm">
-              <button
-                onClick={handleCheckout}
-                disabled={loading || items.length === 0}
-                className="w-full py-3 bg-dark1 dark:bg-white text-white dark:text-black rounded-sm disabled:opacity-50"
-              >
-                {loading ? "Processing…" : "Pay Now"}
-              </button>
+              <form onSubmit={handleCheckout}>
+                <h2 className="text-xl font-medium mb-6">Your Information</h2>
+                
+                <div className="space-y-4 mb-6">
+                  <div>
+                    <label htmlFor="email" className="block mb-1 text-sm font-medium">Email Address</label>
+                    <input
+                      type="email"
+                      id="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full p-2 border rounded-sm focus:ring-1 focus:ring-dark1 dark:bg-dark1/30"
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="name" className="block mb-1 text-sm font-medium">Full Name</label>
+                    <input
+                      type="text"
+                      id="name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="w-full p-2 border rounded-sm focus:ring-1 focus:ring-dark1 dark:bg-dark1/30"
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="phone" className="block mb-1 text-sm font-medium">Phone Number</label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className="w-full p-2 border rounded-sm focus:ring-1 focus:ring-dark1 dark:bg-dark1/30"
+                      required
+                    />
+                  </div>
+                </div>
+                
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
+                  You'll complete your shipping and payment details in the next step.
+                </p>
+                
+                <button
+                  type="submit"
+                  disabled={loading || items.length === 0}
+                  className="w-full py-3 bg-dark1 dark:bg-white text-white dark:text-black rounded-sm disabled:opacity-50"
+                >
+                  {loading ? "Processing…" : "Continue to Payment"}
+                </button>
+              </form>
             </div>
+            
+            {/* Order Summary */}
             <div className="lg:w-1/2 p-6">
               <h2 className="text-xl font-medium mb-6">Order Summary</h2>
               <div className="space-y-4 mb-6">
@@ -96,12 +154,14 @@ export default function CheckoutPage() {
                     key={`${item.id}-${item.size}-${item.color.name}-${index}`}
                     className="flex justify-start border-b pb-2 gap-4"
                   >
-                    <img 
+                    <div className="relative w-20 h-20">
+                      <Image 
                         src={item.image}
                         alt={item.name}
-                        width={80}
-                        height={80}
-                    />
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
                     <div className="flex flex-col gap-1 w-full justify-start">
                       <p className="font-medium">{item.name}</p>
                       <p className="text-sm text-gray-600 dark:text-gray-300">
@@ -119,9 +179,7 @@ export default function CheckoutPage() {
                 <div className="flex justify-between font-semibold text-lg mb-2">
                   <span>Total</span>
                   <div className="flex gap-2 h-full items-end">
-                    <span className="text-sm font-normal">
-                      {" currency formatted like: USD"}
-                    </span>
+                    <span className="text-sm font-normal">USD</span>
                     <span>${totalPrice.toFixed(2)}</span>
                   </div>
                 </div>

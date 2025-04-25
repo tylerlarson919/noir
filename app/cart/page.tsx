@@ -173,7 +173,7 @@ export default function CartPage() {
                     <span className="text-black/40 dark:text-white/30">
                       Calculated at checkout
                     </span>
-                  </div>
+                  </div> 
                 </div>
 
                 <div className="border-t pt-4">
