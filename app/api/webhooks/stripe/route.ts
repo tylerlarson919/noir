@@ -82,7 +82,6 @@ async function handlePaymentIntentSucceeded(pi: Stripe.PaymentIntent) {
       metadata: pi.metadata,
       createdAt: new Date().toISOString(),
     };
-    
     // Save to appropriate location based on user status
     if (userId !== "guest-user") {
       // If user is logged in, save to their data/orders collection
