@@ -11,7 +11,7 @@ const adminDb = new Firestore({
       client_email: process.env.FIREBASE_CLIENT_EMAIL!,
       private_key: process.env.FIREBASE_PRIVATE_KEY!.replace(/\\n/g, "\n"),
     },
-    fallback: true,    // HTTP/REST only, no gRPC
+    fallback: "rest",  // force HTTP/1.1 REST instead of gRPC
   });
 
 function sanitizeData(obj: any): any {
