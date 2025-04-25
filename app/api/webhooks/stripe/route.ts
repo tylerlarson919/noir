@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { headers } from "next/headers";
 import { db } from "@/lib/firebaseConfig";
-import { collection, addDoc, doc, setDoc } from "firebase/firestore";
+import { collection, addDoc, doc, setDoc, writeBatch } from "firebase/firestore";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-03-31.basil",
@@ -95,7 +95,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     );
 
     const userId = session.metadata?.userId || "guest-user";
-
+    const shippingAddress = (session as any).shipping_details?.address || 
+                            session.customer_details?.address || {};
     console.log("session data (look for shipping addy): ", JSON.stringify(session, null, 2));
     
     const orderData = {
@@ -115,20 +116,36 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       metadata: session.metadata || {},
       email: session.customer_details?.email || '',
       createdAt: new Date().toISOString(),
+      status: "pending",
+      shippingAddress: {
+        line1: shippingAddress.line1 || '',
+        line2: shippingAddress.line2 || '',
+        city: shippingAddress.city || '',
+        state: shippingAddress.state || '',
+        postal_code: shippingAddress.postal_code || '',
+        country: shippingAddress.country || '',
+      },
+      shipping: {
+        status: "preparing", // pending, preparing, shipped, delivered
+        trackingNumber: null,
+        carrier: null,
+        updatedAt: new Date().toISOString(),
+      },
     };
 
-    // Save to appropriate location based on user status
+    const batch = writeBatch(db);
+    
+    // Add to orders collection
+    const orderRef = doc(collection(db, "orders"), session.id);
+    batch.set(orderRef, orderData);
+    
+    // Add to user orders if authenticated
     if (userId !== "guest-user") {
-      await setDoc(
-        doc(db, `users/${userId}/orders/${session.id}`),
-        orderData
-      );
-    } 
+      const userOrderRef = doc(db, `users/${userId}/orders/${session.id}`);
+      batch.set(userOrderRef, orderData);
+    }
     
-    // Still maintain a global orders collection for easier lookup
-    await addDoc(collection(db, "orders"), orderData);
-    
-    console.log(`Order saved successfully: ${session.id}`);
+    await batch.commit();
   } catch (error) {
     console.error("Error saving order to Firestore:", error);
     throw error;
