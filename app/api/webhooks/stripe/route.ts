@@ -1,4 +1,5 @@
 // src/app/api/webhooks/stripe/route.ts
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { headers } from "next/headers";
