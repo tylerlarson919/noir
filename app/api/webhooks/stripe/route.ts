@@ -60,33 +60,52 @@ export async function POST(req: NextRequest) {
 }
 
 async function handlePaymentIntentSucceeded(pi: Stripe.PaymentIntent) {
-    try {
-      const userId = pi.metadata.userId || "guest-user";
-      const items = pi.metadata.cartItems ? JSON.parse(pi.metadata.cartItems) : [];
-      const orderItems = pi.metadata.orderItems ? JSON.parse(pi.metadata.orderItems) : [];
-      
-      const orderData = {
-        orderId: pi.id,
-        customerId: pi.customer?.toString() || null,
-        userId,
-        orderDate: new Date().toISOString(),
-        amount: { 
-          total: pi.amount / 100,
-          captured: (pi.amount_received || 0) / 100 
-        },
-        currency: pi.currency,
-        paymentStatus: pi.status,
-        items: items.length > 0 ? items : orderItems,
-        paymentMethod: pi.payment_method_types,
-        // Skip billing details entirely
-        shippingDetails: pi.shipping || null,
-        metadata: pi.metadata,
-        createdAt: new Date().toISOString(),
-      };
-      
-      // Rest of your code...
-    } catch (error) {
-      console.error("Error saving order to Firestore:", error);
-      throw error;
+  try {
+    const userId = pi.metadata.userId || "guest-user";
+    const items = pi.metadata.cartItems ? JSON.parse(pi.metadata.cartItems) : [];
+    const orderItems = pi.metadata.orderItems ? JSON.parse(pi.metadata.orderItems) : [];
+    
+    const orderData = {
+      orderId: pi.id,
+      customerId: pi.customer?.toString() || null,
+      userId,
+      orderDate: new Date().toISOString(),
+      amount: { 
+        total: pi.amount / 100,
+        captured: (pi.amount_received || 0) / 100 
+      },
+      currency: pi.currency,
+      paymentStatus: pi.status,
+      items: items.length > 0 ? items : orderItems,
+      paymentMethod: pi.payment_method_types,
+      shippingDetails: pi.shipping || null,
+      metadata: pi.metadata,
+      createdAt: new Date().toISOString(),
+    };
+    
+    // Save to appropriate location based on user status
+    if (userId !== "guest-user") {
+      // If user is logged in, save to their data/orders collection
+      await setDoc(
+        doc(db, `users/${userId}/data/orders/${pi.id}`),
+        orderData
+      );
+      console.log(`Order saved to user's collection: ${pi.id}`);
+    } else {
+      // If no user (guest checkout), save to noUser data/orders collection
+      await setDoc(
+        doc(db, `users/noUser/data/orders/${pi.id}`),
+        orderData
+      );
+      console.log(`Order saved to guest collection: ${pi.id}`);
     }
+    
+    // Still maintain a global orders collection for easier lookup
+    await addDoc(collection(db, "orders"), orderData);
+    
+    console.log(`Order saved successfully: ${pi.id}`);
+  } catch (error) {
+    console.error("Error saving order to Firestore:", error);
+    throw error;
   }
+}

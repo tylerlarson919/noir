@@ -15,9 +15,16 @@ function CheckoutSuccessContent() {
   const { useSearchParams } = require("next/navigation");
   const searchParams = useSearchParams();
   const clientSecret = searchParams.get("payment_intent_client_secret");
+  const paymentIntentId = searchParams.get("payment_intent");
 
   useEffect(() => {
-    if (!clientSecret) return router.replace("/");
+    // If no payment intent information is present, redirect to home
+    if (!clientSecret || !paymentIntentId) {
+      console.log("No payment information found, redirecting to home page");
+      return;
+    }
+  
+    // Verify the payment intent status
     stripePromise
       .then((stripe) => {
         if (!stripe) throw new Error("Stripe failed to load");
@@ -25,16 +32,28 @@ function CheckoutSuccessContent() {
       })
       .then((result) => {
         const paymentIntent = result.paymentIntent;
-        if (paymentIntent?.status !== "succeeded") {
-          router.replace("/");
-        } else {
+        
+        // Check if the payment intent ID in URL matches the retrieved one
+        if (paymentIntent?.id !== paymentIntentId) {
+          console.error("Payment intent ID mismatch");
+          return;
+        }
+        
+        // Handle based on payment status
+        if (paymentIntent?.status === "succeeded") {
+          console.log("Payment succeeded, clearing cart");
           clearCart();
+        } else if (paymentIntent?.status === "processing") {
+          console.log("Payment still processing");
+          // Let user stay on page while processing
+        } else {
+          console.log("Payment failed with status:", paymentIntent?.status);
         }
       })
-      .catch(() => {
-        router.replace("/");
+      .catch((error) => {
+        console.error("Error verifying payment:", error);
       });
-  }, [clientSecret, clearCart, router]);
+  }, [clientSecret, paymentIntentId, clearCart, router]);
 
   return (
     <div className="mx-4 flex flex-col justify-start items-center">
