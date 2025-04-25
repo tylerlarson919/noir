@@ -4,30 +4,26 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import { loadStripe } from "@stripe/stripe-js";
-import {
-  AddressElement,
-} from "@stripe/react-stripe-js";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "next-themes";
 
-// Load stripe outside of component render to avoid recreating the Stripe object on every render
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
-);
+// Load stripe outside of component render
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 export default function CheckoutPage() {
   const { totalPrice, items } = useCart();
-  const [loading, setLoading] = useState(true);
-  const { user } = useAuth(); // Get current user
+  const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const { resolvedTheme } = useTheme();
 
-    useEffect(() => {
-        setIsDarkMode(resolvedTheme === "dark");
-    }, [resolvedTheme]);
+  useEffect(() => {
+    setIsDarkMode(resolvedTheme === "dark");
+  }, [resolvedTheme]);
 
-    const handleCheckout = async () => {
-      setLoading(true);
+  const handleCheckout = async () => {
+    setLoading(true);
+    try {
       const res = await fetch("/api/create-checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -40,7 +36,11 @@ export default function CheckoutPage() {
       const { sessionId } = await res.json();
       const stripe = await stripePromise;
       await stripe?.redirectToCheckout({ sessionId });
-    };
+    } catch (err) {
+      console.error(err);
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="mx-4 flex flex-col justify-start items-center">
