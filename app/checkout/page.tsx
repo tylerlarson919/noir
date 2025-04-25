@@ -5,10 +5,6 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import { loadStripe } from "@stripe/stripe-js";
 import {
-  Elements,
-  PaymentElement,
-  useStripe,
-  useElements,
   AddressElement,
 } from "@stripe/react-stripe-js";
 import { useAuth } from "@/context/AuthContext";
@@ -21,49 +17,30 @@ const stripePromise = loadStripe(
 
 export default function CheckoutPage() {
   const { totalPrice, items } = useCart();
-  const [clientSecret, setClientSecret] = useState("");
   const [loading, setLoading] = useState(true);
   const { user } = useAuth(); // Get current user
   const [isDarkMode, setIsDarkMode] = useState(false);
   const { resolvedTheme } = useTheme();
 
-  useEffect(() => {
-    // Create PaymentIntent as soon as the page loads
-    if (items.length > 0) {
-      fetch("/api/create-payment-intent", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          items: items.map((item) => ({
-            id: item.id,
-            name: item.name,
-            price: item.price,
-            quantity: item.quantity,
-            size: item.size,
-            color: item.color.name,
-          })),
-          amount: totalPrice,
-          userId: user?.uid || null,
-          cartItems: JSON.stringify(items),
-        }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setClientSecret(data.clientSecret);
-          setLoading(false);
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          setLoading(false);
-        });
-    } else {
-      setLoading(false);
-    }
-  }, [items, totalPrice, user?.uid]);
-
     useEffect(() => {
         setIsDarkMode(resolvedTheme === "dark");
     }, [resolvedTheme]);
+
+    const handleCheckout = async () => {
+      setLoading(true);
+      const res = await fetch("/api/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items,
+          userId: user?.uid || null,
+          cartItems: JSON.stringify(items),
+        }),
+      });
+      const { sessionId } = await res.json();
+      const stripe = await stripePromise;
+      await stripe?.redirectToCheckout({ sessionId });
+    };
 
   return (
     <div className="mx-4 flex flex-col justify-start items-center">
@@ -88,17 +65,13 @@ export default function CheckoutPage() {
         ) : (
           <div className="flex flex-col lg:flex-row w-full gap-4">
             <div className="lg:w-1/2 p-6 bg-white/30 dark:bg-darkaccent backdrop-blur-md rounded-sm shadow-sm">
-              {clientSecret && (
-                <Elements 
-                    stripe={stripePromise}
-                    options={{
-                    clientSecret,
-                    appearance: { theme: isDarkMode ? "night" : "stripe" },
-                    }}
-                >                  
-              <CheckoutForm />
-                </Elements>
-              )}
+              <button
+                onClick={handleCheckout}
+                disabled={loading || items.length === 0}
+                className="w-full py-3 bg-dark1 dark:bg-white text-white dark:text-black rounded-sm disabled:opacity-50"
+              >
+                {loading ? "Processing…" : "Pay Now"}
+              </button>
             </div>
             <div className="lg:w-1/2 p-6">
               <h2 className="text-xl font-medium mb-6">Order Summary</h2>
@@ -145,94 +118,3 @@ export default function CheckoutPage() {
     </div>
   );
 }
-
-function CheckoutForm() {
-    const stripe = useStripe();
-    const elements = useElements();
-    const router = useRouter();
-    const { clearCart } = useCart();
-  
-    const [message, setMessage] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
-    const [formComplete, setFormComplete] = useState(false);
-    const [addressComplete, setAddressComplete] = useState(false);
-  
-    const handleSubmit = async (e: React.FormEvent) => {
-      e.preventDefault();
-    
-      if (!stripe || !elements) {
-        return;
-      }
-    
-      setIsLoading(true);
-    
-      const { error } = await stripe.confirmPayment({
-        elements,
-        confirmParams: {
-          return_url: `${window.location.origin}/checkout/success`,
-        },
-      });
-      // Only runs if there's an error (no redirect happened)
-      if (error) {
-        setMessage(error.message || "An unexpected error occurred.");
-        setIsLoading(false);
-      }
-    };
-  
-    return (
-      <form id="payment-form" onSubmit={handleSubmit}>
-        <div className="mb-6">
-          <label htmlFor="address-element" className="block text-xl font-medium mb-2">
-            Shipping
-          </label>
-          <AddressElement
-            id="address-element"
-            options={{
-              mode: "shipping",
-              allowedCountries: ["US", "CA", "GB"],
-              defaultValues: {
-                address: {
-                  country: "US",
-                },
-              },
-              fields: {
-                phone: "always",
-              },
-              display: {
-                name: "split",
-              },
-              validation: {
-                phone: {
-                  required: "always",
-                },
-              },
-            }}
-            onChange={(event) => {
-              setAddressComplete(event.complete);
-            }}
-          />
-        </div>
-  
-        <div className="my-6">
-          <label htmlFor="payment-element" className="block text-lg font-medium mb-2">
-            Payment
-          </label>
-          <PaymentElement
-            id="payment-element"
-            onChange={(e) => setFormComplete(e.complete)}
-          />
-        </div>
-  
-        <button
-          disabled={isLoading || !stripe || !elements || !formComplete || !addressComplete}
-          className="w-full py-3 px-4 bg-dark1 dark:bg-white text-white dark:text-black text-center font-medium button-grow-subtle rounded-sm disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isLoading ? "Processing..." : "Pay Now"}
-        </button>
-  
-        {message && (
-          <div className="mt-4 text-center text-red-600">{message}</div>
-        )}
-      </form>
-    );
-  }

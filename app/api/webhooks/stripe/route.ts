@@ -31,9 +31,11 @@ export async function POST(req: NextRequest) {
   try {
     // Handle the event
     switch (event.type) {
-        case "payment_intent.succeeded":
-            const pi = event.data.object as Stripe.PaymentIntent;
-            await handlePaymentIntentSucceeded(pi);
+        case "checkout.session.completed":
+          const session = event.data.object as Stripe.Checkout.Session;
+          // fetch the PaymentIntent so you can re-use your existing handler
+          const pi = await stripe.paymentIntents.retrieve(session.payment_intent as string);
+          await handlePaymentIntentSucceeded(pi);
             break;
         case "payment_intent.payment_failed":
             const failedPaymentIntent = event.data.object as Stripe.PaymentIntent;

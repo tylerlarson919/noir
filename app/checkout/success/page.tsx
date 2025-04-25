@@ -1,59 +1,23 @@
 // src/app/checkout/success/page.tsx
 "use client";
+
 import { useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
-import { loadStripe } from "@stripe/stripe-js";
-import { useRouter } from "next/navigation";
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
-
-// Create a separate client component that uses useSearchParams
 function CheckoutSuccessContent() {
   const { clearCart } = useCart();
   const router = useRouter();
-  const { useSearchParams } = require("next/navigation");
-  const searchParams = useSearchParams();
-  const clientSecret = searchParams.get("payment_intent_client_secret");
-  const paymentIntentId = searchParams.get("payment_intent");
+  const sessionId = useSearchParams().get("session_id");
 
   useEffect(() => {
-    // If no payment intent information is present, redirect to home
-    if (!clientSecret || !paymentIntentId) {
-      console.log("No payment information found, redirecting to home page");
+    if (!sessionId) {
+      router.replace("/checkout");
       return;
     }
-  
-    // Verify the payment intent status
-    stripePromise
-      .then((stripe) => {
-        if (!stripe) throw new Error("Stripe failed to load");
-        return stripe.retrievePaymentIntent(clientSecret);
-      })
-      .then((result) => {
-        const paymentIntent = result.paymentIntent;
-        
-        // Check if the payment intent ID in URL matches the retrieved one
-        if (paymentIntent?.id !== paymentIntentId) {
-          console.error("Payment intent ID mismatch");
-          return;
-        }
-        
-        // Handle based on payment status
-        if (paymentIntent?.status === "succeeded") {
-          console.log("Payment succeeded, clearing cart");
-          clearCart();
-        } else if (paymentIntent?.status === "processing") {
-          console.log("Payment still processing");
-          // Let user stay on page while processing
-        } else {
-          console.log("Payment failed with status:", paymentIntent?.status);
-        }
-      })
-      .catch((error) => {
-        console.error("Error verifying payment:", error);
-      });
-  }, [clientSecret, paymentIntentId, clearCart, router]);
+    clearCart();
+  }, [sessionId, clearCart, router]);
 
   return (
     <div className="mx-4 flex flex-col justify-start items-center">
@@ -85,7 +49,11 @@ function CheckoutSuccessContent() {
           <h2 className="text-xl font-medium mb-4">What&apos;s Next?</h2>
           <p className="mb-4">
             You will receive an email confirmation with your order details and
-            tracking information once your order ships. You can also track the status of your order <Link href={"/track-order"} className="underline">here</Link>.
+            tracking information once your order ships. You can also track the status of your order{" "}
+            <Link href="/track-order" className="underline">
+              here
+            </Link>
+            .
           </p>
           <p className="text-sm text-gray-600 dark:text-gray-300">
             If you have any questions about your order, please contact our
@@ -104,11 +72,10 @@ function CheckoutSuccessContent() {
   );
 }
 
-
 export default function CheckoutSuccessPage() {
-    return (
-      <Suspense fallback={<div className="mx-4 flex flex-col justify-start items-center">Loading...</div>}>
-        <CheckoutSuccessContent />
-      </Suspense>
-    );
-  }
+  return (
+    <Suspense fallback={<div className="mx-4 flex flex-col justify-start items-center">Loading...</div>}>
+      <CheckoutSuccessContent />
+    </Suspense>
+  );
+}
