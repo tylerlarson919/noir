@@ -141,8 +141,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     
     // Add to user orders if authenticated
     if (userId !== "guest-user") {
-      const userOrderRef = doc(db, `users/${userId}/orders/${session.id}`);
-      batch.set(userOrderRef, orderData);
+      const userOrderRef = doc(db, `users/${userId}/data/orders/${session.id}`);
+      await setDoc(userOrderRef, orderData);
     }
     
     await batch.commit();
