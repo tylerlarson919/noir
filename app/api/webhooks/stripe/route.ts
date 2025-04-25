@@ -2,8 +2,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { headers } from "next/headers";
-import { db } from "@/lib/firebaseConfig";
-import { collection, addDoc, doc, arrayUnion, writeBatch } from "firebase/firestore";
+import { adminDb } from "@/lib/firebaseAdmin";
+import * as admin from 'firebase-admin';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-03-31.basil",
@@ -159,28 +159,30 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     // Improve error handling and logging for Firebase operations
     try {
       console.log("📝 Preparing order data for Firestore:", JSON.stringify(orderData, null, 2));
-      const batch = writeBatch(db);
+      
+      // Use a batch with adminDb instead
+      const batch = adminDb.batch();
       
       // Add to orders collection with explicit ID
-      const orderRef = doc(db, "orders", session.id);
+      const orderRef = adminDb.collection('orders').doc(session.id);
       batch.set(orderRef, orderData);
       
       // Add to user orders if authenticated or has email
       if (userId !== "guest-user" || userEmail) {
         if (userId === "guest-user" && userEmail) {
           // Store the order in a way we can look it up later by email
-          const guestOrderRef = doc(db, `users/guest-user/orders/${session.id}`);
+          const guestOrderRef = adminDb.collection('users').doc('guest-user').collection('orders').doc(session.id);
           batch.set(guestOrderRef, {...orderData, email: userEmail});
           
           // Also create an index by email for easy lookup during account creation
-          const emailIndexRef = doc(db, `users/guest-user/email-index/${userEmail.toLowerCase()}`);
+          const emailIndexRef = adminDb.collection('users').doc('guest-user').collection('email-index').doc(userEmail.toLowerCase());
           batch.set(emailIndexRef, {
-            orders: arrayUnion(session.id),
+            orders: admin.firestore.FieldValue.arrayUnion(session.id),
             updatedAt: new Date().toISOString()
           }, {merge: true});
         } else if (userId !== "guest-user") {
           // If user is authenticated, add to their orders collection
-          const userOrderRef = doc(db, `users/${userId}/orders/${session.id}`);
+          const userOrderRef = adminDb.collection('users').doc(userId).collection('orders').doc(session.id);
           batch.set(userOrderRef, {
             orderId: session.id,
             createdAt: new Date().toISOString()
@@ -274,25 +276,26 @@ async function handlePaymentIntentSucceeded(pi: Stripe.PaymentIntent) {
     };
 
     // Write to Firestore
-    const batch = writeBatch(db);
+    const batch = adminDb.batch();
     
     // Add to orders collection with explicit ID
-    const orderRef = doc(db, "orders", pi.id);
+    const orderRef = adminDb.collection('orders').doc(pi.id);
     batch.set(orderRef, orderData);
     
     // Add to user orders if authenticated or has email
     if (userId !== "guest-user" || userEmail) {
       if (userId === "guest-user" && userEmail) {
-        const guestOrderRef = doc(db, `users/guest-user/orders/${pi.id}`);
+        const guestOrderRef = adminDb.collection('users').doc('guest-user').collection('orders').doc(pi.id);
         batch.set(guestOrderRef, {...orderData, email: userEmail});
         
-        const emailIndexRef = doc(db, `users/guest-user/email-index/${userEmail.toLowerCase()}`);
+        // In handlePaymentIntentSucceeded function
+        const emailIndexRef = adminDb.collection('users').doc('guest-user').collection('email-index').doc(userEmail.toLowerCase());
         batch.set(emailIndexRef, {
-          orders: arrayUnion(pi.id),
+          orders: admin.firestore.FieldValue.arrayUnion(pi.id),
           updatedAt: new Date().toISOString()
         }, {merge: true});
       } else if (userId !== "guest-user") {
-        const userOrderRef = doc(db, `users/${userId}/orders/${pi.id}`);
+        const userOrderRef = adminDb.collection('users').doc(userId).collection('orders').doc(pi.id);
         batch.set(userOrderRef, {
           orderId: pi.id,
           createdAt: new Date().toISOString()
