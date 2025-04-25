@@ -5,6 +5,33 @@ import { headers } from "next/headers";
 import { adminDb } from "@/lib/firebaseAdmin";
 import * as admin from 'firebase-admin';
 
+function sanitizeData(obj: any): any {
+  if (obj === null || obj === undefined) return obj;
+  
+  if (typeof obj !== 'object') return obj;
+  
+  if (Array.isArray(obj)) {
+    return obj.map(item => sanitizeData(item));
+  }
+  
+  const sanitized: Record<string, any> = {};
+  for (const [key, value] of Object.entries(obj)) {
+    // Skip undefined or function values
+    if (value === undefined || typeof value === 'function') continue;
+    
+    // Convert Date objects to ISO strings
+    if (value instanceof Date) {
+      sanitized[key] = value.toISOString();
+    } else if (typeof value === 'object' && value !== null) {
+      sanitized[key] = sanitizeData(value);
+    } else {
+      // For primitive values
+      sanitized[key] = value;
+    }
+  }
+  return sanitized;
+}
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-03-31.basil",
 });
@@ -136,7 +163,11 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       items: orderItems,
       paymentMethod: session.payment_method_types,
       billingDetails: session.customer_details || null,
-      metadata: session.metadata || {},
+      metadata: Object.entries(session.metadata || {}).reduce((acc, [key, value]) => {
+        // Only include string values and convert other types to strings
+        acc[key] = typeof value === 'string' ? value : String(value);
+        return acc;
+      }, {} as Record<string, string>),
       email: session.customer_details?.email || '',
       createdAt: new Date().toISOString(),
       status: "pending",
@@ -155,6 +186,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         updatedAt: new Date().toISOString(),
       },
     };
+    const sanitizedOrderData = sanitizeData(orderData);
 
     // Improve error handling and logging for Firebase operations
     try {
@@ -165,14 +197,14 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       
       // Add to orders collection with explicit ID
       const orderRef = adminDb.collection('orders').doc(session.id);
-      batch.set(orderRef, orderData);
+      batch.set(orderRef, sanitizedOrderData);
       
       // Add to user orders if authenticated or has email
       if (userId !== "guest-user" || userEmail) {
         if (userId === "guest-user" && userEmail) {
           // Store the order in a way we can look it up later by email
           const guestOrderRef = adminDb.collection('users').doc('guest-user').collection('orders').doc(session.id);
-          batch.set(guestOrderRef, {...orderData, email: userEmail});
+  batch.set(guestOrderRef, sanitizedOrderData); 
           
           // Also create an index by email for easy lookup during account creation
           const emailIndexRef = adminDb.collection('users').doc('guest-user').collection('email-index').doc(userEmail.toLowerCase());
@@ -255,7 +287,11 @@ async function handlePaymentIntentSucceeded(pi: Stripe.PaymentIntent) {
       paymentStatus: pi.status,
       paymentMethod: [pi.payment_method_types?.[0] || 'card'],
       billingDetails: null,
-      metadata: pi.metadata || {},
+      metadata: Object.entries(pi.metadata || {}).reduce((acc, [key, value]) => {
+        // Only include string values and convert other types to strings
+        acc[key] = typeof value === 'string' ? value : String(value);
+        return acc;
+      }, {} as Record<string, string>),
       email: userEmail,
       createdAt: new Date().toISOString(),
       status: "pending",
@@ -274,19 +310,20 @@ async function handlePaymentIntentSucceeded(pi: Stripe.PaymentIntent) {
         updatedAt: new Date().toISOString(),
       },
     };
+    const sanitizedOrderData = sanitizeData(orderData);
 
     // Write to Firestore
     const batch = adminDb.batch();
     
     // Add to orders collection with explicit ID
     const orderRef = adminDb.collection('orders').doc(pi.id);
-    batch.set(orderRef, orderData);
+    batch.set(orderRef, sanitizedOrderData);
     
     // Add to user orders if authenticated or has email
     if (userId !== "guest-user" || userEmail) {
       if (userId === "guest-user" && userEmail) {
         const guestOrderRef = adminDb.collection('users').doc('guest-user').collection('orders').doc(pi.id);
-        batch.set(guestOrderRef, {...orderData, email: userEmail});
+        batch.set(guestOrderRef, sanitizedOrderData);
         
         // In handlePaymentIntentSucceeded function
         const emailIndexRef = adminDb.collection('users').doc('guest-user').collection('email-index').doc(userEmail.toLowerCase());
