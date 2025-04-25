@@ -2,12 +2,19 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-
+import { useRouter } from "next/router";
 import { useCart } from "@/context/CartContext";
+import { loadStripe } from "@stripe/stripe-js";
+
+ // load stripe outside render
+ const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+);
 
 export default function CartPage() {
   const { items, totalPrice, removeItem, updateQuantity, clearCart } =
     useCart();
+  const router = useRouter();
 
   // Handle quantity change
   const handleQuantityChange = (
@@ -19,6 +26,11 @@ export default function CartPage() {
     if (newQuantity < 1) return;
     updateQuantity(id, size, colorName, newQuantity);
   };
+
+    const handleCheckout = () => {
+        if (!items.length) return;
+        router.push("/checkout");
+      };
 
   return (
     <div className="mx-4 relative flex flex-col justify-start items-center">
@@ -189,12 +201,13 @@ export default function CartPage() {
                     >
                       Continue Shopping
                     </Link>
-                    <Link
+                    <button
                       className="block w-full py-3 px-4 bg-dark1 dark:bg-white text-white dark:text-black text-center font-medium button-grow-subtle rounded-sm"
-                      href="/checkout"
+                      onClick={handleCheckout}
+                      disabled={!items.length}
                     >
                       CHECKOUT
-                    </Link>
+                    </button>
                   </div>
                 </div>
               </div>
