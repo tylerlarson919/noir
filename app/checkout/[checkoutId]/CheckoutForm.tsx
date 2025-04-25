@@ -41,7 +41,7 @@ export default function CheckoutForm() {
         const result = await stripe.confirmPayment({
             elements,
             confirmParams: {
-              return_url: `${window.location.origin}/checkout/success?session_id={PAYMENT_INTENT_ID}`,
+              return_url: `${window.location.origin}/checkout/success?payment_intent={PAYMENT_INTENT_ID}`,
               receipt_email: email || user?.email || undefined,
               payment_method_data: {
                 billing_details: {

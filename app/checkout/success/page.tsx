@@ -39,20 +39,20 @@ interface OrderDetails {
 function CheckoutResultContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const sessionId = searchParams.get("session_id");
+  const paymentIntentId = searchParams.get("payment_intent");
   const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!sessionId) {
+    if (!paymentIntentId) {
       router.replace("/checkout");
       return;
     }
     
     const fetchOrderDetails = async () => {
       try {
-        const orderDoc = await getDoc(doc(db, "orders", sessionId!));
+        const orderDoc = await getDoc(doc(db, "orders", paymentIntentId!));
         if (orderDoc.exists()) {
           setOrderDetails(orderDoc.data() as OrderDetails);
         } else {
@@ -64,16 +64,16 @@ function CheckoutResultContent() {
     };
 
     fetchOrderDetails();
-  }, [sessionId]);
+  }, [paymentIntentId]);
 
   const fetchOrderDetails = async () => {
     try {
       setLoading(true);
-      const orderDoc = await getDoc(doc(db, "orders", sessionId as string));
+      const orderDoc = await getDoc(doc(db, "orders", paymentIntentId as string));
       if (orderDoc.exists()) {
         setOrderDetails(orderDoc.data() as OrderDetails);
       } else {
-        console.log("Order not found with ID:", sessionId);
+        console.log("Order not found with ID:", paymentIntentId);
         setError("Order not found. Please contact customer support.");
       }
     } catch (err) {
@@ -192,7 +192,7 @@ function CheckoutResultContent() {
         {orderDetails && (
           <div className="my-4 p-4 border rounded w-full text-left">
             <h2 className="text-lg font-medium mb-2">Order Details</h2>
-            <p><span className="font-medium">Order ID:</span> {sessionId}</p>
+            <p><span className="font-medium">Order ID:</span> {paymentIntentId}</p>
             <p><span className="font-medium">Status:</span> {orderDetails.shipping?.status || "Processing"}</p>
             <p><span className="font-medium">Amount:</span> ${(orderDetails.amount?.total || 0).toFixed(2)}</p>
             {orderDetails.email && <p><span className="font-medium">Email:</span> {orderDetails.email}</p>}
@@ -214,7 +214,7 @@ function CheckoutResultContent() {
           <p className="mb-4">
             You will receive an email confirmation with your order details and
             tracking information once your order ships. You can also track the status of your order{" "}
-            <Link href={`/track-order?id=${sessionId}`} className="underline">
+            <Link href={`/track-order?id=${paymentIntentId}`} className="underline">
               here
             </Link>
             .
