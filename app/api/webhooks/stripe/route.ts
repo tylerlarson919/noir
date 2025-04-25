@@ -5,7 +5,6 @@ import { headers } from "next/headers";
 import { db } from "@/lib/firebaseConfig";
 import { collection, addDoc, doc, setDoc } from "firebase/firestore";
 
-// Initialize Stripe with the API version specified in your Stripe dashboard
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-03-31.basil",
 });
@@ -31,29 +30,25 @@ export async function POST(req: NextRequest) {
   try {
     // Handle the event
     switch (event.type) {
-        case "checkout.session.completed":
-          const session = event.data.object as Stripe.Checkout.Session;
-          // fetch the PaymentIntent so you can re-use your existing handler
-          const pi = await stripe.paymentIntents.retrieve(session.payment_intent as string);
-          await handlePaymentIntentSucceeded(pi);
-            break;
-        case "payment_intent.payment_failed":
-            const failedPaymentIntent = event.data.object as Stripe.PaymentIntent;
-            // Log failure and potentially store in database for analytics
-            console.log(`Payment failed: ${failedPaymentIntent.id}, reason: ${failedPaymentIntent.last_payment_error?.message || 'Unknown'}`);
-            break;
-        case "payment_intent.requires_action":
-            // Handle cases requiring additional authentication
-            const actionRequiredPI = event.data.object as Stripe.PaymentIntent;
-            console.log(`Payment requires action: ${actionRequiredPI.id}`);
-            break;
-        default:
-            console.log(`Unhandled event type: ${event.type}`);
-        }
-  } catch (error) {
+      case "checkout.session.completed":
+        const session = event.data.object as Stripe.Checkout.Session;
+        await handleCheckoutCompleted(session);
+        break;
+      case "payment_intent.succeeded":
+        const paymentIntent = event.data.object as Stripe.PaymentIntent;
+        await handlePaymentIntentSucceeded(paymentIntent);
+        break;
+      case "payment_intent.payment_failed":
+        const failedPaymentIntent = event.data.object as Stripe.PaymentIntent;
+        console.log(`Payment failed: ${failedPaymentIntent.id}, reason: ${failedPaymentIntent.last_payment_error?.message || 'Unknown'}`);
+        break;
+      default:
+        console.log(`Unhandled event type: ${event.type}`);
+    }
+  } catch (error: any) {
     console.error("Error processing webhook:", error);
     return NextResponse.json(
-      { error: "Error processing webhook" },
+      { error: error.message || "Error processing webhook" },
       { status: 500 },
     );
   }
@@ -61,52 +56,86 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ received: true });
 }
 
-async function handlePaymentIntentSucceeded(pi: Stripe.PaymentIntent) {
+async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   try {
-    const userId = pi.metadata.userId || "guest-user";
-    const items = pi.metadata.cartItems ? JSON.parse(pi.metadata.cartItems) : [];
-    const orderItems = pi.metadata.orderItems ? JSON.parse(pi.metadata.orderItems) : [];
+    // Retrieve line items to get complete order details
+    const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
+    
+    // Get expanded product data if needed
+    const orderItems = await Promise.all(
+      lineItems.data.map(async (item) => {
+        // If you need more product details
+        if (item.price?.product) {
+          const productId = typeof item.price.product === 'string' 
+            ? item.price.product 
+            : item.price.product.id;
+            
+          const product = await stripe.products.retrieve(productId);
+          
+          return {
+            productId: product.metadata.productId || product.id,
+            name: product.name,
+            price: (item.price.unit_amount || 0) / 100,
+            quantity: item.quantity,
+            size: product.metadata.size,
+            color: {
+              name: product.metadata.colorName,
+              value: product.metadata.colorValue
+            },
+            image: product.images?.[0] || '',
+          };
+        }
+        
+        return {
+          price: (item.price?.unit_amount || 0) / 100,
+          quantity: item.quantity,
+          description: item.description
+        };
+      })
+    );
+
+    const userId = session.metadata?.userId || "guest-user";
+
+    console.log("session data (look for shipping addy): ", JSON.stringify(session, null, 2));
     
     const orderData = {
-      orderId: pi.id,
-      customerId: pi.customer?.toString() || null,
+      orderId: session.id,
+      customerId: session.customer?.toString() || null,
       userId,
       orderDate: new Date().toISOString(),
       amount: { 
-        total: pi.amount / 100,
-        captured: (pi.amount_received || 0) / 100 
+        total: (session.amount_total || 0) / 100,
+        subtotal: (session.amount_subtotal || 0) / 100,
       },
-      currency: pi.currency,
-      paymentStatus: pi.status,
-      items: items.length > 0 ? items : orderItems,
-      paymentMethod: pi.payment_method_types,
-      shippingDetails: pi.shipping || null,
-      metadata: pi.metadata,
+      currency: session.currency,
+      paymentStatus: session.payment_status,
+      items: orderItems,
+      paymentMethod: session.payment_method_types,
+      billingDetails: session.customer_details || null,
+      metadata: session.metadata || {},
+      email: session.customer_details?.email || '',
       createdAt: new Date().toISOString(),
     };
+
     // Save to appropriate location based on user status
     if (userId !== "guest-user") {
-      // If user is logged in, save to their data/orders collection
       await setDoc(
-        doc(db, `users/${userId}/data/orders/${pi.id}`),
+        doc(db, `users/${userId}/orders/${session.id}`),
         orderData
       );
-      console.log(`Order saved to user's collection: ${pi.id}`);
-    } else {
-      // If no user (guest checkout), save to noUser data/orders collection
-      await setDoc(
-        doc(db, `users/noUser/data/orders/${pi.id}`),
-        orderData
-      );
-      console.log(`Order saved to guest collection: ${pi.id}`);
-    }
+    } 
     
     // Still maintain a global orders collection for easier lookup
     await addDoc(collection(db, "orders"), orderData);
     
-    console.log(`Order saved successfully: ${pi.id}`);
+    console.log(`Order saved successfully: ${session.id}`);
   } catch (error) {
     console.error("Error saving order to Firestore:", error);
     throw error;
   }
+}
+
+async function handlePaymentIntentSucceeded(pi: Stripe.PaymentIntent) {
+  // You can add payment intent specific logic here if needed
+  console.log(`Payment intent succeeded: ${pi.id}`);
 }

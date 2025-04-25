@@ -30,15 +30,29 @@ export default function CheckoutPage() {
         body: JSON.stringify({
           items,
           userId: user?.uid || null,
-          cartItems: JSON.stringify(items),
           customerEmail: user?.email || undefined,
         }),
       });
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to create checkout session");
+      }
+      
       const { sessionId } = await res.json();
       const stripe = await stripePromise;
-      await stripe?.redirectToCheckout({ sessionId });
-    } catch (err) {
-      console.error(err);
+      if (!stripe) {
+        throw new Error("Failed to load Stripe");
+      }
+      
+      const { error } = await stripe.redirectToCheckout({ sessionId });
+      if (error) {
+        throw new Error(error.message);
+      }
+    } catch (err: any) {
+      console.error("Checkout error:", err);
+      // Show error to user
+      alert(`Checkout error: ${err.message}`);
       setLoading(false);
     }
   };
