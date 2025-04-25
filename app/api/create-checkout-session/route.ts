@@ -18,11 +18,12 @@ type RequestBody = {
   }[];
   userId: string | null;
   customerEmail?: string;
+  checkoutId?: string;
 };
 
 export async function POST(req: NextRequest) {
   try {
-    const { items, userId, customerEmail }: RequestBody = await req.json();
+    const { items, userId, customerEmail, checkoutId }: RequestBody = await req.json();
 
     // Calculate total
     const amount = items
@@ -35,6 +36,7 @@ export async function POST(req: NextRequest) {
       automatic_payment_methods: { enabled: true },
       metadata: {
         userId: userId || "guest",
+        checkoutId: checkoutId || "unknown",
         orderSummary: JSON.stringify({
           itemCount: items.length,
           totalAmount: amount / 100,
