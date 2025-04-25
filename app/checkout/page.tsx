@@ -370,7 +370,7 @@ export default function CheckoutPage() {
             </div>
             
             <div className="text-xs text-gray-500">
-              <p>Your info will be saved to a Shop account. By continuing, you agree to Shop's Terms of Service and acknowledge the Privacy Policy.</p>
+              <p>Your info will be saved to a Shop account. By continuing, you agree to Shop&apos;s Terms of Service and acknowledge the Privacy Policy.</p>
             </div>
           </form>
         </div>
