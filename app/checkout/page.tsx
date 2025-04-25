@@ -132,7 +132,7 @@ export default function CheckoutPage() {
                 </div>
                 
                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
-                  You'll complete your shipping and payment details in the next step.
+                  You&apos;ll complete your shipping and payment details in the next step.
                 </p>
                 
                 <button
