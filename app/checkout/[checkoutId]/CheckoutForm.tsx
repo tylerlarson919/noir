@@ -48,7 +48,6 @@ export default function CheckoutForm() {
                   email: email || user?.email,
                 },
               }
-              // Remove the metadata and redirect options - they're not supported in this API
             },
           });
 

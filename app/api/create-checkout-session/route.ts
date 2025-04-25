@@ -38,16 +38,10 @@ export async function POST(req: NextRequest) {
         userId: userId || "guest",
         checkoutId: checkoutId || "unknown",
         userEmail: customerEmail || "",
-        orderSummary: JSON.stringify({
-          itemCount: items.length,
-          totalAmount: amount / 100,
-          items: items.map(item => ({
-            id: item.id,
-            name: item.name,
-            quantity: item.quantity,
-            price: item.price
-          }))
-        }),
+        // Remove the complex orderSummary JSON and replace with simpler data
+        itemCount: items.length.toString(),
+        totalAmount: (amount / 100).toString()
+        // Don't include the detailed items array in metadata
       },
       receipt_email: customerEmail,
     });
