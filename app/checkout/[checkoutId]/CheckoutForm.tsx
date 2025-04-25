@@ -10,7 +10,7 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
-
+import { useParams } from "next/navigation";
 export default function CheckoutForm() {
   const [email, setEmail] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -22,7 +22,9 @@ export default function CheckoutForm() {
   const { user } = useAuth();
   const { clearCart } = useCart();
   const router = useRouter();
-  
+  const { items } = useCart();
+  const params = useParams();
+  const checkoutId = params.checkoutId as string;
   const stripe = useStripe();
   const elements = useElements();
 
@@ -36,35 +38,34 @@ export default function CheckoutForm() {
     setIsProcessing(true);
 
     try {
-      const { error, paymentIntent } = await stripe.confirmPayment({
-        elements,
-        confirmParams: {
-          return_url: `${window.location.origin}/checkout/success`,
-          receipt_email: email || user?.email || undefined,
-          payment_method_data: {
-            billing_details: {
-              email: email || user?.email,
+        const result = await stripe.confirmPayment({
+            elements,
+            confirmParams: {
+              return_url: `${window.location.origin}/checkout/success?session_id={PAYMENT_INTENT_ID}`,
+              receipt_email: email || user?.email || undefined,
+              payment_method_data: {
+                billing_details: {
+                  email: email || user?.email,
+                },
+              }
+              // Remove the metadata and redirect options - they're not supported in this API
             },
-          },
-        },
-        redirect: "if_required",
-      });
+          });
 
-      if (error) {
-        setErrorMessage(error.message || "Something went wrong with your payment");
-      } else if (paymentIntent && paymentIntent.status === "succeeded") {
-        clearCart();
-        router.push(`/checkout/success?session_id=${paymentIntent.id}`);
-      } else {
-        setErrorMessage("Unexpected payment state. Please try again.");
-      }
-    } catch (err) {
-      console.error("Payment error:", err);
-      setErrorMessage("An unexpected error occurred. Please try again.");
-    } finally {
-      setIsProcessing(false);
-    }
-  };
+          if (result.error) {
+            setErrorMessage(result.error.message || "Something went wrong with your payment");
+          } else {
+            // This shouldn't execute as confirmPayment with return_url should redirect
+            clearCart();
+          }
+        } catch (err) {
+          console.error("Payment error:", err);
+          setErrorMessage("An unexpected error occurred. Please try again.");
+        } finally {
+          setIsProcessing(false);
+        }
+      };
+    
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">

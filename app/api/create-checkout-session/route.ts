@@ -41,6 +41,12 @@ export async function POST(req: NextRequest) {
         orderSummary: JSON.stringify({
           itemCount: items.length,
           totalAmount: amount / 100,
+          items: items.map(item => ({
+            id: item.id,
+            name: item.name,
+            quantity: item.quantity,
+            price: item.price
+          }))
         }),
       },
       receipt_email: customerEmail,

@@ -14,6 +14,8 @@ export async function POST(req: NextRequest) {
   const headersList = await headers();
   const signature = headersList.get("stripe-signature") as string;
 
+  console.log("Webhook received, verifying signature...");
+
   let event: Stripe.Event;
 
   try {
@@ -32,10 +34,13 @@ export async function POST(req: NextRequest) {
     switch (event.type) {
       case "checkout.session.completed":
         const session = event.data.object as Stripe.Checkout.Session;
+        console.log("Checkout session completed event received:", session.id);
         await handleCheckoutCompleted(session);
         break;
       case "payment_intent.succeeded":
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
+        console.log("Payment intent succeeded event received:", paymentIntent.id);
+        // Add this line to process payment intents as well
         await handlePaymentIntentSucceeded(paymentIntent);
         break;
       case "payment_intent.payment_failed":
@@ -187,6 +192,108 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 }
 
 async function handlePaymentIntentSucceeded(pi: Stripe.PaymentIntent) {
-  // You can add payment intent specific logic here if needed
-  console.log(`Payment intent succeeded: ${pi.id}`);
+  try {
+    console.log(`Processing payment intent: ${pi.id}`);
+    
+    if (!pi.id) {
+      throw new Error("Missing payment intent ID");
+    }
+    
+    const metadata = pi.metadata || {};
+    const userId = metadata.userId || "guest-user";
+    const userEmail = metadata.userEmail || pi.receipt_email || '';
+    
+    // Define a properly typed address object with defaults
+    const shippingAddress: Record<string, string> = {};
+    
+    // Get shipping details (safely) if available
+    if (pi.shipping && pi.shipping.address) {
+      // Type assertion to overcome TypeScript limitation
+      const address = pi.shipping.address as {
+        line1?: string;
+        line2?: string;
+        city?: string;
+        state?: string;
+        postal_code?: string;
+        country?: string;
+      };
+      
+      // Now we can safely access these properties
+      shippingAddress.line1 = address.line1 || '';
+      shippingAddress.line2 = address.line2 || '';
+      shippingAddress.city = address.city || '';
+      shippingAddress.state = address.state || '';
+      shippingAddress.postal_code = address.postal_code || '';
+      shippingAddress.country = address.country || '';
+    }
+    
+    console.log("Payment intent data:", JSON.stringify(pi, null, 2));
+    
+    const orderData = {
+      orderId: pi.id,
+      customerId: pi.customer?.toString() || null,
+      userId,
+      orderDate: new Date().toISOString(),
+      amount: { 
+        total: (pi.amount || 0) / 100,
+        subtotal: (pi.amount || 0) / 100,
+      },
+      currency: pi.currency,
+      paymentStatus: pi.status,
+      paymentMethod: [pi.payment_method_types?.[0] || 'card'],
+      billingDetails: null,
+      metadata: pi.metadata || {},
+      email: userEmail,
+      createdAt: new Date().toISOString(),
+      status: "pending",
+      shippingAddress: {
+        line1: shippingAddress.line1 || '',
+        line2: shippingAddress.line2 || '',
+        city: shippingAddress.city || '',
+        state: shippingAddress.state || '',
+        postal_code: shippingAddress.postal_code || '',
+        country: shippingAddress.country || '',
+      },
+      shipping: {
+        status: "preparing",
+        trackingNumber: null,
+        carrier: null,
+        updatedAt: new Date().toISOString(),
+      },
+    };
+
+    // Write to Firestore
+    const batch = writeBatch(db);
+    
+    // Add to orders collection with explicit ID
+    const orderRef = doc(db, "orders", pi.id);
+    batch.set(orderRef, orderData);
+    
+    // Add to user orders if authenticated or has email
+    if (userId !== "guest-user" || userEmail) {
+      if (userId === "guest-user" && userEmail) {
+        const guestOrderRef = doc(db, `users/guest-user/orders/${pi.id}`);
+        batch.set(guestOrderRef, {...orderData, email: userEmail});
+        
+        const emailIndexRef = doc(db, `users/guest-user/email-index/${userEmail.toLowerCase()}`);
+        batch.set(emailIndexRef, {
+          orders: arrayUnion(pi.id),
+          updatedAt: new Date().toISOString()
+        }, {merge: true});
+      } else if (userId !== "guest-user") {
+        const userOrderRef = doc(db, `users/${userId}/orders/${pi.id}`);
+        batch.set(userOrderRef, {
+          orderId: pi.id,
+          createdAt: new Date().toISOString()
+        });
+      }
+    }
+
+    console.log("Committing payment intent order to Firestore:", pi.id);
+    await batch.commit();
+    console.log("Successfully saved payment intent order to Firestore:", pi.id);
+  } catch (error) {
+    console.error("Error processing payment intent:", error);
+    throw error;
+  }
 }
