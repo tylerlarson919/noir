@@ -72,15 +72,16 @@ export default function CheckoutForm() {
       <div className="mb-6">
         <h2 className="text-lg font-medium mb-4">Contact Information</h2>
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Email</label>
-          <input
+            <label htmlFor="email" className="block text-sm font-medium mb-1">Email</label>
+            <input
+            id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="youremail@example.com"
             className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
-          />
+            />
         </div>
 
         <div className="flex items-center mb-2">
