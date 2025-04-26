@@ -50,6 +50,7 @@ function CheckoutResultContent() {
     }
     
     const fetchOrderDetails = async () => {
+      console.log("Fetching order details for payment intent:", paymentIntentId);
       try {
         const orderDoc = await getDoc(doc(db, "orders", paymentIntentId!));
         if (orderDoc.exists()) {
