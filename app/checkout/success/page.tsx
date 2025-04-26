@@ -4,8 +4,9 @@
 import { useEffect, Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { doc, getDoc, DocumentData } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
+import { useCart } from "@/context/CartContext";          
 
 // Define types for order details
 interface OrderItem {
@@ -42,8 +43,8 @@ function CheckoutResultContent() {
   const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
+  const { clearCart } = useCart();
+    useEffect(() => {
     if (!paymentIntentId) {
       router.replace("/checkout");
       return;
@@ -55,10 +56,12 @@ function CheckoutResultContent() {
         const orderDoc = await getDoc(doc(db, "orders", paymentIntentId!));
         if (orderDoc.exists()) {
           setOrderDetails(orderDoc.data() as OrderDetails);
-          console.log("order details from db:", orderDoc.data());
+          console.log("order details set");
+          clearCart();
           setLoading(false);
         } else {
           setError("Order not found.");
+          setLoading(false);
         }
       } catch {
         setError("Error fetching order details.");
