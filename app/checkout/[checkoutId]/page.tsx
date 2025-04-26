@@ -37,7 +37,7 @@ export default function CheckoutPage() {
   // Create payment intent and get client secret
   useEffect(() => {
     if (!items.length) return;
-
+  
     const fetchPaymentIntent = async () => {
       try {
         const response = await fetch("/api/create-checkout-session", {
@@ -45,12 +45,13 @@ export default function CheckoutPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             items,
-            userId: user?.uid || null,
-            customerEmail: user?.email || "",
+            userId: user?.uid || "guest-user",
+            // don’t send an empty string for email
+            ...(user?.email ? { customerEmail: user.email } : {}),
             checkoutId,
           }),
         });
-
+  
         const data = await response.json();
         setClientSecret(data.checkoutSessionClientSecret);
       } catch (error) {
@@ -59,7 +60,7 @@ export default function CheckoutPage() {
         setLoading(false);
       }
     };
-
+  
     fetchPaymentIntent();
   }, [items, user, checkoutId]);
 

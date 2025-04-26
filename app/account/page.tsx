@@ -2,15 +2,12 @@
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import AddressModal from "@/components/account/AddressModal";
-import { doc, onSnapshot } from "firebase/firestore";
+import { collection, query, where, orderBy, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
 
 export default function AccountPage() {
   const { user, logout, loading } = useAuth();
-  const [showAddressModal, setShowAddressModal] = useState(false);
   const router = useRouter();
-  const [address, setAddress] = useState<any>(null);
   const [orders, setOrders] = useState<any[]>([]);
 
   useEffect(() => {
@@ -21,26 +18,22 @@ export default function AccountPage() {
 
   useEffect(() => {
     if (!user) return;
-    const ref = doc(db, "users", user.uid, "data", "address");
-    const unsub = onSnapshot(ref, (snap) => {
-      setAddress(snap.exists() ? snap.data() : null);
+    
+    // Use collection query instead of a specific document
+    const ordersQuery = query(
+      collection(db, "orders"),
+      where("userId", "==", user.uid),
+      orderBy("createdAt", "desc")
+    );
+    
+    const unsubOrders = onSnapshot(ordersQuery, (querySnapshot) => {
+      const ordersArray = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setOrders(ordersArray);
     });
-    return () => unsub();
-  }, [user]);
-
-  useEffect(() => {
-    if (!user) return;
-    const ordersRef = doc(db, "users", user.uid, "data", "orders");
-    const unsubOrders = onSnapshot(ordersRef, (snap) => {
-      if (snap.exists()) {
-        const ordersData = snap.data();
-        // Convert orders object to array if needed
-        const ordersArray = ordersData.orders || [];
-        setOrders(ordersArray);
-      } else {
-        setOrders([]);
-      }
-    });
+    
     return () => unsubOrders();
   }, [user]);
 
@@ -67,8 +60,8 @@ export default function AccountPage() {
         View all your orders and manage your account information.
       </p>
 
-      <div className="flex flex-col md:flex-row gap-10 mb-20">
-        <div className="w-full md:w-2/3">
+      <div className="flex mb-20">
+        <div className="w-full">
           <div className="flex justify-between items-center mb-4 text-sm font-medium">
             <h2>ORDERS</h2>
             <button
@@ -84,7 +77,7 @@ export default function AccountPage() {
                 {orders.map((order, index) => (
                   <div key={index} className="border-b border-gray-200 pb-4">
                     <p className="font-medium">
-                      Order #{order.id || index + 1}
+                      Order #{order.id ? order.id.substring(3) : (index + 1)}
                     </p>
                     <p className="text-sm text-gray-600">
                       Date: {order.date || "N/A"}
@@ -102,38 +95,7 @@ export default function AccountPage() {
             )}
           </div>
         </div>
-
-        <div className="w-full md:w-1/3">
-          <div className="flex justify-between items-center mb-4 text-sm font-medium">
-            <h2>PRIMARY ADDRESS</h2>
-            <button
-              onClick={() => setShowAddressModal(true)}
-              className="w-fit py-2 px-6 bg-dark1 dark:bg-white button-grow-subtle text-white dark:text-black transition-color duration-300 rounded-sm text-sm font-medium"
-            >
-              MANAGE
-            </button>
-          </div>
-          <div className="border-t border-gray-200 pt-6">
-            {address ? (
-              <>
-                <p className="mb-1">{address.row1}</p>
-                <p className="mb-1 text-gray-600 text-sm">
-                  {address.city}, {address.zip}, {address.country}
-                </p>
-                {address.notes && (
-                  <p className="mb-8 text-gray-600 text-sm">{address.notes}</p>
-                )}
-              </>
-            ) : (
-              <p className="text-gray-600 mb-8">No address saved</p>
-            )}
-          </div>
-        </div>
       </div>
-
-      {showAddressModal && (
-        <AddressModal onClose={() => setShowAddressModal(false)} />
-      )}
     </div>
   );
 }

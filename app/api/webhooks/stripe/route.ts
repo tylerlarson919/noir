@@ -160,7 +160,6 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     
     const orderData = {
       orderId: session.id,
-      customerId: session.customer?.toString() || null,
       userId,
       orderDate: new Date().toISOString(),
       amount: { 
@@ -171,14 +170,12 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       paymentStatus: session.payment_status,
       items: orderItems,
       paymentMethod: session.payment_method_types,
-      billingDetails: session.customer_details || null,
       metadata: Object.entries(session.metadata || {}).reduce((acc, [key, value]) => {
         // Only include string values and convert other types to strings
         acc[key] = typeof value === 'string' ? value : String(value);
         return acc;
       }, {} as Record<string, string>),
       email: session.customer_details?.email || '',
-      createdAt: new Date().toISOString(),
       status: "pending",
       shippingAddress: {
         line1: shippingAddress.line1 || '',
@@ -202,38 +199,9 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       console.log("📝 Preparing order data for Firestore:", JSON.stringify(orderData, null, 2));
       
       // Use a batch with adminDb instead
-      const batch = adminDb.batch();
-      
-      // Add to orders collection with explicit ID
       const orderRef = adminDb.collection('orders').doc(session.id);
-      batch.set(orderRef, sanitizedOrderData);
+      await orderRef.set(sanitizedOrderData);
       
-      // Add to user orders if authenticated or has email
-      if (userId !== "guest-user" || userEmail) {
-        if (userId === "guest-user" && userEmail) {
-          // Store the order in a way we can look it up later by email
-          const guestOrderRef = adminDb.collection('users').doc('guest-user').collection('orders').doc(session.id);
-  batch.set(guestOrderRef, sanitizedOrderData); 
-          
-          // Also create an index by email for easy lookup during account creation
-          const emailIndexRef = adminDb.collection('users').doc('guest-user').collection('email-index').doc(userEmail.toLowerCase());
-          batch.set(emailIndexRef, {
-            orders: FieldValue.arrayUnion(session.id),
-            updatedAt: new Date().toISOString()
-          }, {merge: true});
-        } else if (userId !== "guest-user") {
-          // If user is authenticated, add to their orders collection
-          const userOrderRef = adminDb.collection('users').doc(userId).collection('orders').doc(session.id);
-          batch.set(userOrderRef, {
-            orderId: session.id,
-            createdAt: new Date().toISOString()
-          });
-        }
-      }
-
-      // Commit with additional logging
-      console.log("Committing order batch to Firestore:", session.id);
-      await batch.commit();
       console.log("Successfully saved order to Firestore:", session.id);
     } catch (dbError) {
       console.error("Firebase write failed:", dbError);
@@ -256,6 +224,16 @@ async function handlePaymentIntentSucceeded(pi: Stripe.PaymentIntent) {
     const metadata = pi.metadata || {};
     const userId = metadata.userId || "guest-user";
     const userEmail = metadata.userEmail || pi.receipt_email || '';
+
+    // Extract cart items from metadata if available
+    let orderItems = [];
+    try {
+      if (metadata.cartItems) {
+        orderItems = JSON.parse(metadata.cartItems);
+      }
+    } catch (e) {
+      console.error("Error parsing cart items from metadata:", e);
+    }
     
     // Define a properly typed address object with defaults
     const shippingAddress: Record<string, string> = {};
@@ -285,7 +263,6 @@ async function handlePaymentIntentSucceeded(pi: Stripe.PaymentIntent) {
     
     const orderData = {
       orderId: pi.id,
-      customerId: pi.customer?.toString() || null,
       userId,
       orderDate: new Date().toISOString(),
       amount: { 
@@ -295,14 +272,14 @@ async function handlePaymentIntentSucceeded(pi: Stripe.PaymentIntent) {
       currency: pi.currency,
       paymentStatus: pi.status,
       paymentMethod: [pi.payment_method_types?.[0] || 'card'],
-      billingDetails: null,
+      items: orderItems,
       metadata: Object.entries(pi.metadata || {}).reduce((acc, [key, value]) => {
         // Only include string values and convert other types to strings
+        if (key === 'cartItems') return acc;
         acc[key] = typeof value === 'string' ? value : String(value);
         return acc;
       }, {} as Record<string, string>),
       email: userEmail,
-      createdAt: new Date().toISOString(),
       status: "pending",
       shippingAddress: {
         line1: shippingAddress.line1 || '',
@@ -322,35 +299,9 @@ async function handlePaymentIntentSucceeded(pi: Stripe.PaymentIntent) {
     const sanitizedOrderData = sanitizeData(orderData);
 
     // Write to Firestore
-    const batch = adminDb.batch();
-    
-    // Add to orders collection with explicit ID
     const orderRef = adminDb.collection('orders').doc(pi.id);
-    batch.set(orderRef, sanitizedOrderData);
+    await orderRef.set(sanitizedOrderData);
     
-    // Add to user orders if authenticated or has email
-    if (userId !== "guest-user" || userEmail) {
-      if (userId === "guest-user" && userEmail) {
-        const guestOrderRef = adminDb.collection('users').doc('guest-user').collection('orders').doc(pi.id);
-        batch.set(guestOrderRef, sanitizedOrderData);
-        
-        // In handlePaymentIntentSucceeded function
-        const emailIndexRef = adminDb.collection('users').doc('guest-user').collection('email-index').doc(userEmail.toLowerCase());
-        batch.set(emailIndexRef, {
-          orders: FieldValue.arrayUnion(pi.id),
-          updatedAt: new Date().toISOString()
-        }, {merge: true});
-      } else if (userId !== "guest-user") {
-        const userOrderRef = adminDb.collection('users').doc(userId).collection('orders').doc(pi.id);
-        batch.set(userOrderRef, {
-          orderId: pi.id,
-          createdAt: new Date().toISOString()
-        });
-      }
-    }
-
-    console.log("Committing payment intent order to Firestore:", pi.id);
-    await batch.commit();
     console.log("Successfully saved payment intent order to Firestore:", pi.id);
   } catch (error) {
     console.error("Error processing payment intent:", error);

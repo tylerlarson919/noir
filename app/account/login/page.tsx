@@ -11,9 +11,21 @@ import { recoverGuestOrders } from "@/lib/recoverGuestOrders";
 export default function LoginPage() {
   const router = useRouter();
   const { user, login, loginWithGoogle, resetPassword } = useAuth();
+
+
   useEffect(() => {
     if (user) {
-      router.push("/account");
+      // Check for redirect parameter in URL
+      const params = new URLSearchParams(window.location.search);
+      const redirectPath = params.get('redirect');
+      
+      if (redirectPath) {
+        // Redirect to the specified path (e.g., /checkout)
+        router.push(redirectPath);
+      } else {
+        // Default redirect to account page
+        router.push("/account");
+      }
     }
   }, [user, router]);
 

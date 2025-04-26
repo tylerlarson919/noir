@@ -74,7 +74,7 @@ export default function CheckoutForm() {
       <div className="mb-6">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-lg font-semibold">Contact</h2>
-          <Link href="/login?redirect=/checkout" className="text-sm text-blue-600 hover:underline">
+          <Link href="/accounts/login?redirect=/checkout" className="text-sm text-blue-600 hover:underline">
             Log in
           </Link>
         </div>

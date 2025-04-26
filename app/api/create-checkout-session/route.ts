@@ -30,21 +30,31 @@ export async function POST(req: NextRequest) {
       .reduce((sum, item) => sum + item.price * item.quantity, 0) * 100; // in cents
 
     // Create PaymentIntent with automatic methods (PaymentElement)
-    const paymentIntent = await stripe.paymentIntents.create({
+    const params: Stripe.PaymentIntentCreateParams = {
       amount: Math.round(amount),
       currency: "usd",
       automatic_payment_methods: { enabled: true },
       metadata: {
         userId: userId || "guest",
         checkoutId: checkoutId || "unknown",
-        userEmail: customerEmail || "",
-        // Remove the complex orderSummary JSON and replace with simpler data
         itemCount: items.length.toString(),
-        totalAmount: (amount / 100).toString()
-        // Don't include the detailed items array in metadata
+        totalAmount: (amount / 100).toString(),
+        cartItems: JSON.stringify(items.map(item => ({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          size: item.size,
+          color: item.color,
+          image: item.image
+        }))),
+        // only include if set
+        ...(customerEmail ? { userEmail: customerEmail } : {}),
       },
-      receipt_email: customerEmail,
-    });
+      // only send receipt_email if we actually got one
+      ...(customerEmail ? { receipt_email: customerEmail } : {}),
+    };
+    const paymentIntent = await stripe.paymentIntents.create(params);
 
     return NextResponse.json({
       checkoutSessionClientSecret: paymentIntent.client_secret,
