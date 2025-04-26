@@ -4,7 +4,6 @@
 import { useEffect, Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { useCart } from "@/context/CartContext";
 import { doc, getDoc, DocumentData } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
 
@@ -55,6 +54,7 @@ function CheckoutResultContent() {
         const orderDoc = await getDoc(doc(db, "orders", paymentIntentId!));
         if (orderDoc.exists()) {
           setOrderDetails(orderDoc.data() as OrderDetails);
+          console.log("order details from db:", orderDoc.data());
         } else {
           setError("Order not found.");
         }
@@ -65,24 +65,6 @@ function CheckoutResultContent() {
 
     fetchOrderDetails();
   }, [paymentIntentId]);
-
-  const fetchOrderDetails = async () => {
-    try {
-      setLoading(true);
-      const orderDoc = await getDoc(doc(db, "orders", paymentIntentId as string));
-      if (orderDoc.exists()) {
-        setOrderDetails(orderDoc.data() as OrderDetails);
-      } else {
-        console.log("Order not found with ID:", paymentIntentId);
-        setError("Order not found. Please contact customer support.");
-      }
-    } catch (err) {
-      console.error("Error fetching order details:", err);
-      setError("There was a problem retrieving your order details.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (loading) {
     return (
