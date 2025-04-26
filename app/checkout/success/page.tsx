@@ -44,7 +44,8 @@ function CheckoutResultContent() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const { clearCart } = useCart();
-    useEffect(() => {
+  
+  useEffect(() => {
     if (!paymentIntentId) {
       router.replace("/checkout");
       return;
@@ -52,24 +53,50 @@ function CheckoutResultContent() {
     
     const fetchOrderDetails = async () => {
       console.log("Fetching order details for payment intent:", paymentIntentId);
-      try {
-        const orderDoc = await getDoc(doc(db, "orders", paymentIntentId!));
-        if (orderDoc.exists()) {
-          setOrderDetails(orderDoc.data() as OrderDetails);
-          console.log("order details set");
-          clearCart();
-          setLoading(false);
-        } else {
-          setError("Order not found.");
-          setLoading(false);
+      setLoading(true);
+      
+      // Add a 3-second initial delay before first attempt
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      
+      // Add retry logic - try up to 3 times with increasing delays
+      let attempts = 0;
+      const maxAttempts = 3;
+      
+      while (attempts < maxAttempts) {
+        try {
+          const orderDoc = await getDoc(doc(db, "orders", paymentIntentId!));
+          if (orderDoc.exists()) {
+            setOrderDetails(orderDoc.data() as OrderDetails);
+            console.log("order details set");
+            clearCart();
+            setLoading(false);
+            return; // Success, exit the function
+          } else {
+            // If we're on the last attempt, show the error
+            if (attempts === maxAttempts - 1) {
+              setError("Order not found.");
+              setLoading(false);
+              return;
+            }
+          }
+        } catch (err) {
+          // If we're on the last attempt, show the error
+          if (attempts === maxAttempts - 1) {
+            setError("Error fetching order details.");
+            setLoading(false);
+            return;
+          }
         }
-      } catch {
-        setError("Error fetching order details.");
+        
+        attempts++;
+        // Wait longer between each retry (2s, then 3s)
+        await new Promise(resolve => setTimeout(resolve, 2000 * attempts));
+        console.log(`Retry attempt ${attempts} for order details...`);
       }
     };
-
+  
     fetchOrderDetails();
-  }, [paymentIntentId]);
+  }, [paymentIntentId, router, clearCart]);
 
   if (loading) {
     return (
