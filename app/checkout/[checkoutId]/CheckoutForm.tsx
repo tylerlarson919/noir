@@ -12,7 +12,7 @@ import {
 } from "@stripe/react-stripe-js";
 import { useParams } from "next/navigation";
 import "./checkout.css";
-import { Link } from "@heroUI/link"
+import Link from "next/link";
 export default function CheckoutForm() {
   const [email, setEmail] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -149,7 +149,7 @@ export default function CheckoutForm() {
 
       {/* Payment */}
       <div className="mb-6">
-        <h2 className="text-lg font-medium mb-2">Payment</h2>
+        <h2 className="text-lg font-semibold mb-2">Payment</h2>
         <p 
           className="text-gray-500 dark:text-gray-300 mb-4 text-[14.88px]" 
           style={{ fontFamily: 'Apple System, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}
@@ -195,15 +195,23 @@ export default function CheckoutForm() {
           {errorMessage}
         </div>
       )}
-
-      <button
-        type="submit"
-        disabled={!stripe || isProcessing || !billingDetailsComplete}
-        className="w-full py-3 bg-green-600 text-white rounded font-medium 
-        hover:bg-green-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
-      >
-        {isProcessing ? "Processing..." : "Pay now"}
-      </button>
+      <div className="flex flex-col gap-4">
+        <button
+          type="submit"
+          disabled={!stripe || isProcessing || !billingDetailsComplete}
+          className="w-full py-3 bg-green-600 text-white rounded font-medium 
+          hover:bg-green-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+        >
+          {isProcessing ? "Processing..." : "Pay now"}
+        </button>
+        <p 
+          className="text-sm"
+          style={{ fontFamily: 'Apple System, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}
+        >
+          Your info will be saved to a Link account. By continuing, you agree to acknowledge their
+           <Link href="https://link.com/privacy" className="text-gray-500 dark:text-gray-300 hover:text-blue-700 hover:dark:text-blue-500 transition-colors underline"> Privacy Policy</Link>.
+        </p>
+      </div>
     </form>
   );
 }
