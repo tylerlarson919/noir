@@ -56,6 +56,7 @@ function CheckoutResultContent() {
         if (orderDoc.exists()) {
           setOrderDetails(orderDoc.data() as OrderDetails);
           console.log("order details from db:", orderDoc.data());
+          setLoading(false);
         } else {
           setError("Order not found.");
         }
