@@ -45,49 +45,52 @@ function CheckoutResultContent() {
   const [error, setError] = useState<string | null>(null);
   const { clearCart } = useCart();
   
-  const fetchOrderDetails = async () => {
-    console.log("Fetching order details for payment intent:", paymentIntentId);
-    setLoading(true);
-    
-    // Add a 2-second initial delay before first attempt
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    try {
-      const orderDoc = await getDoc(doc(db, "orders", paymentIntentId!));
-      if (orderDoc.exists()) {
-        const data = orderDoc.data() as OrderDetails;
-        setOrderDetails(data);
-        console.log("order details set");
-        clearCart();
-        setLoading(false);
-        return; // Success, exit the function
-      } else {
-        // Add retry logic if needed
-        setError("Order not found. Please refresh or contact customer support.");
-        setLoading(false);
-      }
-    } catch (err) {
-      console.error("Error fetching order:", err);
-      setError("Error fetching order details. Please try again.");
-      setLoading(false);
-    }
-  };
-  
-  // Then modify the useEffect to add a cleanup or dependency
   useEffect(() => {
     if (!paymentIntentId) {
       router.replace("/checkout");
       return;
     }
     
-    let isActive = true;
+    // Create a flag to track if we've already fetched data successfully
+    let hasFetched = false;
     
-    fetchOrderDetails();
-    
-    return () => {
-      isActive = false; // Cleanup to prevent state updates after unmount
+    const fetchOrderDetails = async () => {
+      // Skip if we've already successfully fetched
+      if (hasFetched) return;
+      
+      console.log("Fetching order details for payment intent:", paymentIntentId);
+      
+      try {
+        const orderDoc = await getDoc(doc(db, "orders", paymentIntentId));
+        if (orderDoc.exists()) {
+          const data = orderDoc.data() as OrderDetails;
+          setOrderDetails(data);
+          console.log("order details set");
+          clearCart();
+          setLoading(false);
+          hasFetched = true; // Mark as fetched successfully
+        } else {
+          setError("Order not found. Please refresh or contact customer support.");
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error("Error fetching order:", err);
+        setError("Error fetching order details. Please try again.");
+        setLoading(false);
+      }
     };
-  }, [paymentIntentId, router, clearCart])
+    
+    // Add a small delay before first fetch
+    const timer = setTimeout(() => {
+      fetchOrderDetails();
+    }, 1000);
+    
+    // Clean up function
+    return () => {
+      clearTimeout(timer);
+    };
+    
+  }, []); 
 
   if (loading) {
     return (
