@@ -1,7 +1,15 @@
 import React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const Footer: React.FC = () => {
+  const pathname = usePathname();
+
+  // Prevent rendering on checkout pages
+  if (pathname.startsWith('/checkout')) {
+    return null;
+  }
+
   return (
     <footer className="bg-white dark:bg-darkaccent border-b">
       <div className="container mx-auto px-4 py-12">

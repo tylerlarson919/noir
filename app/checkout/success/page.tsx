@@ -132,10 +132,10 @@ function CheckoutResultContent() {
 
           <div className="flex gap-4">
             <button
-              onClick={() => router.push("/checkout")}
+              onClick={() => router.push("/cart")}
               className="mt-6 px-8 py-3 bg-dark1 dark:bg-white text-white dark:text-black button-grow-subtle rounded-sm"
             >
-              Try Again
+              Back to Cart
             </button>
             <button
               onClick={() => router.push("/")}

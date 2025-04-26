@@ -16,6 +16,11 @@ export const Navbar = () => {
   const [prevScrollY, setPrevScrollY] = useState(0);
   const pathname = usePathname();
   const isMainPage = pathname === "/";
+  
+  // Prevent rendering on checkout pages
+  if (pathname.startsWith('/checkout')) {
+    return null;
+  }
 
   useEffect(() => {
     if (isHeaderOpen) {
