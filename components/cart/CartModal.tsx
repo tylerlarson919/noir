@@ -55,7 +55,7 @@ export default function CartModal() {
       />
       <div
         aria-modal="true"
-        className={`bg-white dark:bg-darkaccent w-full max-w-md h-full overflow-y-auto p-6 relative ${
+        className={`bg-white dark:bg-darkaccent w-full max-w-full md:max-w-lg h-full overflow-y-auto p-6 relative ${
           isClosing ? "drawer-right-animation-exit" : "drawer-right-animation"
         }`}
         ref={menuRef}
@@ -98,35 +98,31 @@ export default function CartModal() {
                 >
                   <Link
                     href={`/all/products/${item.id}`}
-                    className="flex gap-4 flex-grow cursor-pointer"
+                    className="flex flex-grow cursor-pointer"
                   >
-                    <div className="relative h-20 w-20 flex-shrink-0">
+                    <div className="relative w-[80px] h-[80px] bg-white rounded mr-4">
+                      <div className="absolute top-0 right-0 w-5 h-5 bg-gray-500 rounded-full flex items-center justify-center text-white text-xs">
+                        {item.quantity}
+                      </div>
                       <Image
                         fill
                         alt={item.name}
-                        className="object-contain"
+                        className="object-contain rounded-lg p-1"
                         src={item.image}
                       />
                     </div>
                     <div className="flex-grow relative">
-                      <h3 className="font-medium uppercase">{item.name}</h3>
-                      <p className="text-sm">${item.price.toFixed(2)}</p>
+                      <div className="flex justify-between items-start gap-2">
+                        <h3 className="font-medium">{item.name}</h3>
+                        <p className="font-medium">${item.price.toFixed(2)}</p>
+                      </div>
                       <div className="text-xs text-textaccentdarker dark:text-textaccent">
-                        <p>Size: {item.size}</p>
-                        <div className="flex items-center">
-                          <span>Color: </span>
-                          <div
-                            className="ml-1 w-3 h-3 rounded-full"
-                            style={{ backgroundColor: item.color.hex }}
-                          />
-                          <span className="ml-1">{item.color.name}</span>
-                        </div>
-                        <p>Quantity: {item.quantity}</p>
+                        <p>{item.size} / {item.color?.name}</p>
                       </div>
 
                       <div className="flex justify-end items-center absolute bottom-0 right-0 left-0">
                         <button
-                          className="text-sm underline"
+                          className="text-sm underline hover:text-red-800 transition-colors"
                           onClick={(e) => {
                             e.preventDefault(); // Prevent the Link from being followed
                             removeItem(item.id, item.size, item.color.name);
@@ -144,14 +140,14 @@ export default function CartModal() {
               <div className="font-medium space-y-3 absolute left-6 right-6 bottom-8 text-sm text-textaccentdarker dark:text-textaccent flex flex-col items-center">
                 Taxes & shipping calculated at checkout.
                 <Link
-                  className="block w-full py-2 px-4 mt-2 border border-black/30 dark:border-textaccent/30 text-center button-grow-subtle rounded-sm"
+                  className="block w-full py-4 px-4 mt-2 border border-black/30 dark:border-textaccent/30 text-center button-grow-subtle rounded-sm"
                   href="/cart"
                   onClick={handleClose}
                 >
                   VIEW SHOPPING BAG
                 </Link>
                 <Link
-                  className="block w-full py-2 px-4 bg-dark1 dark:bg-white text-white dark:text-black text-center button-grow-subtle rounded-sm"
+                  className="block w-full py-4 px-4 bg-dark1 dark:bg-white text-white dark:text-black text-center button-grow-subtle rounded-sm"
                   href="/checkout"
                   onClick={handleClose}
                 >

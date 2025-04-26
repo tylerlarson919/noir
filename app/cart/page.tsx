@@ -72,7 +72,7 @@ export default function CartPage() {
                     YOUR SELECTION ({items.length})
                   </h2>
                   <button
-                    className="text-sm text-red-600/50 hover:underline"
+                    className="text-sm text-red-600/50 hover:underline hover:text-red-600/70 transition-colors"
                     onClick={clearCart}
                   >
                     Clear All
@@ -98,66 +98,63 @@ export default function CartPage() {
                           />
                         </div>
                         <div className="flex-grow space-y-1">
-                          <h3 className="font-medium text-md">{item.name}</h3>
-                          <p className="text-md font-light">
-                            ${item.price.toFixed(2)}
-                          </p>
-                          <div className="text-sm text-textaccentdarker dark:text-textaccent grid grid-cols-2 sm:grid-cols-3 gap-2">
-                            <p>Size: {item.size}</p>
-                            <div className="flex items-center">
-                              <span>Color: </span>
-                              <div
-                                className="ml-1 w-3 h-3 rounded-full"
-                                style={{ backgroundColor: item.color.hex }}
-                              />
-                              <span className="ml-1">{item.color.name}</span>
+                          <div className="flex justify-between items-top gap-2">
+                            <h3 className="font-medium text-md">{item.name}</h3>
+                              <p className="font-medium text-md">
+                                ${item.price.toFixed(2)}
+                              </p>
+                          </div>
+
+                          <div className="text-xs text-textaccentdarker dark:text-textaccent">
+                            <p>{item.size} / {item.color?.name}</p>
+                          </div>
+                          <div className="flex flex-row items-center justify-between gap-4 pt-2">
+                            <div className="flex items-center border rounded-sm">
+                              <button
+                                aria-label="Decrease quantity"
+                                className="px-2 py-1 border-r hover:bg-gray-100 dark:hover:bg-white/30 transition rounded-sm"
+                                onClick={() =>
+                                  handleQuantityChange(
+                                    item.id,
+                                    item.size,
+                                    item.color.name,
+                                    item.quantity - 1,
+                                  )
+                                }
+                              >
+                                -
+                              </button>
+                              <span className="px-3 py-1">{item.quantity}</span>
+                              <button
+                                aria-label="Increase quantity"
+                                className="px-2 py-1 border-l hover:bg-gray-100 dark:hover:bg-white/30 transition rounded-sm"
+                                onClick={() =>
+                                  handleQuantityChange(
+                                    item.id,
+                                    item.size,
+                                    item.color.name,
+                                    item.quantity + 1,
+                                  )
+                                }
+                              >
+                                +
+                              </button>
                             </div>
+                            <button
+                              className="text-sm text-red-600/40 hover:text-red-600/60 transition-colors"
+                              onClick={() =>
+                                removeItem(item.id, item.size, item.color?.name)
+                              }
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-5">
+                                <path fillRule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.07a3 3 0 0 1-2.991 2.77H8.084a3 3 0 0 1-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 0 1-.256-1.478A48.567 48.567 0 0 1 7.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 0 1 3.369 0c1.603.051 2.815 1.387 2.815 2.951Zm-6.136-1.452a51.196 51.196 0 0 1 3.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 0 0-6 0v-.113c0-.794.609-1.428 1.364-1.452Zm-.355 5.945a.75.75 0 1 0-1.5.058l.347 9a.75.75 0 1 0 1.499-.058l-.346-9Zm5.48.058a.75.75 0 1 0-1.498-.058l-.347 9a.75.75 0 0 0 1.5.058l.345-9Z" clipRule="evenodd" />
+                              </svg>
+                            </button>
                           </div>
                         </div>
                       </Link>
 
-                      <div className="flex flex-row items-center justify-between gap-3 pt-2 sm:ml-10">
-                        <div className="flex items-center border rounded-sm">
-                          <button
-                            aria-label="Decrease quantity"
-                            className="px-3 py-1 border-r hover:bg-gray-100 dark:hover:bg-white/30 transition"
-                            onClick={() =>
-                              handleQuantityChange(
-                                item.id,
-                                item.size,
-                                item.color.name,
-                                item.quantity - 1,
-                              )
-                            }
-                          >
-                            -
-                          </button>
-                          <span className="px-4 py-1">{item.quantity}</span>
-                          <button
-                            aria-label="Increase quantity"
-                            className="px-3 py-1 border-l hover:bg-gray-100 dark:hover:bg-white/30 transition"
-                            onClick={() =>
-                              handleQuantityChange(
-                                item.id,
-                                item.size,
-                                item.color.name,
-                                item.quantity + 1,
-                              )
-                            }
-                          >
-                            +
-                          </button>
-                        </div>
-
-                        <button
-                          className="text-sm text-red-600/50 hover:underline"
-                          onClick={() =>
-                            removeItem(item.id, item.size, item.color.name)
-                          }
-                        >
-                          Remove
-                        </button>
-                      </div>
+                      
                     </div>
                   ))}
                 </div>
@@ -189,7 +186,7 @@ export default function CartPage() {
                 </div>
 
                 <div className="border-t pt-4">
-                  <div className="flex justify-between font-semibold text-md mb-6">
+                  <div className="flex justify-between font-semibold text-lg mb-6">
                     <span>Total</span>
                     <span>${totalPrice.toFixed(2)}</span>
                   </div>
@@ -206,7 +203,7 @@ export default function CartPage() {
                       onClick={handleCheckout}
                       disabled={!items.length}
                     >
-                      CHECKOUT
+                      Checkout
                     </button>
                   </div>
                 </div>

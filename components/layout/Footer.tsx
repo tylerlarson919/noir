@@ -13,7 +13,7 @@ const Footer: React.FC = () => {
 
   return (
     <footer className="bg-white dark:bg-darkaccent border-b">
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 pt-12 pb-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <h3 className="text-sm uppercase tracking-wider mb-2">ELEGANCE</h3>

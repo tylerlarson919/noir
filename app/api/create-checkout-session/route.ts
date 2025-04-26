@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
           price: item.price,
           quantity: item.quantity,
           size: item.size,
-          color: item.color,
+          color: item.color.name,
           image: item.image
         }))),
         // only include if set

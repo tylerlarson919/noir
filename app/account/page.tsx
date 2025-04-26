@@ -77,7 +77,7 @@ export default function AccountPage() {
                 {orders.map((order, index) => (
                   <div key={index} className="border-b border-gray-200 pb-4">
                     <p className="font-medium">
-                      Order #{order.id ? order.id.substring(3) : (index + 1)}
+                      Order #{order.id ? order.id.substring(3, 9) : (index + 1)}
                     </p>
                     <p className="text-sm text-gray-600">
                       Date: {order.date || "N/A"}

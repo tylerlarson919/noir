@@ -199,13 +199,12 @@ function CheckoutResultContent() {
 
         <h1 className="text-3xl md:text-4xl font-semibold">Order Confirmed!</h1>
         <p className="text-lg my-4">
-          Thank you for your purchase. We&apos;ve received your order and will
-          begin processing it right away.
+          Thank you for your purchase. You will receive email confirmation shortly.
         </p>
 
         {orderDetails && (
           <div className="my-4 p-4 border rounded w-full text-left">
-            <h2 className="text-lg font-medium mb-2">Order Details</h2>
+            <h2 className="text-lg font-medium mb-2">Order #{paymentIntentId?.substring(3, 9)}</h2>
             <p><span className="font-medium">Order ID:</span> {paymentIntentId}</p>
             <p><span className="font-medium">Status:</span> {orderDetails.shipping?.status || "Processing"}</p>
             <p><span className="font-medium">Amount:</span> ${(orderDetails.amount?.total || 0).toFixed(2)}</p>
@@ -213,11 +212,26 @@ function CheckoutResultContent() {
             {orderDetails.items && (
               <div className="mt-2">
                 <p className="font-medium">Items:</p>
-                <ul className="list-disc pl-5">
+                <div className="flex flex-row items-center">
                   {orderDetails.items.map((item: OrderItem, index: number) => (
-                    <li key={index}>{item.name} x {item.quantity}</li>
+                    <div key={index}>
+                      <div className="relative w-[80px] h-[80px] bg-white rounded mr-4">
+                        image
+                      </div>
+                      <div className="flex flex-col">
+                        <div className="flex justify-between items-start gap-2">
+                          <h3 className="font-medium">{item.name}</h3>
+                          <p className="font-medium">${item.price.toFixed(2)}</p>
+                        </div>
+                        <div className="text-xs text-textaccentdarker dark:text-textaccent flex flex-col">
+                          <p>{item.size} / {item.color?.name}</p>
+                          <p>Quantity: {item.quantity}</p>
+                        </div>
+                      </div>
+                      {item.name} x {item.quantity}
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
             )}
           </div>
@@ -226,8 +240,7 @@ function CheckoutResultContent() {
         <div className="my-8 p-6 bg-white/30 dark:bg-dark1/30 backdrop-blur-md rounded-sm shadow-sm w-full">
           <h2 className="text-xl font-medium mb-4">What&apos;s Next?</h2>
           <p className="mb-4">
-            You will receive an email confirmation with your order details and
-            tracking information once your order ships. You can also track the status of your order{" "}
+            You will receive an email confirmation shortly. You can track the status of your order{" "}
             <Link href={`/track-order?id=${paymentIntentId}`} className="underline">
               here
             </Link>
