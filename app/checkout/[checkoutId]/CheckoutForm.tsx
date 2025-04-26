@@ -11,6 +11,8 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import { useParams } from "next/navigation";
+import "./checkout.css";
+import { Link } from "@heroUI/link"
 export default function CheckoutForm() {
   const [email, setEmail] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -27,7 +29,6 @@ export default function CheckoutForm() {
   const checkoutId = params.checkoutId as string;
   const stripe = useStripe();
   const elements = useElements();
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -65,55 +66,60 @@ export default function CheckoutForm() {
         }
       };
     
+      
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Contact Information */}
       <div className="mb-6">
-        <h2 className="text-lg font-medium mb-4">Contact Information</h2>
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="text-lg font-semibold">Contact</h2>
+          <Link href="/login?redirect=/checkout" className="text-sm text-blue-600 hover:underline">
+            Log in
+          </Link>
+        </div>
         <div className="mb-4">
-            <label htmlFor="email" className="block text-sm font-medium mb-1">Email</label>
-            <input
+          <label 
+            htmlFor="email" 
+            className="block font-regular mb-1 text-gray-700 text-[14.88px]"
+            style={{ fontFamily: 'Apple System, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}
+          >
+            Email
+          </label>
+          <input
             id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="youremail@example.com"
-            className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 drop-shadow-sm"
             required
-            />
-        </div>
-
-        <div className="flex items-center mb-2">
-          <input
-            type="checkbox"
-            id="receiveEmails"
-            checked={receiveEmails}
-            onChange={(e) => setReceiveEmails(e.target.checked)}
-            className="mr-2"
           />
-          <label htmlFor="receiveEmails" className="text-sm text-gray-600 dark:text-gray-300">
-            Email me with news and offers
-          </label>
         </div>
-
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="receiveTexts"
-            checked={receiveTexts}
-            onChange={(e) => setReceiveTexts(e.target.checked)}
-            className="mr-2"
-          />
-          <label htmlFor="receiveTexts" className="text-sm text-gray-600 dark:text-gray-300">
-            Text me with news and offers
+        <div className="checkbox-wrapper-4 -ml-2">
+          <input className="inp-cbx" id="morning" type="checkbox" checked={receiveEmails} onChange={(e) => setReceiveEmails(e.target.checked)} />
+          <label className="cbx" htmlFor="morning">
+            <span>
+              <svg width="12px" height="10px">
+                <use xlinkHref="#check-4"></use>
+              </svg>
+            </span>
+            <span className="text-[14.88px] text-[#30313D]"
+              style={{ fontFamily: 'Apple System, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}
+            >
+              Email me with news and offers
+            </span>
           </label>
+          <svg className="inline-svg">
+            <symbol id="check-4" viewBox="0 0 12 10">
+              <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+            </symbol>
+          </svg>
         </div>
       </div>
 
       {/* Shipping */}
       <div className="mb-6">
-        <h2 className="text-lg font-medium mb-4">Shipping Address</h2>
+        <h2 className="text-lg font-semibold mb-2">Shipping</h2>
         <AddressElement 
           options={{
             mode: 'shipping',
@@ -124,6 +130,11 @@ export default function CheckoutForm() {
               phone: {
                 required: 'always',
               },
+            },
+            defaultValues: {
+              address: {
+                country: 'US',
+              }, 
             },
           }}
           onChange={(event) => {
@@ -138,8 +149,11 @@ export default function CheckoutForm() {
 
       {/* Payment */}
       <div className="mb-6">
-        <h2 className="text-lg font-medium mb-4">Payment</h2>
-        <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+        <h2 className="text-lg font-medium mb-2">Payment</h2>
+        <p 
+          className="text-gray-500 dark:text-gray-300 mb-4 text-[14.88px]" 
+          style={{ fontFamily: 'Apple System, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}
+        >
           All transactions are secure and encrypted.
         </p>
         <div className="border rounded p-4 mb-4">
@@ -148,19 +162,31 @@ export default function CheckoutForm() {
       </div>
 
       {/* Remember me */}
-      <div className="mb-6">
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="rememberMe"
-            checked={rememberMe}
-            onChange={(e) => setRememberMe(e.target.checked)}
-            className="mr-2"
-          />
-          <label htmlFor="rememberMe" className="text-sm text-gray-600 dark:text-gray-300">
+      <div className="checkbox-wrapper-4 mb-6 -ml-2">
+        <input
+          className="inp-cbx"
+          id="remember-me"
+          type="checkbox"
+          checked={rememberMe}
+          onChange={(e) => setRememberMe(e.target.checked)}
+        />
+        <label className="cbx" htmlFor="remember-me">
+          <span>
+            <svg width="12px" height="10px">
+              <use xlinkHref="#check-5"></use>
+            </svg>
+          </span>
+          <span className="text-[14.88px] text-[#30313D]"
+            style={{ fontFamily: 'Apple System, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}
+          >
             Save my info for faster checkout
-          </label>
-        </div>
+          </span>
+        </label>
+        <svg className="inline-svg">
+          <symbol id="check-5" viewBox="0 0 12 10">
+            <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+          </symbol>
+        </svg>
       </div>
 
       {/* Error messages */}

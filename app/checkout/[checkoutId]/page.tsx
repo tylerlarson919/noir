@@ -10,7 +10,7 @@ import { Elements } from "@stripe/react-stripe-js";
 import CheckoutForm from "./CheckoutForm";
 import { useParams, useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
-
+import Link from "next/link";
 // Initialize Stripe outside of component
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
@@ -79,12 +79,39 @@ export default function CheckoutPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="py-6 flex justify-between items-center border-b border-gray-200">
+        <Link aria-label="Noir Home" href="/">
+          <Image
+            alt="Noir Logo"
+            className="h-auto dark:invert transition-all duration-300"
+            height={32}
+            src="/noir-logo-full.svg"
+            width={100}
+            priority={true}
+          />
+        </Link>
+        <Link
+            aria-label="Open shopping cart"
+            className="relative p-2 text-black hover:text-black/70 dark:text-white dark:hover:text-white/70 transition-colors"
+            href="/cart"
+          >
+            <svg
+              className="size-8"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clipRule="evenodd"
+                d="M7.5 6v.75H5.513c-.96 0-1.764.724-1.865 1.679l-1.263 12A1.875 1.875 0 0 0 4.25 22.5h15.5a1.875 1.875 0 0 0 1.865-2.071l-1.263-12a1.875 1.875 0 0 0-1.865-1.679H16.5V6a4.5 4.5 0 1 0-9 0ZM12 3a3 3 0 0 0-3 3v.75h6V6a3 3 0 0 0-3-3Zm-3 8.25a3 3 0 1 0 6 0v-.75a.75.75 0 0 1 1.5 0v.75a4.5 4.5 0 1 1-9 0v-.75a.75.75 0 0 1 1.5 0v.75Z"
+                fillRule="evenodd"
+              />
+            </svg>
+          </Link>
+      </div>
       <div className="flex flex-col lg:flex-row gap-8 py-10">
         {/* Left column */}
         <div className="lg:w-3/5">
-          <h1 className="text-2xl font-medium mb-6 hidden lg:block">
-            Checkout
-          </h1>
 
           {/* Express checkout */}
           <div className="mb-8">
