@@ -29,47 +29,57 @@ export default function CheckoutPage() {
   const checkoutId = params.checkoutId as string;
   const [isSummaryVisible, setIsSummaryVisible] = useState(false);
   const [isShippingPolicyOpen, setIsShippingPolicyOpen] = useState(false);
-  const [shippingAddress, setShippingAddress] = useState<{country:string;region?:string}>({
-      country: 'US'
-    });
+  const [shippingAddress, setShippingAddress] = useState<{country:string;region?:string}|null>(null);
+
 
   useEffect(() => {
     setIsDarkMode(resolvedTheme === "dark");
   }, [resolvedTheme]);
 
   // Create payment intent and get client secret
+  // 1) create PI immediately on items (no shipping)
   useEffect(() => {
     if (!items.length) return;
-  
-    const fetchPaymentIntent = async () => {
-      try {
-        const response = await fetch("/api/create-checkout-session", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            items,
-            userId: user?.uid || "guest-user",
-            // don’t send an empty string for email
-            ...(user?.email ? { customerEmail: user.email } : {}),
-            checkoutId,
-            shipping: {
-              country: shippingAddress.country,      // from your AddressElement onChange
-              region: shippingAddress.region || null // if ES subdivisions
-            },
-          }),
-        });
-  
-        const data = await response.json();
-        setClientSecret(data.checkoutSessionClientSecret);
-      } catch (error) {
-        console.error("Error creating payment intent:", error);
-      } finally {
-        setLoading(false);
-      }
+    const createIntent = async () => {
+      const payload: any = {
+        items,
+        userId: user?.uid || "guest-user",
+        ...(user?.email && { customerEmail: user.email }),
+        checkoutId
+      };
+      const res = await fetch("/api/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const { checkoutSessionClientSecret } = await res.json();
+      setClientSecret(checkoutSessionClientSecret);
+      setLoading(false);
     };
+    createIntent();
+  }, [items, user, checkoutId]);
   
-    fetchPaymentIntent();
-  }, [items, user, checkoutId, shippingAddress]);
+  // 2) re-create PI with shipping once user enters address
+  useEffect(() => {
+    if (shippingAddress === null) return;
+    const recreateWithShipping = async () => {
+      const payload: any = {
+        items,
+        userId: user?.uid || "guest-user",
+        ...(user?.email && { customerEmail: user.email }),
+        checkoutId,
+        shipping: shippingAddress
+      };
+      const res = await fetch("/api/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const { checkoutSessionClientSecret } = await res.json();
+      setClientSecret(checkoutSessionClientSecret);
+    };
+    recreateWithShipping();
+  }, [shippingAddress]);
 
   // Ensure we have a checkout ID in the URL
   useEffect(() => {

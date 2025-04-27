@@ -24,13 +24,15 @@ type RequestBody = {
 
 export async function POST(req: NextRequest) {
   try {
-    const { items, userId, customerEmail, checkoutId, shipping }: RequestBody & { shipping: { country: string; region?: string } } = await req.json();
-
+    const { items, userId, customerEmail, checkoutId, shipping }:
+      RequestBody & { shipping?: { country: string; region?: string } }
+      = await req.json();
     // compute subtotal
     const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
     // compute shipping
-    const { fee: shippingFee, currency } = getShippingFee(shipping.country, shipping.region || null, subtotal);
-
+    const { fee: shippingFee, currency } = shipping
+      ? getShippingFee(shipping.country, shipping.region || null, subtotal)
+      : { fee: 0, currency: "usd" };
     const totalAmount = Math.round((subtotal + shippingFee) * 100); // in cents
 
     // Calculate total
