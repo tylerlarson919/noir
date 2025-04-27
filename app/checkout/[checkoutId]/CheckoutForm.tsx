@@ -13,7 +13,11 @@ import {
 import { useParams } from "next/navigation";
 import "./checkout.css";
 import Link from "next/link";
-export default function CheckoutForm() {
+export default function CheckoutForm({
+  onShippingChange
+  }: {
+    onShippingChange: (addr: {country:string;region?:string}) => void
+  }) {
   const [email, setEmail] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -138,11 +142,14 @@ export default function CheckoutForm() {
               }, 
             },
           }}
-          onChange={(event) => {
-            if (event.complete) {
-              setBillingDetailsComplete(true);
-            } else {
-              setBillingDetailsComplete(false);
+          onChange={event => {
+            if (event.complete) setBillingDetailsComplete(true);
+            else setBillingDetailsComplete(false);
+            if (event.value?.address) {
+              onShippingChange({
+                country: event.value.address.country!,
+                region: event.value.address.state || undefined
+              });
             }
           }}
         />

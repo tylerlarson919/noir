@@ -75,30 +75,49 @@ export default function ShippingPolicyModal({ isOpen, onClose }: ShippingPolicyM
           </p>
           
           <p className="mb-4 italic">
-            If you wish to cancel an order, you must notify Scuffers by emailing to
+            If you wish to cancel an order, you must notify Noir by emailing to
             support@noir-clothing.com.
             <br />
             * Cancelations are only available for unfulffiled orders
           </p>
           
           <h3 className="font-semibold mt-6 mb-2 underline">SHIPPING FEES:</h3>
-          <p className="underline bold">United States</p>
+          <p className="underline font-bold">United States</p>
           <ul className="list-disc pl-5 mb-6">
             <li>STANDARD 5-10 DAYS - $9 | FREE &gt; 100 USD</li>
           </ul>
-          <p className="underline bold">Canada</p>
+          <p className="underline font-bold">Canada</p>
           <ul className="list-disc pl-5 mb-6">
-            <li>STANDARD 5-10 DAYS - $9 | FREE &gt; 100 USD</li>
+            <li>STANDARD 5-10 DAYS - $7 | FREE &gt; 100 CAD</li>
           </ul>
-          <p className="underline bold">Rest of the World</p>
+          <p className="underline font-bold">Spain (Mainland & Balearic Islands) & Portugal</p>
           <ul className="list-disc pl-5 mb-6">
-            <li>STANDARD 5-10 DAYS - $9 | FREE &gt; 100 USD</li>
+            <li>STANDARD 8-12 DAYS - $4 | FREE &gt; 100€</li>
           </ul>
-          
-          <h3 className="font-semibold mt-6 mb-2 underline">SHIPPING COSTS</h3>
-          <p className="mb-4">
-            Shipping costs are calculated at checkout based on your location and the weight of your order.
-          </p>
+          <p className="underline font-bold">Spain (Canary Islands, Ceuta & Melilla)</p>
+          <ul className="list-disc pl-5 mb-6">
+            <li>STANDARD 8-12 DAYS - $9.50 | FREE &gt; 100€</li>
+          </ul>
+          <p className="underline font-bold">European Countries (Andorra, Germany, Italy, Belgium, Denmark, France, Austria, Netherlands & Luxemburg)</p>
+          <ul className="list-disc pl-5 mb-6">
+            <li>STANDARD 5-10 DAYS - $5 | FREE &gt; 100€</li>
+          </ul>
+          <p className="underline font-bold">Switzerland</p>
+          <ul className="list-disc pl-5 mb-6">
+            <li>STANDARD 5-10 DAYS - $20 | FREE &gt; 200€</li>
+          </ul>
+          <p className="underline font-bold">United Kingdom</p>
+          <ul className="list-disc pl-5 mb-6">
+            <li>STANDARD 5-10 DAYS - $10 | FREE &gt; 100£</li>
+          </ul>
+          <p className="underline font-bold">*Rest of European Countries</p>
+          <ul className="list-disc pl-5 mb-6">
+            <li>STANDARD 5-10 DAYS - $8 | FREE &gt; 100€</li>
+          </ul>
+          <p className="underline font-bold">Rest of the World</p>
+          <ul className="list-disc pl-5 mb-6">
+            <li>STANDARD 5-10 DAYS - $10 | FREE &gt; 100€</li>
+          </ul>
           
           <p className="mb-4">
             At all times Noir will work to offer the best service in terms of international shipments, 

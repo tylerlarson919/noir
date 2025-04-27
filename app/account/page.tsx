@@ -66,8 +66,8 @@ export default function AccountPage() {
 
         <div className="flex mb-20">
           <div className="w-full">
-            <div className="flex justify-between items-center mb-4 text-sm font-medium">
-              <h2>ORDERS</h2>
+            <div className="flex justify-between items-center mb-4 text-2xl font-medium">
+              <h2>Orders</h2>
               <button
                 onClick={() => (window.location.href = "/track")}
                 className="w-fit py-2 px-6 bg-dark1 dark:bg-white button-grow-subtle text-white dark:text-black transition-color duration-300 rounded-sm text-sm font-medium"
@@ -77,21 +77,67 @@ export default function AccountPage() {
             </div>
             <div className="border-t border-gray-200 pt-6">
               {orders.length > 0 ? (
-                <div className="space-y-4">
+                <div className="space-y-6">
                   {orders.map((order, index) => (
-                    <div key={index} className="border-b border-gray-200 pb-4">
-                      <p className="font-medium">
-                        Order #{order.id ? order.id.substring(0, 6) : (index + 1)}
+                    <div key={index} className="border border-gray-200 rounded-lg p-6">
+                      <div className="flex justify-between items-center mb-1">
+                        <h2 className="text-xl font-medium">Order #{order.id ? order.id.substring(3, 9) : (index + 1)}</h2>
+                        <span className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm capitalize">
+                          {order.shipping?.status || order.status || "Processing"}
+                        </span>
+                      </div>
+                      
+                      <p className="text-sm text-gray-600 mb-1">
+                        {
+                          order.orderDate ? 
+                            (() => {
+                              try {
+                                const date = new Date(order.orderDate);
+                                return date.toLocaleDateString('en-US', {
+                                  year: 'numeric', 
+                                  month: 'short', 
+                                  day: 'numeric'
+                                });
+                              } catch (err) {
+                                console.error("Date parsing error:", err);
+                                return order.orderDate;
+                              }
+                            })() : 
+                            "N/A"
+                        }
                       </p>
-                      <p className="text-sm text-gray-600">
-                        Date: {order.createdAt ? new Date(order.createdAt.toDate()).toLocaleDateString() : "N/A"}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        Status: {order.status || "Processing"}
-                      </p>
-                      <p className="text-sm text-gray-600 mt-2">
-                        Items: {order.items ? order.items.length : 0}
-                      </p>
+                      <div className="divide-y">
+                        {order.items && order.items.map((item: any, idx: number) => (
+                          <div key={idx} className="py-4 flex justify-between items-center">
+                            <div className="flex items-center">
+                              <div className="w-16 h-16 mr-4 bg-gray-100 rounded-md overflow-hidden">
+                                <img
+                                  src={item.image || "/placeholder.png"}
+                                  alt={item.name}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                              <div>
+                                <h3 className="font-medium">{item.name}</h3>
+                                <p className="text-sm text-gray-600">
+                                  {item.size} / {item.color?.name || item.color}
+                                </p>
+                                <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+                              </div>
+                            </div>
+                            <p className="font-medium">${parseFloat(item.price).toFixed(2)}</p>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      <div className="border-t pt-4 mt-4">
+                        <div className="flex justify-between items-center">
+                          <h3 className="text-lg font-bold">Total</h3>
+                          <p className="text-lg font-bold">
+                            ${(order.amount?.total || order.amount?.subtotal || 0).toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>

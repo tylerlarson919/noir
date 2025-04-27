@@ -29,6 +29,9 @@ export default function CheckoutPage() {
   const checkoutId = params.checkoutId as string;
   const [isSummaryVisible, setIsSummaryVisible] = useState(false);
   const [isShippingPolicyOpen, setIsShippingPolicyOpen] = useState(false);
+  const [shippingAddress, setShippingAddress] = useState<{country:string;region?:string}>({
+      country: 'US'
+    });
 
   useEffect(() => {
     setIsDarkMode(resolvedTheme === "dark");
@@ -49,6 +52,10 @@ export default function CheckoutPage() {
             // don’t send an empty string for email
             ...(user?.email ? { customerEmail: user.email } : {}),
             checkoutId,
+            shipping: {
+              country: shippingAddress.country,      // from your AddressElement onChange
+              region: shippingAddress.region || null // if ES subdivisions
+            },
           }),
         });
   
@@ -62,7 +69,7 @@ export default function CheckoutPage() {
     };
   
     fetchPaymentIntent();
-  }, [items, user, checkoutId]);
+  }, [items, user, checkoutId, shippingAddress]);
 
   // Ensure we have a checkout ID in the URL
   useEffect(() => {
@@ -171,7 +178,7 @@ export default function CheckoutPage() {
                 },
               }}
             >
-              <CheckoutForm />
+              <CheckoutForm  onShippingChange={setShippingAddress} />
             </Elements>
           )}
         </div>
