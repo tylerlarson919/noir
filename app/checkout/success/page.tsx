@@ -142,7 +142,7 @@ function CheckoutResultContent() {
             customer support team.
           </p>
           <p className="text-center text-gray-600 text-sm">
-            If your payment was processed but you're seeing this message, please email us at 
+            If your payment was processed but you&apos;re seeing this message, please email us at 
             <a href="mailto:support@yourdomain.com" className="ml-1 underline">
               support@yourdomain.com
             </a>
