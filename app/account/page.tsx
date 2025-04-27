@@ -18,7 +18,7 @@ export default function AccountPage() {
 
   useEffect(() => {
     if (!user) return;
-    
+
     // Use collection query instead of a specific document
     const ordersQuery = query(
       collection(db, "orders"),
@@ -32,7 +32,7 @@ export default function AccountPage() {
         ...doc.data()
       }));
       setOrders(ordersArray);
-    });
+    },);
     
     return () => unsubOrders();
   }, [user]);
@@ -77,13 +77,16 @@ export default function AccountPage() {
                 {orders.map((order, index) => (
                   <div key={index} className="border-b border-gray-200 pb-4">
                     <p className="font-medium">
-                      Order #{order.id ? order.id.substring(3, 9) : (index + 1)}
+                      Order #{order.id ? order.id.substring(0, 6) : (index + 1)}
                     </p>
                     <p className="text-sm text-gray-600">
-                      Date: {order.date || "N/A"}
+                      Date: {order.createdAt ? new Date(order.createdAt.toDate()).toLocaleDateString() : "N/A"}
                     </p>
                     <p className="text-sm text-gray-600">
                       Status: {order.status || "Processing"}
+                    </p>
+                    <p className="text-sm text-gray-600 mt-2">
+                      Items: {order.items ? order.items.length : 0}
                     </p>
                   </div>
                 ))}
