@@ -7,7 +7,7 @@ import Link from "next/link";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
 import { useCart } from "@/context/CartContext";          
-
+import Image from "next/image";
 // Define types for order details
 interface OrderItem {
   name: string;
@@ -172,87 +172,92 @@ function CheckoutResultContent() {
 
   // Success case
   return (
-    <div className="mx-4 flex flex-col justify-start items-center">
-      <div className="flex flex-col w-full h-full items-center justify-start mt-28 gap-4 max-w-[800px] text-center">
-        <div className="mb-6 text-green-600">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-24 w-24 mx-auto"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M5 13l4 4L19 7"
-            />
-          </svg>
-        </div>
-
-        <h1 className="text-3xl md:text-4xl font-semibold">Order Confirmed!</h1>
-        <p className="text-lg my-4">
-          Thank you for your purchase. You will receive email confirmation shortly.
-        </p>
-
-        {orderDetails && (
-          <div className="my-4 p-4 border rounded w-full text-left">
-            <h2 className="text-lg font-medium mb-2">Order #{paymentIntentId?.substring(3, 9)}</h2>
-            <p><span className="font-medium">Order ID:</span> {paymentIntentId}</p>
-            <p><span className="font-medium">Status:</span> {orderDetails.shipping?.status || "Processing"}</p>
-            <p><span className="font-medium">Amount:</span> ${(orderDetails.amount?.total || 0).toFixed(2)}</p>
-            {orderDetails.email && <p><span className="font-medium">Email:</span> {orderDetails.email}</p>}
-            {orderDetails.items && (
-              <div className="mt-2">
-                <p className="font-medium">Items:</p>
-                <div className="flex flex-row items-center">
-                  {orderDetails.items.map((item: OrderItem, index: number) => (
-                    <div key={index}>
-                      <div className="relative w-[80px] h-[80px] bg-white rounded mr-4">
-                        image
-                      </div>
-                      <div className="flex flex-col">
-                        <div className="flex justify-between items-start gap-2">
-                          <h3 className="font-medium">{item.name}</h3>
-                          <p className="font-medium">${item.price.toFixed(2)}</p>
-                        </div>
-                        <div className="text-xs text-textaccentdarker dark:text-textaccent flex flex-col">
-                          <p>{item.size} / {item.color?.name}</p>
-                          <p>Quantity: {item.quantity}</p>
-                        </div>
-                      </div>
-                      {item.name} x {item.quantity}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        <div className="my-8 p-6 bg-white/30 dark:bg-dark1/30 backdrop-blur-md rounded-sm shadow-sm w-full">
-          <h2 className="text-xl font-medium mb-4">What&apos;s Next?</h2>
-          <p className="mb-4">
-            You will receive an email confirmation shortly. You can track the status of your order{" "}
-            <Link href={`/track-order?id=${paymentIntentId}`} className="underline">
-              here
-            </Link>
-            .
-          </p>
-          <p className="text-sm text-gray-600 dark:text-gray-300">
-            If you have any questions about your order, please contact our
-            customer support team.
-          </p>
-        </div>
-
-        <button
-          onClick={() => router.push("/")}
-          className="mt-6 px-8 py-3 bg-dark1 dark:bg-white text-white dark:text-black button-grow-subtle rounded-sm"
+    <div className="mx-auto flex flex-col items-center max-w-[800px] px-4 py-10">
+      <div className="text-green-600 mb-6">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-16 w-16 mx-auto"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
         >
-          Continue Shopping
-        </button>
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M5 13l4 4L19 7"
+          />
+        </svg>
       </div>
+  
+      <h1 className="text-4xl font-bold mb-4">Order Confirmed!</h1>
+      <p className="text-lg mb-8">
+        Thank you for your order! You will receive email confirmation shortly.
+      </p>
+  
+      {orderDetails && (
+        <div className="my-4 p-6 border border-gray-200 rounded-lg w-full">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-medium">Order #{paymentIntentId?.substring(3, 9)}</h2>
+            <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+              {orderDetails.shipping?.status || "Preparing"}
+            </span>
+          </div>
+          
+          <div className="divide-y">
+            {orderDetails.items && orderDetails.items.map((item, index) => (
+              <div key={index} className="py-4 flex justify-between items-center">
+                <div className="flex items-center">
+                  <div className="w-16 h-16 mr-4 bg-gray-100 rounded-md overflow-hidden">
+                    <Image
+                      src={item.image || "/placeholder.png"}
+                      alt={item.name}
+                      width={64}
+                      height={64}
+                      className="object-cover"
+                    />
+                  </div>
+                  <div>
+                    <h3 className="font-medium">{item.name}</h3>
+                    <p className="text-sm text-gray-600">
+                      {item.size} / {item.color?.name}
+                    </p>
+                    <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+                  </div>
+                </div>
+                <p className="font-medium">${item.price.toFixed(2)}</p>
+              </div>
+            ))}
+          </div>
+          
+          <div className="border-t pt-4 mt-4">
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg font-bold">Total</h3>
+              <p className="text-lg font-bold">${(orderDetails.amount?.total || 0).toFixed(2)}</p>
+            </div>
+          </div>
+        </div>
+      )}
+  
+      <div className="my-8 w-full">
+        <h2 className="text-2xl font-bold mb-4 text-center">What's Next?</h2>
+        <p className="text-center mb-2">
+          You will receive an email confirmation shortly. You can track the status of your order{" "}
+          <Link href="/account" className="underline font-medium">
+            here
+          </Link>.
+        </p>
+        <p className="text-center text-gray-600 text-sm">
+          If you have any questions about your order, please contact our customer support team.
+        </p>
+      </div>
+  
+      <button
+        onClick={() => router.push("/")}
+        className="mt-4 px-8 py-3 bg-black text-white font-medium rounded-md hover:bg-gray-800 transition"
+      >
+        Continue Shopping
+      </button>
     </div>
   );
 }

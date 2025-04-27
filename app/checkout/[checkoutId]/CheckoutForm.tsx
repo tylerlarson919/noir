@@ -92,6 +92,7 @@ export default function CheckoutForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 drop-shadow-sm"
+            style={{ fontFamily: 'Apple System, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}
             required
           />
         </div>
