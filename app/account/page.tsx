@@ -23,7 +23,7 @@ export default function AccountPage() {
     const ordersQuery = query(
       collection(db, "orders"),
       where("userId", "==", user.uid),
-      orderBy("createdAt", "desc")
+      orderBy("shipping.updatedAt", "desc")
     );
     
     const unsubOrders = onSnapshot(
