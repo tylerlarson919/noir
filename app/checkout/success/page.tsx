@@ -240,7 +240,7 @@ function CheckoutResultContent() {
       )}
   
       <div className="my-8 w-full">
-        <h2 className="text-2xl font-bold mb-4 text-center">What's Next?</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center">What&apos;s Next?</h2>
         <p className="text-center mb-2">
           You will receive an email confirmation shortly. You can track the status of your order{" "}
           <Link href="/account" className="underline font-medium">
