@@ -14,17 +14,6 @@ export default function SizeChartModal({ isOpen, onClose, productSizeChart }: Si
     const modalContentRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const handleEscKey = (event: KeyboardEvent) => {
-            if (isOpen && event.key === 'Escape') {
-            onClose();
-            }
-        };
-        
-        window.addEventListener('keydown', handleEscKey);
-        return () => window.removeEventListener('keydown', handleEscKey);
-    }, [isOpen, onClose]);
-
-    useEffect(() => {
         if (isOpen && !isRendered) {
           setIsRendered(true);
           // Small delay to ensure DOM is updated before starting animation
