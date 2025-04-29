@@ -44,19 +44,21 @@ export default function SizeChartModal({ isOpen, onClose, productSizeChart }: Si
           className={`fixed inset-0 bg-black z-50 flex items-center justify-center p-4 backdrop-blur-md transition-all duration-300 ease-in-out ${
             isAnimating ? 'bg-opacity-50 opacity-100' : 'bg-opacity-0 opacity-0 pointer-events-none'
           }`}
-          onClick={onClose}
-          role="dialog"
-          aria-modal="true"
-          onKeyDown={(e) => e.key === 'Escape' && onClose()}
-          tabIndex={0}
+          aria-hidden={!isOpen}
         >
+          <button 
+            className="absolute inset-0 w-full h-full cursor-default bg-transparent"
+            onClick={onClose}
+            aria-label="Close modal"
+          />
           <div 
             ref={modalContentRef}
             className={`rounded-lg shadow-xl w-fit max-h-[80vh] flex flex-col transition-transform duration-300 relative ${
               isAnimating ? 'scale-100' : 'scale-95'
             }`}
-            onClick={(e) => e.stopPropagation()}
-            role="presentation"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="size-chart-title"
           >
             <div className="flex justify-between items-center p-4 absolute top-0 right-0 left-0">
               <h2 className="text-xl font-semibold text-black">Size Chart</h2>

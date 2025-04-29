@@ -42,19 +42,21 @@ export default function ShippingPolicyModal({ isOpen, onClose }: ShippingPolicyM
           className={`fixed inset-0 bg-black z-50 flex items-center justify-center p-4 backdrop-blur-md transition-all duration-300 ease-in-out ${
             isAnimating ? 'bg-opacity-50 opacity-100' : 'bg-opacity-0 opacity-0 pointer-events-none'
           }`}
-          onClick={onClose}
-          role="dialog"
-          aria-modal="true"
-          onKeyDown={(e) => e.key === 'Escape' && onClose()}
-          tabIndex={0}
+          aria-hidden={!isOpen}
         >
+          <button 
+            className="absolute inset-0 w-full h-full cursor-default bg-transparent"
+            onClick={onClose}
+            aria-label="Close modal"
+          />
           <div 
             ref={modalContentRef}
             className={`bg-white dark:bg-darkaccent rounded-lg shadow-xl max-w-4/5 lg:max-w-3xl w-full max-h-[80vh] flex flex-col transition-transform duration-300 ${
               isAnimating ? 'scale-100' : 'scale-95'
             }`}
-            onClick={(e) => e.stopPropagation()}
-            role="presentation"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="shipping-policy-title"
           >
             <div className="flex justify-between items-center p-4 border-b dark:border-textaccent/40">
               <h2 className="text-xl font-semibold">Shipping policy</h2>
