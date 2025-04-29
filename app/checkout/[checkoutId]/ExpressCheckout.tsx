@@ -98,15 +98,19 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items 
             // Let Stripe handle redirects for auth if needed
             if (paymentIntent?.status === 'requires_action') {
               console.log('Payment requires authentication');
-              // Stripe will handle the redirect flow automatically
               const { error } = await stripe.confirmCardPayment(clientSecret);
               if (error) {
                 console.error('Payment authentication failed:', error);
                 setError(error.message || 'Payment authentication failed');
+              } else if (paymentIntent?.id) {
+                // Successful authentication, redirect to success page
+                window.location.href = `${window.location.origin}/checkout/success?payment_intent=${paymentIntent.id}`;
               }
+            } else if (paymentIntent?.id) {
+              // Immediate success without authentication, redirect to success page
+              window.location.href = `${window.location.origin}/checkout/success?payment_intent=${paymentIntent.id}`;
             }
             
-            // Success is handled by Stripe redirect
             console.log('Payment successful!');
           }
         } catch (err) {
