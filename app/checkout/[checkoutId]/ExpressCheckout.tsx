@@ -22,29 +22,27 @@ export default function ExpressCheckout({ amount, currency, clientSecret }: Prop
 
   useEffect(() => {
     if (!stripe || !clientSecret) return;
+    setReady(false);
+    setPr(null);
+    setError(null);
     
     try {
-      // Create payment request with the current options
-      const paymentRequest = stripe.paymentRequest(paymentRequestOptions);
-      
-      // Add shipping address change handler
-      paymentRequest.on('shippingaddresschange', async (event) => {
-        try {
-          // In a real app, you would calculate shipping based on the address
-          const update: PaymentRequestUpdateOptions = {
-            total: { label: 'Order Total', amount },
-            displayItems: [
-              { label: 'Subtotal', amount: amount - 1000 },
-              { label: 'Shipping', amount: 1000 }
-            ]
-          };
-          event.updateWith(update);
-        } catch (err) {
-          console.error('Shipping address update error:', err);
-          event.updateWith({ status: 'invalid_shipping_address' });
-        }
-      });
-      
+        // Create payment request with the current options
+        const paymentRequest = stripe.paymentRequest(paymentRequestOptions);
+        
+        // Add a cancel event handler to clear state when popup is closed
+        paymentRequest.on('cancel', () => {
+          console.log('Payment request cancelled by user');
+          // Force reset of the payment request
+          setPr(null);
+          setReady(false);
+          
+          // Small delay before allowing to create a new payment request
+          setTimeout(() => {
+            setReady(true);
+            setPr(paymentRequest);
+          }, 100);
+        });
       // Improve the payment method handler
       paymentRequest.on('paymentmethod', async (event) => {
         try {
@@ -87,29 +85,29 @@ export default function ExpressCheckout({ amount, currency, clientSecret }: Prop
       // Check if the browser supports this payment method
       paymentRequest.canMakePayment()
         .then(result => {
-          if (result) {
+            if (result) {
             console.log('Can make payment:', result);
             setPr(paymentRequest);
             setReady(true);
-          } else {
+            } else {
             console.log('Cannot make payment - methods not available');
             setReady(false);
-          }
+            }
         })
         .catch(err => {
-          console.error('canMakePayment error:', err);
-          setError('Could not initialize express checkout');
+            console.error('canMakePayment error:', err);
+            setError('Could not initialize express checkout');
         });
     } catch (err) {
-      console.error('Express checkout setup error:', err);
-      setError('Express checkout initialization failed');
+        console.error('Express checkout setup error:', err);
+        setError('Express checkout initialization failed');
     }
-    
     // Cleanup function remains the same
     return () => {
-      setReady(false);
-      setPr(null);
-    };
+        setReady(false);
+        setPr(null);
+        setError(null);
+      };
   }, [stripe, amount, currency, clientSecret, paymentRequestOptions]);
 
   if (error) {
@@ -120,6 +118,20 @@ export default function ExpressCheckout({ amount, currency, clientSecret }: Prop
     );
   }
 
-  if (!ready || !pr) return null
-  return <PaymentRequestButtonElement options={{ paymentRequest: pr }} />
+  if (!ready || !pr) return null;
+
+  return (
+    <div key={`pr-${clientSecret.substring(0, 8)}`}> {/* Add a key to force re-render */}
+      <PaymentRequestButtonElement 
+        options={{ 
+          paymentRequest: pr,
+          style: {
+            paymentRequestButton: {
+              height: '48px'
+            }
+          }
+        }}
+      />
+    </div>
+  );
 }
