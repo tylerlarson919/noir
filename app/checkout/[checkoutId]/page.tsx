@@ -32,6 +32,7 @@ export default function CheckoutPage() {
   const [shippingAddress, setShippingAddress] = useState<{country:string;region?:string}|null>(null);
   const [shippingFee, setShippingFee] = useState(0);
   const [orderTotal, setOrderTotal] = useState(totalPrice);
+  const addressRef = useRef<{country: string; region?: string} | null>(null);
 
 
   useEffect(() => {
@@ -69,40 +70,44 @@ export default function CheckoutPage() {
   // Update when shipping changes and API returns
   useEffect(() => {
     if (shippingAddress === null) return;
-    const recreateWithShipping = async () => {
-      setLoading(true);
-      const payload = {
-        items,
-        userId: user?.uid || "guest-user",
-        ...(user?.email && { customerEmail: user.email }),
-        checkoutId,
-        shipping: shippingAddress
+    
+    // Only call API if country or region has actually changed
+    if (addressRef.current?.country !== shippingAddress.country || 
+        addressRef.current?.region !== shippingAddress.region) {
+      
+      addressRef.current = shippingAddress;
+      
+      const recreateWithShipping = async () => {
+        setLoading(true);
+        const payload = {
+          items,
+          userId: user?.uid || "guest-user",
+          ...(user?.email && { customerEmail: user.email }),
+          checkoutId,
+          shipping: shippingAddress
+        };
+        
+        try {
+          const res = await fetch("/api/create-checkout-session", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          
+          const data = await res.json();
+          setClientSecret(data.checkoutSessionClientSecret);
+          
+          // Update shipping fee from API response
+          if (data.shippingFee !== undefined) {
+            setShippingFee(data.shippingFee);
+          }
+        } catch (error) {
+          console.error("Error updating shipping:", error);
+        } finally {
+          setLoading(false);
+        }
       };
       
-      try {
-        const res = await fetch("/api/create-checkout-session", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        
-        const data = await res.json();
-        setClientSecret(data.checkoutSessionClientSecret);
-        
-        // Update shipping fee from API response
-        if (data.shippingFee !== undefined) {
-          setShippingFee(data.shippingFee);
-        }
-      } catch (error) {
-        console.error("Error updating shipping:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    const addressRef = useRef(shippingAddress);
-      if (addressRef.current?.country !== shippingAddress.country || 
-        addressRef.current?.region !== shippingAddress.region) {
-      addressRef.current = shippingAddress;
       recreateWithShipping();
     } else {
       // If it's the same address, don't reload
