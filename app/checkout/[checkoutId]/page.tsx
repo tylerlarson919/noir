@@ -207,7 +207,7 @@ export default function CheckoutPage() {
               >
                 PayPal
               </button>
-              <ExpressCheckout amount={Math.round(orderTotal * 100)} currency={currency} />
+              <ExpressCheckout amount={Math.round(orderTotal * 100)} currency={currency} clientSecret={clientSecret}/>
             </div>
             <div className="flex items-center my-4">
               <div className="flex-grow h-px bg-gray-200 dark:bg-textaccent/40 " />
@@ -246,7 +246,7 @@ export default function CheckoutPage() {
               <div className="flex flex-row gap-3 items-center">
                 <span className="font-medium">Order Summary</span>
                 <svg 
-                  className={`w-5 h-5 transition-transform ${isSummaryVisible ? 'rotate-180' : ''}`} 
+                  className={`w-5 h-5 transition-transform ${isSummaryVisible ? 'rotate-180' : ''}`}
                   fill="none" 
                   stroke="currentColor" 
                   viewBox="0 0 24 24" 
