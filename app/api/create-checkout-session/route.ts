@@ -24,22 +24,32 @@ type RequestBody = {
 
 export async function POST(req: NextRequest) {
   try {
-    const { items, userId, customerEmail, checkoutId, shipping }:
-      RequestBody & { shipping?: { country: string; region?: string } }
-      = await req.json();
+    const { items, userId, customerEmail, checkoutId, shipping, paymentIntentId }:
+      RequestBody & { 
+        shipping?: { country: string; region?: string },
+        paymentIntentId?: string
+      } = await req.json();
+      
     // compute subtotal
     const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+    
     // compute shipping
     const { fee: shippingFee, currency } = shipping
       ? getShippingFee(shipping.country, shipping.region || null, subtotal)
       : { fee: 0, currency: "usd" };
+      
     const totalAmount = Math.round((subtotal + shippingFee) * 100); // in cents
-
-    // Calculate total
-    const amount = items
-      .reduce((sum, item) => sum + item.price * item.quantity, 0) * 100; // in cents
-
-    // Create PaymentIntent with automatic methods (PaymentElement)
+    
+    // If we have a shipping update only without changing payment intent
+    if (shipping && !paymentIntentId) {
+      // Just return the shipping fee without creating/updating payment intent
+      return NextResponse.json({
+        shippingFee: shippingFee,
+        currency: currency
+      });
+    }
+    
+    // Create a new payment intent
     const params: Stripe.PaymentIntentCreateParams = {
       amount: totalAmount,
       currency,
@@ -49,7 +59,7 @@ export async function POST(req: NextRequest) {
         userId: userId || "guest",
         checkoutId: checkoutId || "unknown",
         itemCount: items.length.toString(),
-        totalAmount: (amount / 100).toString(),
+        totalAmount: (totalAmount / 100).toString(),
         cartItems: JSON.stringify(items.map(item => ({
           id: item.id,
           name: item.name,

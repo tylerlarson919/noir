@@ -78,7 +78,6 @@ export default function CheckoutPage() {
       addressRef.current = shippingAddress;
       
       const recreateWithShipping = async () => {
-        setLoading(true);
         const payload = {
           items,
           userId: user?.uid || "guest-user",
@@ -95,8 +94,6 @@ export default function CheckoutPage() {
           });
           
           const data = await res.json();
-          setClientSecret(data.checkoutSessionClientSecret);
-          
           // Update shipping fee from API response
           if (data.shippingFee !== undefined) {
             setShippingFee(data.shippingFee);

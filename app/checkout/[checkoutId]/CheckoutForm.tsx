@@ -143,15 +143,18 @@ export default function CheckoutForm({
             },
           }}
           onChange={event => {
-            if (event.complete) setBillingDetailsComplete(true);
-            else setBillingDetailsComplete(false);
-            
-            // Only trigger shipping change if there's a complete address with country
-            if (event.complete && event.value?.address?.country) {
-              onShippingChange({
-                country: event.value.address.country,
-                region: event.value.address.state || undefined
-              });
+            if (event.complete) {
+              setBillingDetailsComplete(true);
+              
+              // Only trigger shipping change if there's a complete address with country
+              if (event.value?.address?.country) {
+                onShippingChange({
+                  country: event.value.address.country,
+                  region: event.value.address.state || undefined
+                });
+              }
+            } else {
+              setBillingDetailsComplete(false);
             }
           }}
         />
