@@ -14,7 +14,7 @@ export default function ExpressCheckout({ amount, currency, clientSecret }: Prop
     if (!stripe) return
     const paymentRequest = stripe.paymentRequest({
       country: "US",
-      currency,
+      currency: currency.toLowerCase(),
       total: { label: "Order Total", amount },
       requestPayerName: true,
       requestPayerEmail: true,
