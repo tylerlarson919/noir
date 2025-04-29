@@ -20,6 +20,7 @@ const stripePromise = loadStripe(
 
 export default function CheckoutPage() {
   const { totalPrice, items } = useCart();
+  const [currency, setCurrency] = useState("usd");
   const { user } = useAuth();
   const { resolvedTheme } = useTheme();
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -64,9 +65,10 @@ export default function CheckoutPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      const { checkoutSessionClientSecret, paymentIntentId: piId } = await res.json();
+      const { checkoutSessionClientSecret, paymentIntentId: piId, currency: respCurrency } = await res.json();
       setClientSecret(checkoutSessionClientSecret);
       setPaymentIntentId(piId || ""); // Store the payment intent ID
+      setCurrency(respCurrency);
       setLoading(false);
     };
     createIntent();
@@ -105,11 +107,10 @@ export default function CheckoutPage() {
             body: JSON.stringify(payload),
           });
           
-          const data = await res.json();
-          
-          // Update shipping fee from API response
-          if (data.shippingFee !== undefined) {
-            setShippingFee(data.shippingFee);
+          const { shippingFee: newFee, currency: respCurrency } = await res.json();
+          if (newFee!==undefined) {
+            setShippingFee(newFee);
+            setCurrency(respCurrency);
           }
         } catch (error) {
           console.error("Error updating shipping:", error);
@@ -206,7 +207,7 @@ export default function CheckoutPage() {
               >
                 PayPal
               </button>
-              <ExpressCheckout amount={Math.round(orderTotal * 100)} currency="usd" />
+              <ExpressCheckout amount={Math.round(orderTotal * 100)} currency={currency} />
             </div>
             <div className="flex items-center my-4">
               <div className="flex-grow h-px bg-gray-200 dark:bg-textaccent/40 " />
@@ -332,7 +333,9 @@ export default function CheckoutPage() {
               <div className="flex justify-between">
                 <span className="font-medium text-lg">Total</span>
                 <div>
-                  <span className="text-xs text-gray-500 dark:text-gray-300 mr-2">USD</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-300 mr-2">
+                    {currency.toUpperCase()}
+                  </span>
                   <span className="font-medium text-lg">
                     ${orderTotal.toFixed(2)}
                   </span>
