@@ -16,6 +16,8 @@ import "@/styles/swiper-custom.css";
 import Lightbox from "yet-another-react-lightbox";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/styles.css";
+import SizeChartModal from "@/components/sizeChartModal";
+import TrustItems from "@/components/trustItems";
 
 export default function ProductDetails({
   product,
@@ -34,6 +36,9 @@ export default function ProductDetails({
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [open, setOpen] = useState(false);
   const [slideIndex, setSlideIndex] = useState(0);
+  const [isSizeChartOpen, setIsSizeChartOpen] = useState(false);
+  const [expandedKeys, setExpandedKeys] = useState<Set<string>>(new Set([]));
+
   // Add this useEffect to handle transition timing
   useEffect(() => {
     if (isTransitioning) {
@@ -53,6 +58,14 @@ export default function ProductDetails({
       swiperRef.current.swiper.slideTo(0);
     }
   }, [selectedColor]);
+
+  const openSizeChart = () => {
+    setIsSizeChartOpen(true);
+  };
+  
+  const closeSizeChart = () => {
+    setIsSizeChartOpen(false);
+  };
 
   const addToBagClick = () => {
     if (!selectedSize) {
@@ -83,6 +96,11 @@ export default function ProductDetails({
 
   return (
     <div className="mx-4 relative flex flex-col justify-start items-center">
+      <SizeChartModal 
+        productSizeChart={product.sizeChart}
+        isOpen={isSizeChartOpen} 
+        onClose={closeSizeChart} 
+      />
       <div className="flex flex-col md:flex-row w-full h-full items-start justify-center mt-28 gap-4">
         {/* Product Images */}
         <div className="w-full md:w-2/3 flex flex-col relative">
@@ -222,7 +240,7 @@ export default function ProductDetails({
         <div className="w-full md:w-1/3 ">
           <div className="flex flex-col gap-1">
             <h1 className="text-xl font-medium">{product.name}</h1>
-            <p className="text-xl font-light">${product.price.toFixed(2)}</p>
+            <p className="text-xl">${product.price.toFixed(2)}</p>
             <p className="text-textaccentdarker dark:text-textaccent text-[14px] pt-2 pb-6">
               {product.description}
             </p>
@@ -330,18 +348,45 @@ export default function ProductDetails({
                 )}
               </Select>
             </div>
+            <button className="text-sm flex items-center gap-2 underline" onClick={openSizeChart}>
+              <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.583 8.445h.01M10.86 19.71l-6.573-6.63a.993.993 0 0 1 0-1.4l7.329-7.394A.98.98 0 0 1 12.31 4l5.734.007A1.968 1.968 0 0 1 20 5.983v5.5a.992.992 0 0 1-.316.727l-7.44 7.5a.974.974 0 0 1-1.384.001Z"/>
+              </svg>
+              <p>What's my size?</p>
+            </button>
             <div className="w-full">
               <button
-                className="w-full py-2 px-6 bg-dark1 dark:bg-white button-grow-subtle text-white dark:text-black transition-color duration-300 rounded-sm"
+                className="w-full py-4 px-6 bg-dark1 dark:bg-white button-grow-subtle text-white dark:text-black transition-color duration-300 rounded-sm text-sm"
                 onClick={addToBagClick}
               >
-                Add to bag
+                Add to cart
               </button>
             </div>
+            <div className="w-full">
+              <button
+                className="w-full py-4 px-6 bg-dark1 dark:bg-white button-grow-subtle text-white dark:text-black transition-color duration-300 rounded-sm text-sm"
+                onClick={addToBagClick}
+              >
+                Google / Apple pay
+              </button>
+            </div>
+            <button className="text-sm text-textaccentdarker dark:text-textaccent underline" onClick={addToBagClick} >More payment options</button>
           </div>
 
-          <div className="mt-6 pt-6 border-t border-black/30 dark:border-textaccent/30">
-            <Accordion variant="light">
+          <TrustItems/>
+
+          <div className="mt-6 ">
+            <Accordion 
+              variant="light"
+              className="px-0"
+              selectedKeys={expandedKeys}
+              onSelectionChange={(keys) => {
+                // Convert Selection to an array of strings first, then filter
+                const keysArray = Array.from(keys) as string[];
+                const filteredKeys = new Set(keysArray.filter(key => key !== "2"));
+                setExpandedKeys(filteredKeys);
+              }}
+            >
               <AccordionItem
                 key="1"
                 aria-label="Details & Care"
@@ -356,16 +401,14 @@ export default function ProductDetails({
                 </p>
               </AccordionItem>
               <AccordionItem
+                onPress={openSizeChart}
                 key="2"
-                aria-label="Sizing"
+                aria-label="Size Guide"
                 classNames={{
                   title: "text-[14px]",
                 }}
-                title="Sizing"
+                title="Size Guide"
               >
-                <p className="text-textaccentdarker dark:text-textaccent text-[12px]">
-                  sizing chart here
-                </p>
               </AccordionItem>
               <AccordionItem
                 key="3"
@@ -375,9 +418,12 @@ export default function ProductDetails({
                 }}
                 title="Delivery & Returns"
               >
-                <p className="text-textaccentdarker dark:text-textaccent text-[12px]">
-                  30 days
-                </p>
+                <div className="text-textaccentdarker dark:text-textaccent text-[14px] flex flex-col gap-2">
+                  <p>- United Stated Shipping 5-10 working days - UPS</p>
+                  <p>- International Shipping 10-15 working days - UPS</p>
+                  <p>If you have any issues with your order email us at help@noir-clothing.com and we will be there to help you. </p>
+                  <p>Orders placed after 1PM (EST) will be shipped the following business day. </p>
+                </div>
               </AccordionItem>
             </Accordion>
           </div>

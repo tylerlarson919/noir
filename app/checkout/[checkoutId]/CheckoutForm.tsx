@@ -85,7 +85,7 @@ export default function CheckoutForm({
         <div className="mb-4">
           <label 
             htmlFor="email" 
-            className="block font-regular mb-1 text-gray-700 text-[14.88px]"
+            className="block font-regular mb-1 text-gray-700 dark:text-white text-[14.88px]"
             style={{ fontFamily: 'Apple System, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}
           >
             Email
@@ -95,7 +95,7 @@ export default function CheckoutForm({
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 drop-shadow-sm"
+            className="w-full p-3 border dark:border-textaccent/40 rounded focus:outline-none focus:ring-1 focus:ring-green-500 drop-shadow-sm dark:bg-[#30313d]"
             style={{ fontFamily: 'Apple System, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}
             required
           />
@@ -108,7 +108,7 @@ export default function CheckoutForm({
                 <use xlinkHref="#check-4"></use>
               </svg>
             </span>
-            <span className="text-[14.88px] text-[#30313D]"
+            <span className="text-[14.88px] text-[#30313D] dark:text-textaccent"
               style={{ fontFamily: 'Apple System, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}
             >
               Email me with news and offers
@@ -191,7 +191,7 @@ export default function CheckoutForm({
               <use xlinkHref="#check-5"></use>
             </svg>
           </span>
-          <span className="text-[14.88px] text-[#30313D]"
+          <span className="text-[14.88px] text-[#30313D] dark:text-textaccent"
             style={{ fontFamily: 'Apple System, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}
           >
             Save my info for faster checkout
@@ -220,11 +220,11 @@ export default function CheckoutForm({
           {isProcessing ? "Processing..." : "Pay now"}
         </button>
         <p 
-          className="text-sm"
+          className="text-sm text-textaccentdarker dark:text-textaccent"
           style={{ fontFamily: 'Apple System, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}
         >
-          Your info will be saved to a Link account. By continuing, you agree to acknowledge their
-           <Link href="https://link.com/privacy" className="text-gray-500 dark:text-gray-300 hover:text-blue-700 hover:dark:text-blue-500 transition-colors underline"> Privacy Policy</Link>.
+          Your info will be saved to a Link account. By continuing, you agree to acknowledge their 
+           <Link href="https://link.com/privacy" className="hover:text-blue-700 hover:dark:text-blue-500 transition-colors underline"> Privacy Policy.</Link>
         </p>
       </div>
     </form>

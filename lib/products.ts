@@ -16,7 +16,7 @@ export type Product = {
     | string;
   sizes: ("XS" | "S" | "M" | "L" | "XL" | "XXL")[];
   images: string[];
-  modelImages: string[];
+  sizeChart: string;
   colors: {
     name: string;
     hex: string;
@@ -53,12 +53,7 @@ export const products: Product[] = [
       "https://res.cloudinary.com/dyujm1mtq/image/upload/v1745005647/4_bi1qe2.png",
       "https://res.cloudinary.com/dyujm1mtq/image/upload/v1745005647/5_jfg3od.png",
     ],
-    modelImages: [
-      "https://res.cloudinary.com/dyujm1mtq/image/upload/fl_preserve_transparency/v1745005647/6_jtghf0.jpg?_s=public-apps",
-      "https://res.cloudinary.com/dyujm1mtq/image/upload/fl_preserve_transparency/v1745005652/12_rwte0w.jpg?_s=public-apps",
-      "https://res.cloudinary.com/dyujm1mtq/image/upload/fl_preserve_transparency/v1745005652/13_lxx8xq.jpg?_s=public-apps",
-      "https://res.cloudinary.com/dyujm1mtq/image/upload/fl_preserve_transparency/v1745005654/16_izekrm.jpg?_s=public-apps",
-    ],
+    sizeChart: "https://res.cloudinary.com/dyujm1mtq/image/upload/v1745956323/ripstop_82b7b2ae-f0c5-407e-9847-981262147de3_li2ghr.webp",
     colors: [
       {
         name: "Black",

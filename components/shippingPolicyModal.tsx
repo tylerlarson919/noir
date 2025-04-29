@@ -1,5 +1,5 @@
 // src/app/checkout/[checkoutId]/ShippingPolicyModal.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 interface ShippingPolicyModalProps {
   isOpen: boolean;
@@ -9,6 +9,18 @@ interface ShippingPolicyModalProps {
 export default function ShippingPolicyModal({ isOpen, onClose }: ShippingPolicyModalProps) {
     const [isRendered, setIsRendered] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
+    const modalContentRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleEscKey = (event: KeyboardEvent) => {
+            if (isOpen && event.key === 'Escape') {
+            onClose();
+            }
+        };
+        
+        window.addEventListener('keydown', handleEscKey);
+        return () => window.removeEventListener('keydown', handleEscKey);
+    }, [isOpen, onClose]);
 
     useEffect(() => {
         if (isOpen && !isRendered) {
@@ -30,13 +42,16 @@ export default function ShippingPolicyModal({ isOpen, onClose }: ShippingPolicyM
           className={`fixed inset-0 bg-black z-50 flex items-center justify-center p-4 backdrop-blur-md transition-all duration-300 ease-in-out ${
             isAnimating ? 'bg-opacity-50 opacity-100' : 'bg-opacity-0 opacity-0 pointer-events-none'
           }`}
+          onClick={onClose}
         >
           <div 
-            className={`bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4/5 lg:max-w-3xl w-full max-h-[80vh] flex flex-col transition-transform duration-300 ${
+            ref={modalContentRef}
+            className={`bg-white dark:bg-darkaccent rounded-lg shadow-xl max-w-4/5 lg:max-w-3xl w-full max-h-[80vh] flex flex-col transition-transform duration-300 ${
               isAnimating ? 'scale-100' : 'scale-95'
             }`}
+            onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex justify-between items-center p-4 border-b">
+            <div className="flex justify-between items-center p-4 border-b dark:border-textaccent/40">
               <h2 className="text-xl font-semibold">Shipping policy</h2>
               <button 
                 onClick={onClose}

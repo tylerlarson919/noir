@@ -153,7 +153,7 @@ export default function CheckoutPage() {
         isOpen={isShippingPolicyOpen} 
         onClose={closeShippingPolicy} 
       />
-      <div className="py-6 flex justify-between items-center border-b border-gray-200">
+      <div className="py-6 flex justify-between items-center border-b dark:border-textaccent/40">
         <Link aria-label="Noir Home" href="/">
           <Image
             alt="Noir Logo"
@@ -189,7 +189,7 @@ export default function CheckoutPage() {
 
           {/* Express checkout */}
           <div className="mb-8">
-            <p className="text-center text-sm text-gray-500 mb-3">
+            <p className="text-center text-sm text-gray-500 dark:text-textaccent mb-3">
               Express checkout
             </p>
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
@@ -213,9 +213,9 @@ export default function CheckoutPage() {
               </button>
             </div>
             <div className="flex items-center my-4">
-              <div className="flex-grow h-px bg-gray-200" />
-              <span className="px-3 text-gray-500 text-sm">OR</span>
-              <div className="flex-grow h-px bg-gray-200" />
+              <div className="flex-grow h-px bg-gray-200 dark:bg-textaccent/40 " />
+              <span className="px-3 text-gray-500 dark:text-textaccent text-sm">OR</span>
+              <div className="flex-grow h-px bg-gray-200 dark:bg-textaccent/40" />
             </div>
           </div>
 
@@ -236,7 +236,7 @@ export default function CheckoutPage() {
 
         {/* Right column - Summary */}
         <div 
-          className="w-full lg:w-2/5 bg-[#f5f5f5] dark:bg-gray-800 p-6 lg:px-6 lg:pt-10 rounded-sm"
+          className="w-full lg:w-2/5 bg-[#f5f5f5] dark:bg-darkaccent p-6 lg:px-6 lg:pt-10 rounded-sm"
           style={{ fontFamily: 'Apple System, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}
 
         >
@@ -267,7 +267,7 @@ export default function CheckoutPage() {
               {items.map((item, i) => (
                 <div
                   key={`${item.id}-${i}`}
-                  className="flex items-center mb-4 border-b pb-4"
+                  className="flex items-center mb-4 border-b pb-4 dark:border-textaccent/40"
                 >
                   <div className="relative w-[72px] h-[72px] bg-white rounded mr-4">
                     <div className="absolute top-0 right-0 w-5 h-5 bg-gray-500 rounded-full flex items-center justify-center text-white text-xs">
@@ -298,7 +298,7 @@ export default function CheckoutPage() {
                 <input
                   type="text"
                   placeholder="Discount code"
-                  className="flex-grow p-3 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="flex-grow p-3 border dark:border-textaccent/40 rounded-sm focus:outline-none focus:ring-1 focus:ring-green-500"
                 />
                 <button
                   onClick={() => console.log("apply discount")}
@@ -332,7 +332,7 @@ export default function CheckoutPage() {
                 )}
               </div>
             </div>
-            <div className="border-t pt-4">
+            <div className="border-t pt-4 dark:border-textaccent/40">
               <div className="flex justify-between">
                 <span className="font-medium text-lg">Total</span>
                 <div>
