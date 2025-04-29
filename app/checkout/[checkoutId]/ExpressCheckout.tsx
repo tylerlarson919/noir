@@ -45,7 +45,7 @@ export default function ExpressCheckout({ amount, currency, clientSecret }: Prop
         setReady(true)
       }
     })
-  }, [stripe, amount, currency])
+  }, [stripe, amount, currency, clientSecret])
 
   if (!ready || !pr) return null
   return <PaymentRequestButtonElement options={{ paymentRequest: pr }} />
