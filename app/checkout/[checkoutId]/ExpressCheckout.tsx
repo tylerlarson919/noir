@@ -4,8 +4,8 @@ import { useEffect, useState } from "react"
 import { useStripe, PaymentRequestButtonElement } from "@stripe/react-stripe-js"
 import type { PaymentRequest as StripePaymentRequest, PaymentRequestUpdateOptions } from "@stripe/stripe-js"
 
-interface Props { amount: number; currency: string; clientSecret: string }
-export default function ExpressCheckout({ amount, currency, clientSecret }: Props) {
+interface Props { amount: number; currency: string; clientSecret: string; items: any[];}
+export default function ExpressCheckout({ amount, currency, clientSecret, items }: Props) {
   const stripe = useStripe()
   const [pr, setPr] = useState<StripePaymentRequest|null>(null)
   const [ready, setReady] = useState(false)
@@ -43,6 +43,40 @@ export default function ExpressCheckout({ amount, currency, clientSecret }: Prop
             setPr(paymentRequest);
           }, 100);
         });
+
+        paymentRequest.on('shippingaddresschange', async (event) => {
+            try {
+              console.log('Shipping address changed:', event.shippingAddress);
+              
+              // Call your backend to calculate shipping options based on the address
+              const response = await fetch('/api/calculate-shipping', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  address: event.shippingAddress,
+                  items: items, 
+                  amount: amount
+                })
+              });
+              
+              const { shippingOptions, total } = await response.json();
+              
+              // Update the payment request with shipping options and total
+              event.updateWith({
+                status: 'success',
+                shippingOptions: shippingOptions,
+                total: {
+                  label: 'Order Total',
+                  amount: total
+                }
+              });
+            } catch (error) {
+              console.error('Error calculating shipping:', error);
+              // If there's an error, update with a failure status
+              event.updateWith({ status: 'invalid_shipping_address' });
+            }
+          });
+
       // Improve the payment method handler
       paymentRequest.on('paymentmethod', async (event) => {
         try {
@@ -108,7 +142,7 @@ export default function ExpressCheckout({ amount, currency, clientSecret }: Prop
         setPr(null);
         setError(null);
       };
-  }, [stripe, amount, currency, clientSecret, paymentRequestOptions]);
+  }, [stripe, amount, currency, clientSecret, paymentRequestOptions, items]);
 
   if (error) {
     return (

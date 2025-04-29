@@ -218,7 +218,7 @@ export default function CheckoutPage() {
                   >
                     PayPal
                   </button>
-                  <ExpressCheckout amount={Math.round(orderTotal * 100)} currency={currency} clientSecret={clientSecret}/>
+                  <ExpressCheckout amount={Math.round(orderTotal * 100)} currency={currency} clientSecret={clientSecret} items={items}/>
                 </div>
                 <div className="flex items-center my-4">
                   <div className="flex-grow h-px bg-gray-200 dark:bg-textaccent/40 " />
