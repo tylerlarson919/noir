@@ -12,6 +12,17 @@ export default function ShippingPolicyModal({ isOpen, onClose }: ShippingPolicyM
     const modalContentRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        const handleEscKey = (event: KeyboardEvent) => {
+            if (isOpen && event.key === 'Escape') {
+            onClose();
+            }
+        };
+        
+        window.addEventListener('keydown', handleEscKey);
+        return () => window.removeEventListener('keydown', handleEscKey);
+    }, [isOpen, onClose]);
+
+    useEffect(() => {
         if (isOpen && !isRendered) {
           setIsRendered(true);
           // Small delay to ensure DOM is updated before starting animation
@@ -32,6 +43,10 @@ export default function ShippingPolicyModal({ isOpen, onClose }: ShippingPolicyM
             isAnimating ? 'bg-opacity-50 opacity-100' : 'bg-opacity-0 opacity-0 pointer-events-none'
           }`}
           onClick={onClose}
+          role="dialog"
+          aria-modal="true"
+          onKeyDown={(e) => e.key === 'Escape' && onClose()}
+          tabIndex={0}
         >
           <div 
             ref={modalContentRef}
@@ -39,6 +54,7 @@ export default function ShippingPolicyModal({ isOpen, onClose }: ShippingPolicyM
               isAnimating ? 'scale-100' : 'scale-95'
             }`}
             onClick={(e) => e.stopPropagation()}
+            role="presentation"
           >
             <div className="flex justify-between items-center p-4 border-b dark:border-textaccent/40">
               <h2 className="text-xl font-semibold">Shipping policy</h2>
