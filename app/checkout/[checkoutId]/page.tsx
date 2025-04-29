@@ -7,6 +7,7 @@ import { useTheme } from "next-themes";
 import Image from "next/image";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
+import ExpressCheckout from "./ExpressCheckout";
 import CheckoutForm from "./CheckoutForm";
 import { useParams, useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
@@ -205,12 +206,7 @@ export default function CheckoutPage() {
               >
                 PayPal
               </button>
-              <button
-                onClick={() => console.log("googlePay")}
-                className="bg-black text-white py-3 rounded"
-              >
-                G Pay
-              </button>
+              <ExpressCheckout amount={Math.round(orderTotal * 100)} currency="usd" />
             </div>
             <div className="flex items-center my-4">
               <div className="flex-grow h-px bg-gray-200 dark:bg-textaccent/40 " />
