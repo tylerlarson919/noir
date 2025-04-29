@@ -145,9 +145,11 @@ export default function CheckoutForm({
           onChange={event => {
             if (event.complete) setBillingDetailsComplete(true);
             else setBillingDetailsComplete(false);
-            if (event.value?.address) {
+            
+            // Only trigger shipping change if there's a complete address with country
+            if (event.complete && event.value?.address?.country) {
               onShippingChange({
-                country: event.value.address.country!,
+                country: event.value.address.country,
                 region: event.value.address.state || undefined
               });
             }

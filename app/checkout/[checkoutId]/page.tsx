@@ -1,6 +1,6 @@
 // src/app/checkout/[checkoutId]/page.tsx
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "next-themes";
@@ -61,7 +61,7 @@ export default function CheckoutPage() {
     createIntent();
   }, [items, user, checkoutId]);
 
-  // Update total price when shipping fee changes
+    // Update total price when shipping fee changes
   useEffect(() => {
     setOrderTotal(totalPrice + shippingFee);
   }, [totalPrice, shippingFee]);
@@ -99,9 +99,16 @@ export default function CheckoutPage() {
         setLoading(false);
       }
     };
-    
-    recreateWithShipping();
-  }, [shippingAddress]);
+    const addressRef = useRef(shippingAddress);
+      if (addressRef.current?.country !== shippingAddress.country || 
+        addressRef.current?.region !== shippingAddress.region) {
+      addressRef.current = shippingAddress;
+      recreateWithShipping();
+    } else {
+      // If it's the same address, don't reload
+      setLoading(false);
+    }
+  }, [shippingAddress, items, user, checkoutId]);
 
   // Ensure we have a checkout ID in the URL
   useEffect(() => {
