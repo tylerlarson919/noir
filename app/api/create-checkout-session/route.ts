@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
   try {
     const { items, userId, customerEmail, checkoutId, shipping, paymentIntentId }:
       RequestBody & { 
-        shipping?: { country: string; region?: string },
+        shipping?: { country: string; region?: string; postalCode?: string; },
         paymentIntentId?: string
       } = await req.json();
       

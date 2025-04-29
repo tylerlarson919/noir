@@ -143,18 +143,20 @@ export default function CheckoutForm({
             },
           }}
           onChange={event => {
+            // Still update billing completion status
             if (event.complete) {
               setBillingDetailsComplete(true);
-              
-              // Only trigger shipping change if there's a complete address with country
-              if (event.value?.address?.country) {
-                onShippingChange({
-                  country: event.value.address.country,
-                  region: event.value.address.state || undefined
-                });
-              }
             } else {
               setBillingDetailsComplete(false);
+            }
+            
+            // Trigger shipping calculation when country or postal code changes,
+            // even if the entire form isn't complete yet
+            if (event.value?.address?.country) {
+              onShippingChange({
+                country: event.value.address.country,
+                region: event.value.address.state || undefined,
+              });
             }
           }}
         />

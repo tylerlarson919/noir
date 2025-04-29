@@ -29,11 +29,18 @@ export default function CheckoutPage() {
   const checkoutId = params.checkoutId as string;
   const [isSummaryVisible, setIsSummaryVisible] = useState(false);
   const [isShippingPolicyOpen, setIsShippingPolicyOpen] = useState(false);
-  const [shippingAddress, setShippingAddress] = useState<{country:string;region?:string}|null>(null);
+  const [shippingAddress, setShippingAddress] = useState<{
+    country: string;
+    region?: string;
+    postalCode?: string
+  } | null>(null);
   const [shippingFee, setShippingFee] = useState(0);
   const [orderTotal, setOrderTotal] = useState(totalPrice);
-  const addressRef = useRef<{country: string; region?: string} | null>(null);
-
+  const addressRef = useRef<{
+    country: string;
+    region?: string;
+    postalCode?: string
+  } | null>(null);
 
   useEffect(() => {
     setIsDarkMode(resolvedTheme === "dark");
@@ -71,13 +78,14 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (shippingAddress === null) return;
     
-    // Only call API if country or region has actually changed
+    // Check if country, region OR postal code has changed
     if (addressRef.current?.country !== shippingAddress.country || 
-        addressRef.current?.region !== shippingAddress.region) {
+        addressRef.current?.region !== shippingAddress.region ||
+        addressRef.current?.postalCode !== shippingAddress.postalCode) {
       
       addressRef.current = shippingAddress;
       
-      const recreateWithShipping = async () => {
+      const updateShippingOnly = async () => {
         const payload = {
           items,
           userId: user?.uid || "guest-user",
@@ -94,18 +102,17 @@ export default function CheckoutPage() {
           });
           
           const data = await res.json();
+          
           // Update shipping fee from API response
           if (data.shippingFee !== undefined) {
             setShippingFee(data.shippingFee);
           }
         } catch (error) {
           console.error("Error updating shipping:", error);
-        } finally {
-          setLoading(false);
         }
       };
       
-      recreateWithShipping();
+      updateShippingOnly();
     } else {
       // If it's the same address, don't reload
       setLoading(false);
