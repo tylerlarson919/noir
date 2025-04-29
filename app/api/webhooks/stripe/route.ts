@@ -78,15 +78,9 @@ export async function POST(req: NextRequest) {
   try {
     // Handle the event
     switch (event.type) {
-      case "checkout.session.completed":
-        const session = event.data.object as Stripe.Checkout.Session;
-        console.log("Checkout session completed event received:", session.id);
-        await handleCheckoutCompleted(session);
-        break;
       case "payment_intent.succeeded":
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
         console.log("Payment intent succeeded event received:", paymentIntent.id);
-        // Add this line to process payment intents as well
         await handlePaymentIntentSucceeded(paymentIntent);
         break;
       case "payment_intent.payment_failed":
@@ -103,116 +97,8 @@ export async function POST(req: NextRequest) {
       { status: 500 },
     );
   }
-
+  
   return NextResponse.json({ received: true });
-}
-
-async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
-  try {
-    console.log("Processing checkout session:", session.id);
-    
-    // Make sure session.id is valid
-    if (!session.id) {
-      throw new Error("Missing session ID for order");
-    }
-    
-    // Retrieve line items to get complete order details
-    const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
-    
-    // Get expanded product data if needed
-    const orderItems = await Promise.all(
-      lineItems.data.map(async (item) => {
-        // If you need more product details
-        if (item.price?.product) {
-          const productId = typeof item.price.product === 'string' 
-            ? item.price.product 
-            : item.price.product.id;
-            
-          const product = await stripe.products.retrieve(productId);
-          
-          return {
-            productId: product.metadata.productId || product.id,
-            name: product.name,
-            price: (item.price.unit_amount || 0) / 100,
-            quantity: item.quantity,
-            size: product.metadata.size,
-            color: {
-              name: product.metadata.colorName,
-              value: product.metadata.colorValue
-            },
-            image: product.images?.[0] || '',
-          };
-        }
-        
-        return {
-          price: (item.price?.unit_amount || 0) / 100,
-          quantity: item.quantity,
-          description: item.description
-        };
-      })
-    );
-
-    const userEmail = session.customer_details?.email || '';
-    const userId = session.metadata?.userId || "guest-user";
-    const shippingAddress = (session as any).shipping_details?.address || session.customer_details?.address || {};
-    
-    const shippingFee = session.metadata?.shippingFee 
-      ? parseFloat(session.metadata.shippingFee) 
-      : ((session.amount_total || 0) - (session.amount_subtotal || 0)) / 100;
-    const orderData = {
-      orderId: session.id,
-      userId,
-      orderDate: new Date().toISOString(),
-      amount: { 
-        total: (session.amount_total || 0) / 100,
-        subtotal: (session.amount_subtotal || 0) / 100,
-        shipping: shippingFee
-      },
-      currency: session.currency,
-      paymentStatus: session.payment_status,
-      items: orderItems,
-      paymentMethod: session.payment_method_types,
-      metadata: Object.entries(session.metadata || {}).reduce((acc, [key, value]) => {
-        // Only include string values and convert other types to strings
-        acc[key] = typeof value === 'string' ? value : String(value);
-        return acc;
-      }, {} as Record<string, string>),
-      email: session.customer_details?.email || '',
-      status: "pending",
-      shippingAddress: {
-        line1: shippingAddress.line1 || '',
-        line2: shippingAddress.line2 || '',
-        city: shippingAddress.city || '',
-        state: shippingAddress.state || '',
-        postal_code: shippingAddress.postal_code || '',
-        country: shippingAddress.country || '',
-      },
-      shipping: {
-        status: "preparing", // pending, preparing, shipped, delivered
-        trackingNumber: null,
-        carrier: null,
-        updatedAt: new Date().toISOString(),
-      },
-    };
-    const sanitizedOrderData = sanitizeData(orderData);
-
-    // Improve error handling and logging for Firebase operations
-    try {
-      console.log("📝 Preparing order data for Firestore:", JSON.stringify(orderData, null, 2));
-      
-      // Use a batch with adminDb instead
-      const orderRef = adminDb.collection('orders').doc(session.id);
-      await orderRef.set(sanitizedOrderData);
-      
-      console.log("Successfully saved order to Firestore:", session.id);
-    } catch (dbError) {
-      console.error("Firebase write failed:", dbError);
-      throw dbError;
-    }
-  } catch (error) {
-    console.error("Error processing checkout completion:", error);
-    throw error;
-  }
 }
 
 async function handlePaymentIntentSucceeded(pi: Stripe.PaymentIntent) {
