@@ -190,32 +190,6 @@ export default function CheckoutPage() {
         <div className="lg:w-3/5 pt-0 lg:pt-10">
 
           {/* Express checkout */}
-          <div className="mb-8">
-            <p className="text-center text-sm text-gray-500 dark:text-textaccent mb-3">
-              Express checkout
-            </p>
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
-              <button
-                onClick={() => console.log("shopPay")}
-                className="bg-[#5A31F4] text-white py-3 rounded col-span-2 lg:col-span-1"
-              >
-                Shop Pay
-              </button>
-              <button
-                onClick={() => console.log("payPal")}
-                className="bg-[#FFC439] py-3 rounded"
-              >
-                PayPal
-              </button>
-              <ExpressCheckout amount={Math.round(orderTotal * 100)} currency={currency} clientSecret={clientSecret}/>
-            </div>
-            <div className="flex items-center my-4">
-              <div className="flex-grow h-px bg-gray-200 dark:bg-textaccent/40 " />
-              <span className="px-3 text-gray-500 dark:text-textaccent text-sm">OR</span>
-              <div className="flex-grow h-px bg-gray-200 dark:bg-textaccent/40" />
-            </div>
-          </div>
-
           {clientSecret && (
             <Elements
               stripe={stripePromise}
@@ -226,7 +200,34 @@ export default function CheckoutPage() {
                 },
               }}
             >
-              <CheckoutForm  onShippingChange={setShippingAddress} />
+              {/* Express checkout */}
+              <div className="mb-8">
+                <p className="text-center text-sm text-gray-500 dark:text-textaccent mb-3">
+                  Express checkout
+                </p>
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
+                  <button
+                    onClick={() => console.log("shopPay")}
+                    className="bg-[#5A31F4] text-white py-3 rounded col-span-2 lg:col-span-1"
+                  >
+                    Shop Pay
+                  </button>
+                  <button
+                    onClick={() => console.log("payPal")}
+                    className="bg-[#FFC439] py-3 rounded"
+                  >
+                    PayPal
+                  </button>
+                  <ExpressCheckout amount={Math.round(orderTotal * 100)} currency={currency} clientSecret={clientSecret}/>
+                </div>
+                <div className="flex items-center my-4">
+                  <div className="flex-grow h-px bg-gray-200 dark:bg-textaccent/40 " />
+                  <span className="px-3 text-gray-500 dark:text-textaccent text-sm">OR</span>
+                  <div className="flex-grow h-px bg-gray-200 dark:bg-textaccent/40" />
+                </div>
+              </div>
+              
+              <CheckoutForm onShippingChange={setShippingAddress} />
             </Elements>
           )}
         </div>
