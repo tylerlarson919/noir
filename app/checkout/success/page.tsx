@@ -30,6 +30,7 @@ interface OrderDetails {
   amount?: {
     total: number;
     subtotal: number;
+    shipping?: number;
   };
   email?: string;
   items?: OrderItem[];
@@ -229,7 +230,18 @@ function CheckoutResultContent() {
           </div>
           
           <div className="border-t pt-4 mt-4">
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="text-md">Subtotal</h3>
+              <p>${(orderDetails.amount?.subtotal || 0).toFixed(2)}</p>
+            </div>
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="text-md">Shipping</h3>
+              <p>
+                ${orderDetails.amount?.shipping !== undefined 
+                  ? orderDetails.amount.shipping.toFixed(2) 
+                  : ((orderDetails.amount?.total || 0) - (orderDetails.amount?.subtotal || 0)).toFixed(2)}</p>
+            </div>
+            <div className="flex justify-between items-center pt-2 border-t border-gray-100">
               <h3 className="text-lg font-bold">Total</h3>
               <p className="text-lg font-bold">${(orderDetails.amount?.total || 0).toFixed(2)}</p>
             </div>

@@ -1,6 +1,6 @@
 // src/app/checkout/[checkoutId]/CheckoutForm.tsx
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
@@ -15,9 +15,9 @@ import "./checkout.css";
 import Link from "next/link";
 export default function CheckoutForm({
   onShippingChange
-  }: {
-    onShippingChange: (addr: {country:string;region?:string}) => void
-  }) {
+}: {
+  onShippingChange: (addr: {country: string; region?: string}) => void
+}) {
   const [email, setEmail] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -78,7 +78,7 @@ export default function CheckoutForm({
       <div className="mb-6">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-lg font-semibold">Contact</h2>
-          <Link href="/accounts/login?redirect=/checkout" className="text-sm text-blue-600 hover:underline">
+          <Link href="/accounts/login?redirect=/checkout" className={`${user ? 'hidden' : 'relative'} text-sm text-blue-600 hover:underline`}>
             Log in
           </Link>
         </div>
@@ -223,3 +223,5 @@ export default function CheckoutForm({
     </form>
   );
 }
+
+

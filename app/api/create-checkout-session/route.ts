@@ -69,6 +69,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       checkoutSessionClientSecret: paymentIntent.client_secret,
+      shippingFee: shippingFee,
+      currency: currency
     });
   } catch (error: any) {
     console.error("Error creating payment intent:", error);

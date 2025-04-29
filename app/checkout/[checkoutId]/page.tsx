@@ -30,6 +30,8 @@ export default function CheckoutPage() {
   const [isSummaryVisible, setIsSummaryVisible] = useState(false);
   const [isShippingPolicyOpen, setIsShippingPolicyOpen] = useState(false);
   const [shippingAddress, setShippingAddress] = useState<{country:string;region?:string}|null>(null);
+  const [shippingFee, setShippingFee] = useState(0);
+  const [orderTotal, setOrderTotal] = useState(totalPrice);
 
 
   useEffect(() => {
@@ -58,26 +60,46 @@ export default function CheckoutPage() {
     };
     createIntent();
   }, [items, user, checkoutId]);
-  
-  // 2) re-create PI with shipping once user enters address
+
+  // Update total price when shipping fee changes
+  useEffect(() => {
+    setOrderTotal(totalPrice + shippingFee);
+  }, [totalPrice, shippingFee]);
+
+  // Update when shipping changes and API returns
   useEffect(() => {
     if (shippingAddress === null) return;
     const recreateWithShipping = async () => {
-      const payload: any = {
+      setLoading(true);
+      const payload = {
         items,
         userId: user?.uid || "guest-user",
         ...(user?.email && { customerEmail: user.email }),
         checkoutId,
         shipping: shippingAddress
       };
-      const res = await fetch("/api/create-checkout-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const { checkoutSessionClientSecret } = await res.json();
-      setClientSecret(checkoutSessionClientSecret);
+      
+      try {
+        const res = await fetch("/api/create-checkout-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        
+        const data = await res.json();
+        setClientSecret(data.checkoutSessionClientSecret);
+        
+        // Update shipping fee from API response
+        if (data.shippingFee !== undefined) {
+          setShippingFee(data.shippingFee);
+        }
+      } catch (error) {
+        console.error("Error updating shipping:", error);
+      } finally {
+        setLoading(false);
+      }
     };
+    
     recreateWithShipping();
   }, [shippingAddress]);
 
@@ -284,17 +306,20 @@ export default function CheckoutPage() {
                     </svg>
                   </button>
                 </div>
-                <span className="text-gray-500 dark:text-gray-300 text-sm">Enter shipping address</span>
+                {shippingAddress ? (
+                  <span>${shippingFee.toFixed(2)}</span>
+                ) : (
+                  <span className="text-gray-500 dark:text-gray-300 text-sm">Enter shipping address</span>
+                )}
               </div>
             </div>
-
             <div className="border-t pt-4">
               <div className="flex justify-between">
                 <span className="font-medium text-lg">Total</span>
                 <div>
                   <span className="text-xs text-gray-500 dark:text-gray-300 mr-2">USD</span>
                   <span className="font-medium text-lg">
-                    ${totalPrice.toFixed(2)}
+                    ${orderTotal.toFixed(2)}
                   </span>
                 </div>
               </div>

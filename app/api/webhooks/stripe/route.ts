@@ -154,10 +154,9 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 
     const userEmail = session.customer_details?.email || '';
     const userId = session.metadata?.userId || "guest-user";
-    const shippingAddress = (session as any).shipping_details?.address || 
-                            session.customer_details?.address || {};
-    console.log("session data (look for shipping addy): ", JSON.stringify(session, null, 2));
+    const shippingAddress = (session as any).shipping_details?.address || session.customer_details?.address || {};
     
+    const shippingFee = ((session.amount_total || 0) - (session.amount_subtotal || 0)) / 100;
     const orderData = {
       orderId: session.id,
       userId,
@@ -165,6 +164,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       amount: { 
         total: (session.amount_total || 0) / 100,
         subtotal: (session.amount_subtotal || 0) / 100,
+        shipping: shippingFee
       },
       currency: session.currency,
       paymentStatus: session.payment_status,
@@ -259,15 +259,17 @@ async function handlePaymentIntentSucceeded(pi: Stripe.PaymentIntent) {
       shippingAddress.country = address.country || '';
     }
     
-    console.log("Payment intent data:", JSON.stringify(pi, null, 2));
-    
+    const shippingFee = parseFloat(metadata.shippingFee || '0');
+    const subtotal = (pi.amount / 100) - shippingFee;
+
     const orderData = {
       orderId: pi.id,
       userId,
       orderDate: new Date().toISOString(),
       amount: { 
         total: (pi.amount || 0) / 100,
-        subtotal: (pi.amount || 0) / 100,
+        subtotal: subtotal,
+        shipping: shippingFee,
       },
       currency: pi.currency,
       paymentStatus: pi.status,
