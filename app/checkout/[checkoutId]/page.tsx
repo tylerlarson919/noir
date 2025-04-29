@@ -41,6 +41,7 @@ export default function CheckoutPage() {
     region?: string;
     postalCode?: string
   } | null>(null);
+  const [paymentIntentId, setPaymentIntentId] = useState("");
 
   useEffect(() => {
     setIsDarkMode(resolvedTheme === "dark");
@@ -62,8 +63,9 @@ export default function CheckoutPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      const { checkoutSessionClientSecret } = await res.json();
+      const { checkoutSessionClientSecret, paymentIntentId: piId } = await res.json();
       setClientSecret(checkoutSessionClientSecret);
+      setPaymentIntentId(piId || ""); // Store the payment intent ID
       setLoading(false);
     };
     createIntent();
@@ -91,7 +93,8 @@ export default function CheckoutPage() {
           userId: user?.uid || "guest-user",
           ...(user?.email && { customerEmail: user.email }),
           checkoutId,
-          shipping: shippingAddress
+          shipping: shippingAddress,
+          paymentIntentId 
         };
         
         try {
@@ -117,7 +120,7 @@ export default function CheckoutPage() {
       // If it's the same address, don't reload
       setLoading(false);
     }
-  }, [shippingAddress, items, user, checkoutId]);
+  }, [shippingAddress, items, user, checkoutId, paymentIntentId]);
 
   // Ensure we have a checkout ID in the URL
   useEffect(() => {

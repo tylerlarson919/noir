@@ -42,8 +42,23 @@ export async function POST(req: NextRequest) {
     
     // If we have a shipping update only without changing payment intent
     if (shipping && !paymentIntentId) {
-      // Just return the shipping fee without creating/updating payment intent
+      // Return the shipping fee to update the UI
       return NextResponse.json({
+        shippingFee: shippingFee,
+        currency: currency
+      });
+    }
+    
+    // If we have a payment intent ID and shipping changes, update the payment intent
+    if (shipping && paymentIntentId) {
+      const updatedIntent = await stripe.paymentIntents.update(paymentIntentId, {
+        metadata: {
+          shippingFee: shippingFee.toString()
+        }
+      });
+      
+      return NextResponse.json({
+        checkoutSessionClientSecret: updatedIntent.client_secret,
         shippingFee: shippingFee,
         currency: currency
       });
@@ -79,6 +94,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       checkoutSessionClientSecret: paymentIntent.client_secret,
+      paymentIntentId: paymentIntent.id,
       shippingFee: shippingFee,
       currency: currency
     });

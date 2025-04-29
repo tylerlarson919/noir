@@ -156,7 +156,9 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     const userId = session.metadata?.userId || "guest-user";
     const shippingAddress = (session as any).shipping_details?.address || session.customer_details?.address || {};
     
-    const shippingFee = ((session.amount_total || 0) - (session.amount_subtotal || 0)) / 100;
+    const shippingFee = session.metadata?.shippingFee 
+      ? parseFloat(session.metadata.shippingFee) 
+      : ((session.amount_total || 0) - (session.amount_subtotal || 0)) / 100;
     const orderData = {
       orderId: session.id,
       userId,
