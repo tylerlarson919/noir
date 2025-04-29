@@ -262,14 +262,15 @@ async function handlePaymentIntentSucceeded(pi: Stripe.PaymentIntent) {
     }
     
     const shippingFee = parseFloat(metadata.shippingFee || '0');
-    const subtotal = (pi.amount / 100) - shippingFee;
+    const total = (pi.amount / 100);
+    const subtotal = total - shippingFee;
 
     const orderData = {
       orderId: pi.id,
       userId,
       orderDate: new Date().toISOString(),
       amount: { 
-        total: (pi.amount || 0) / 100,
+        total: total,
         subtotal: subtotal,
         shipping: shippingFee,
       },
