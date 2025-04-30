@@ -36,31 +36,32 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
           maxColumns: 3,
         }
       }}
-      onShippingAddressChange={async (event: any) => {
-        // call your shipping‐calc API
-        const addr = (event as any).shippingAddress;
+      onShippingAddressChange={async ({ shippingAddress, updateWith }: any) => {
+        if (!shippingAddress) return;
         const res = await fetch("/api/create-checkout-session", {
           method: "POST",
-          headers: {"Content-Type":"application/json"},
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            items, userId, checkoutId, paymentIntentId,
+            items,
+            userId,
+            checkoutId,
+            paymentIntentId,
             shipping: {
-              country:    event.shippingAddress.country,
-              region:     event.shippingAddress.region,
-              postalCode: event.shippingAddress.postalCode,
+              country:    shippingAddress.country,
+              region:     shippingAddress.region,
+              postalCode: shippingAddress.postalCode,
             }
           })
         });
-        const { shippingFee, currency: cur, paymentIntentClientSecret, totalAmount } = await res.json();
-          
-        event.updateWith({
+        const { shippingFee, totalAmount } = await res.json();
+        updateWith({
           shippingOptions: [{
-             id:     "standard",
-             label:  "Standard Shipping",
-             detail: shippingFee===0 ? "Free" : "3-5 business days",
-             amount: Math.round(shippingFee*100),
-           }],
-           total: { label: "Order total", amount: totalAmount },
+            id:     "standard",
+            label:  "Standard Shipping",
+            detail: shippingFee === 0 ? "Free Shipping" : "3-5 business days",
+            amount: Math.round(shippingFee * 100),
+          }],
+          total: { label: "Order total", amount: totalAmount },
         });
       }}
       onConfirm={async (event: any) => {
