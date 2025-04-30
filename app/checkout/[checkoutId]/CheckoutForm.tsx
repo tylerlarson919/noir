@@ -13,11 +13,21 @@ import {
 import { useParams } from "next/navigation";
 import "./checkout.css";
 import Link from "next/link";
+import { useRef } from "react";
+import { debounce } from "lodash";
+
 export default function CheckoutForm({
-  onShippingChange
+  onShippingChange,
 }: {
-  onShippingChange: (addr: {country: string; region?: string}) => void
+  onShippingChange: (addr: {
+    country: string;
+    region?: string;
+    postalCode?: string;
+  }) => void;
 }) {
+  const debouncedOnShippingChange = useRef(
+    debounce(onShippingChange, 500)
+  ).current;
   const [email, setEmail] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -153,9 +163,10 @@ export default function CheckoutForm({
             // Trigger shipping calculation when country or postal code changes,
             // even if the entire form isn't complete yet
             if (event.value?.address?.country) {
-              onShippingChange({
-                country: event.value.address.country,
-                region: event.value.address.state || undefined,
+              debouncedOnShippingChange({
+                country:    event.value.address.country,
+                region:     event.value.address.state || undefined,
+                postalCode: event.value.address.postal_code,
               });
             }
           }}

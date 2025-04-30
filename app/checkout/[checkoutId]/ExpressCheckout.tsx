@@ -1,14 +1,18 @@
 "use client";
 import { ExpressCheckoutElement, useElements, useStripe } from "@stripe/react-stripe-js";
 
+
 interface ExpressCheckoutProps {
   amount: number;
   currency: string;
   clientSecret: string;
   items: any[];
+  userId: string;
+  checkoutId: string;
+  paymentIntentId: string;
 }
 
-export default function ExpressCheckout({ amount, currency, clientSecret, items }: ExpressCheckoutProps) {
+export default function ExpressCheckout({ amount, currency, clientSecret, items, userId, checkoutId, paymentIntentId }: ExpressCheckoutProps) {
   const stripe = useStripe();
   const elements = useElements();
   if (!stripe || !elements) return null;
@@ -35,28 +39,28 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items 
       onShippingAddressChange={async (event: any) => {
         // call your shipping‐calc API
         const addr = (event as any).shippingAddress;
-        const { shippingOptions, total } = await fetch("/api/calculate-shipping", {
+        const res = await fetch("/api/create-checkout-session", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ address: addr, items, amount }),
-        }).then(r => r.json());
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify({
+            items, userId, checkoutId, paymentIntentId,
+            shipping: {
+              country:    event.shippingAddress.country,
+              region:     event.shippingAddress.region,
+              postalCode: event.shippingAddress.postalCode,
+            }
+          })
+        });
+        const { shippingFee, currency: cur, paymentIntentClientSecret, totalAmount } = await res.json();
+          
         event.updateWith({
-          shippingOptions: shippingOptions.map(
-            (
-              { id, label, detail, amount }: {
-                id: string;
-                label: string;
-                detail: string;
-                amount: number;
-              }
-            ) => ({
-              id,
-              label,
-              detail,
-              amount,
-            })
-          ),
-          total: { label: "Order total", amount: total },
+          shippingOptions: [{
+             id:     "standard",
+             label:  "Standard Shipping",
+             detail: shippingFee===0 ? "Free" : "3-5 business days",
+             amount: Math.round(shippingFee*100),
+           }],
+           total: { label: "Order total", amount: totalAmount },
         });
       }}
       onConfirm={async (event: any) => {

@@ -212,6 +212,9 @@ export default function CheckoutPage() {
                     currency={currency}
                     clientSecret={clientSecret}
                     items={items}
+                    userId={user?.uid || "guest-user"}
+                    checkoutId={checkoutId}
+                    paymentIntentId={paymentIntentId}
                   />
                 </div>
                 <div className="flex items-center my-4">
