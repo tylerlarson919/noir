@@ -11,7 +11,6 @@ interface ExpressCheckoutProps {
   userId: string;
   checkoutId: string;
   paymentIntentId: string;
-  onShippingChange: (shippingFee: number, paymentIntentId: string) => void; // Updated prop
 }
 
 export default function ExpressCheckout({ 
@@ -21,12 +20,10 @@ export default function ExpressCheckout({
   items, 
   userId, 
   checkoutId, 
-  paymentIntentId, 
-  onShippingChange 
+  paymentIntentId
 }: ExpressCheckoutProps) {
   const stripe = useStripe();
   const elements = useElements();
-  const [shippingFee, setShippingFee] = useState(0);
 
   if (!stripe || !elements) return null;
 
@@ -66,9 +63,6 @@ export default function ExpressCheckout({
             amount / 100
           );
           
-          setShippingFee(fee);
-          onShippingChange(fee, paymentIntentId); // Notify parent with fee and paymentIntentId
-
           // Convert shipping fee to cents
           const shippingAmount = Math.round(fee * 100);
           

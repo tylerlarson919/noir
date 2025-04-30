@@ -221,7 +221,6 @@ export default function CheckoutPage() {
                   userId={user?.uid || "guest-user"}
                   checkoutId={checkoutId}
                   paymentIntentId={paymentIntentId}
-                  onShippingChange={handleShippingFeeSelected}
                 />
                 </div>
                 <div className="flex items-center my-4">
