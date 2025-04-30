@@ -40,11 +40,7 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
       onShippingAddressChange={async (event: any) => {
         const { shippingAddress, resolve, reject } = event;
       
-        if (
-          !shippingAddress?.country ||
-          !shippingAddress?.addressLine?.length ||
-          !shippingAddress?.postalCode
-        ) {
+        if (!shippingAddress?.country || !shippingAddress?.postalCode) {
           reject({ error: "Invalid shipping address" });
           return;
         }
@@ -52,18 +48,18 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
         const { fee: shippingFee } = getShippingFee(
           shippingAddress.country,
           shippingAddress.region ?? null,
-          amount / 100           // subtotal in major units
+          amount / 100
         );
         const newTotal = amount + Math.round(shippingFee * 100);
       
         resolve({
-          /* 👇 Stripe requires shippingRates when shippingAddressRequired = true */
           shippingRates: [
             {
               id: "standard",
-              amount: Math.round(shippingFee * 100), // minor units
+              amount: Math.round(shippingFee * 100),
               displayName:
                 shippingFee === 0 ? "Free Shipping" : "Standard Shipping",
+              deliveryEstimate: { unit: "business_day", min: 5, max: 10 }, // <- helps GP/AppleP
             },
           ],
           total: { label: "Order total", amount: newTotal },
