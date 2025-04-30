@@ -208,7 +208,7 @@ export default function CheckoutPage() {
                 </p>
                 <div className="w-full">
                   <ExpressCheckout
-                    amount={Math.round(orderTotal * 100)}
+                    amount={Math.round(totalPrice * 100)}  // Start with just product price
                     currency={currency}
                     clientSecret={clientSecret}
                     items={items}

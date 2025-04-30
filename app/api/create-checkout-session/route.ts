@@ -20,11 +20,12 @@ type RequestBody = {
   userId: string | null;
   customerEmail?: string;
   checkoutId?: string;
+  totalAmount?: number;
 };
 
 export async function POST(req: NextRequest) {
   try {
-    const { items, userId, customerEmail, checkoutId, shipping, paymentIntentId }:
+    const { items, userId, customerEmail, checkoutId, shipping, paymentIntentId, totalAmount: requestTotalAmount }:
     RequestBody & {
       shipping?: {
         name: string;
@@ -51,7 +52,7 @@ export async function POST(req: NextRequest) {
         )
       : { fee: 0, currency: "usd" };
       
-    const totalAmount = Math.round((subtotal + shippingFee) * 100); // in cents
+      const totalAmount = requestTotalAmount || Math.round((subtotal + shippingFee) * 100);
     
     // If we have a shipping update only without changing payment intent
     if (shipping && !paymentIntentId) {

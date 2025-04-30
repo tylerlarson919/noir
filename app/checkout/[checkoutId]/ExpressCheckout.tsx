@@ -47,15 +47,15 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
           reject({ error: "Invalid shipping address" });
           return;
         }
-
+      
         const { fee: shippingFee } = getShippingFee(
           addr.country,
           addr.state ?? null,
           amount / 100
         );
         const newTotal = amount + Math.round(shippingFee * 100);
-        setCurrentAmount(newTotal);
-
+        setCurrentAmount(newTotal); // This updates the state but needs to be used in onConfirm
+      
         resolve({
           shippingRates: [
             {
@@ -64,13 +64,13 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
               displayName:
                 shippingFee === 0 ? "Free Shipping" : "Standard Shipping",
               selected: true,
-              deliveryEstimate: {                              // correct Stripe format
+              deliveryEstimate: {
                 minimum: { unit: "business_day", value: 5 },
                 maximum: { unit: "business_day", value: 10 },
               },
             },
           ],
-          total: { label: "Order total", amount: newTotal },
+          total: { label: "Order total", amount: newTotal }, // Make sure total includes shipping
         });
       }}
       
@@ -92,18 +92,20 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
           amount / 100
         );
       
+        // Use currentAmount which includes shipping fee instead of just amount
         const payload = {
           items,
           userId,
           checkoutId,
           paymentIntentId,
-          shippingFee,
+          shippingFee, // Pass the shipping fee explicitly
+          totalAmount: currentAmount, // Include the updated total with shipping
           shipping: {
             name: recipient,
             address: {
               line1: addr.addressLine?.[0] ?? "",
-              city:   addr.city,
-              state:  addr.state,
+              city: addr.city,
+              state: addr.state,
               postal_code: addr.postal_code,
               country: addr.country,
             },
