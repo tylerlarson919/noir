@@ -30,7 +30,7 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items 
         },
         layout: {
           maxColumns: 3,
-          
+          overflow: "never",
         }
       }}
       onShippingAddressChange={async (event: any) => {
