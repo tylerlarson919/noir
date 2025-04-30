@@ -2,14 +2,15 @@
 "use client"
 import { useEffect, useState } from "react"
 import { useStripe, PaymentRequestButtonElement } from "@stripe/react-stripe-js"
-import type { PaymentRequest as StripePaymentRequest, PaymentRequestUpdateOptions } from "@stripe/stripe-js"
+import type { PaymentRequest as StripePaymentRequest } from "@stripe/stripe-js"
 
 interface Props { amount: number; currency: string; clientSecret: string; items: any[];}
 export default function ExpressCheckout({ amount, currency, clientSecret, items }: Props) {
   const stripe = useStripe()
   const [pr, setPr] = useState<StripePaymentRequest|null>(null)
   const [ready, setReady] = useState(false)
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null)
+  const [platform, setPlatform] = useState<'apple' | 'google' | 'link' | null>(null)
   const [paymentRequestOptions, setPaymentRequestOptions] = useState({
     country: "US",
     currency: currency.toLowerCase(),
@@ -18,6 +19,21 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items 
     requestPayerEmail: true,
     requestShipping: true,
   });
+
+  // Detect platform on first render
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const userAgent = window.navigator.userAgent.toLowerCase()
+      
+      if (/iphone|ipad|ipod|macintosh|mac os/.test(userAgent)) {
+        setPlatform('apple')
+      } else if (/android/.test(userAgent)) {
+        setPlatform('google')
+      } else {
+        setPlatform('link')
+      }
+    }
+  }, [])
   
 
   useEffect(() => {
@@ -122,16 +138,24 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items 
       
       // Check if the browser supports this payment method
       paymentRequest.canMakePayment()
-        .then(result => {
-            if (result) {
-            console.log('Can make payment:', result);
+      .then(result => {
+        if (result) {
+          console.log('Can make payment:', result);
+          // Only set the payment request if it's suitable for the platform
+          if ((platform === 'apple' && result.applePay) || 
+              (platform === 'google' && result.googlePay) ||
+              (platform === 'link')) {
             setPr(paymentRequest);
             setReady(true);
-            } else {
-            console.log('Cannot make payment - methods not available');
+          } else {
+            console.log('Payment method not appropriate for this platform');
             setReady(false);
-            }
-        })
+          }
+        } else {
+          console.log('Cannot make payment - methods not available');
+          setReady(false);
+        }
+      })
         .catch(err => {
             console.error('canMakePayment error:', err);
             setError('Could not initialize express checkout');
@@ -146,7 +170,7 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items 
         setPr(null);
         setError(null);
       };
-  }, [stripe, amount, currency, clientSecret, paymentRequestOptions, items]);
+    }, [stripe, amount, currency, clientSecret, paymentRequestOptions, items, platform]);
 
   if (error) {
     return (
@@ -156,20 +180,32 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items 
     );
   }
 
-  if (!ready || !pr) return null;
+if (!ready || !pr || !platform) return null;
 
-  return (
-    <div key={`pr-${clientSecret.substring(0, 8)}`}> {/* Add a key to force re-render */}
-      <PaymentRequestButtonElement 
-        options={{ 
-          paymentRequest: pr,
-          style: {
-            paymentRequestButton: {
-              height: '48px'
-            }
+const buttonLabel = 
+  platform === 'apple' ? 'Apple Pay' :
+  platform === 'google' ? 'Google Pay' : 
+  'Link Payment';
+
+return (
+  <div className="w-full">
+    <PaymentRequestButtonElement 
+      options={{ 
+        paymentRequest: pr,
+        style: {
+          paymentRequestButton: {
+            height: '48px',
+            theme: platform === 'apple' ? 'dark' : 
+                  platform === 'google' ? 'light' : 'dark',
           }
-        }}
-      />
-    </div>
-  );
+        }
+      }}
+    />
+    {error && (
+      <div className="text-xs text-red-500 mt-1">
+        {buttonLabel} not available: {error}
+      </div>
+    )}
+  </div>
+);
 }
