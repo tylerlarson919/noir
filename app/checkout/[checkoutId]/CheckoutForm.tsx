@@ -17,17 +17,17 @@ import { useRef } from "react";
 import { debounce } from "lodash";
 
 export default function CheckoutForm({
-  onShippingChange,
-  paymentIntentId,
-}: {
-  paymentIntentId: string;
-  onShippingChange: (addr: {
-    country: string;
-    region?: string;
-    postalCode?: string;
-    fee: number;
-  }) => void;
-}) {
+    onShippingChange,
+    paymentIntentId,
+  }: {
+    paymentIntentId: string;
+    onShippingChange: (addr: {
+      country: string;
+      region?: string;
+      postalCode?: string;
+      fee: number;
+    }) => void;
+  }) {
   // pull the current checkoutId from the URL
   const params = useParams();
   const checkoutId = params.checkoutId as string;
