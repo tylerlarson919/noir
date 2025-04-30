@@ -40,11 +40,11 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
         },
       }}
       
-      onShippingAddressChange={async (event: any) => {
+      onShippingAddressChange={async (event) => {
         const { address: addr, resolve, reject } = event;
         
         if (!addr.country || !addr.postal_code) {
-          reject({ error: "Invalid shipping address" });
+          reject();
           return;
         }
       
@@ -60,24 +60,34 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
         const newTotal = amount + shippingAmount;
         setCurrentAmount(newTotal);
         
-        resolve({
+        // Update the payload with proper types for deliveryEstimate
+        const payload = {
           shippingRates: [
             {
               id: "standard",
               amount: shippingAmount,
               displayName: shippingFee === 0 ? "Free Shipping" : "Standard Shipping",
-              selected: true,
+              // Format deliveryEstimate according to Stripe's expected type
               deliveryEstimate: {
-                minimum: { unit: "business_day", value: 5 },
-                maximum: { unit: "business_day", value: 10 },
-              },
-            },
+                minimum: {
+                  unit: "business_day" as const, // Use 'as const' to ensure correct type
+                  value: 5
+                },
+                maximum: {
+                  unit: "business_day" as const,
+                  value: 10
+                }
+              }
+            }
           ],
-          total: { 
-            label: "Order total", 
-            amount: newTotal
-          },
-        });
+          // Optional: include line items
+          lineItems: items.map(item => ({
+            name: item.name,
+            amount: Math.round(item.price * item.quantity * 100)
+          }))
+        };
+        
+        resolve(payload);
       }}
       
       
