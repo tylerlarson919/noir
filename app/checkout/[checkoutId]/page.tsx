@@ -7,13 +7,15 @@ import { useTheme } from "next-themes";
 import Image from "next/image";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
-import ExpressCheckout from "./ExpressCheckout";
-import WalletPayButton from "./WalletPayButton";
 import CheckoutForm from "./CheckoutForm";
 import { useParams, useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
 import Link from "next/link";
 import ShippingPolicyModal from "@/components/shippingPolicyModal";
+import ExpressCheckout from "./ExpressCheckout";
+
+
+
 // Initialize Stripe outside of component
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
@@ -194,33 +196,25 @@ export default function CheckoutPage() {
           {clientSecret && (
             <Elements
               stripe={stripePromise}
-              options={{
+              options={({
+                mode: "payment",
+                amount: Math.round(orderTotal * 100),
+                currency,
                 clientSecret,
-                appearance: {
-                  theme: isDarkMode ? "night" : "stripe",
-                },
-              }}
+                appearance: { theme: isDarkMode ? "night" : "stripe" },
+              } as any)}
             >
               {/* Express checkout */}
               <div className="mb-8">
                 <p className="text-center text-sm text-gray-500 dark:text-textaccent mb-3">
                   Express checkout
                 </p>
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
-                  <div className="col-span-2 lg:col-span-1">
-                    <ExpressCheckout 
-                      amount={Math.round(orderTotal * 100)} 
-                      currency={currency} 
-                      clientSecret={clientSecret} 
-                      items={items}
-                    />
-                  </div>
-                  <WalletPayButton 
-                    amount={Math.round(orderTotal * 100)} 
-                    currency={currency} 
-                    clientSecret={clientSecret}
-                    items={items}
-                  />
+                <div className="grid grid-cols-2 gap-2">
+                <ExpressCheckout
+                  amount={Math.round(orderTotal * 100)}
+                  currency={currency}
+                  clientSecret={clientSecret}
+                />
                   <button
                     onClick={() => console.log("payPal")}
                     className="bg-[#FFC439] py-3 rounded"
