@@ -38,11 +38,9 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
         }
       }}
       onShippingAddressChange={async (event: any) => {
-        const { shipping, resolve, reject } = event;
-        console.log("shipping object", shipping);
+        const { shippingAddress: addr, resolve, reject } = event;
+        console.log("shippingAddress", addr);
         
-        // address is under shipping.address
-        const addr = shipping.address;
         if (!addr.country || !addr.postalCode) {
           reject({ error: "Invalid shipping address" });
           return;
@@ -73,7 +71,7 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
       }}
       
       onConfirm={async (event: any) => {
-        const addr = event.shipping.address;
+        const addr = event.shippingAddress;
         const { fee: shippingFee } = getShippingFee(
           addr.country,
           addr.region ?? null,
@@ -109,7 +107,7 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
           confirmParams: {
             return_url: `${window.location.origin}/checkout/success?payment_intent={PAYMENT_INTENT_ID}`,
             shipping: {
-              name: event.shipping.recipient ?? "",
+              name: addr.recipient ?? "",
               address: {
                 line1: addr.addressLine?.[0] ?? "",
                 city: addr.city,
