@@ -39,6 +39,7 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
           maxColumns: 3,
         },
       }}
+      
       onShippingAddressChange={async (event: any) => {
         const { address: addr, resolve, reject } = event;
         console.log("shipping address change →", addr);
@@ -48,21 +49,29 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
           return;
         }
       
+        // Calculate shipping fee based on the product amount (not including previous shipping)
         const { fee: shippingFee } = getShippingFee(
           addr.country,
           addr.state ?? null,
-          amount / 100
+          amount / 100 // Convert cents to dollars for fee calculation
         );
-        const newTotal = amount + Math.round(shippingFee * 100);
-        setCurrentAmount(newTotal); // This updates the state but needs to be used in onConfirm
-      
+        
+        // Convert shipping fee to cents and add to base amount
+        const shippingAmount = Math.round(shippingFee * 100);
+        const newTotal = amount + shippingAmount;
+        
+        // Update component state
+        setCurrentAmount(newTotal);
+        
+        console.log(`Base amount: ${amount}, Shipping: ${shippingAmount}, New total: ${newTotal}`);
+        
+        // Provide the correct payload structure to Stripe
         resolve({
           shippingRates: [
             {
               id: "standard",
-              amount: Math.round(shippingFee * 100),
-              displayName:
-                shippingFee === 0 ? "Free Shipping" : "Standard Shipping",
+              amount: shippingAmount,
+              displayName: shippingFee === 0 ? "Free Shipping" : "Standard Shipping",
               selected: true,
               deliveryEstimate: {
                 minimum: { unit: "business_day", value: 5 },
@@ -70,36 +79,38 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
               },
             },
           ],
-          total: { label: "Order total", amount: newTotal }, // Make sure total includes shipping
+          total: { 
+            label: "Order total", 
+            amount: newTotal,
+            breakdown: {
+              discounts: [],
+              taxes: [],
+              shipping: {
+                amount: shippingAmount,
+                label: "Shipping"
+              }
+            }
+          },
         });
       }}
       
-      onShippingRateChange={async (event: any) => {
-        // when user picks another rate, recalc the total
-        const { shippingOption, resolve } = event;
-        const newTotal = amount + shippingOption.amount;
-        setCurrentAmount(newTotal);
-        resolve({
-          total: { label: "Order total", amount: newTotal },
-        });
-      }}
-
       onConfirm={async (event: any) => {
-        const { address: addr, name: recipient } = event;
-        const { fee: shippingFee } = getShippingFee(
-          addr.country,
-          addr.state ?? null,
-          amount / 100
-        );
+        const { address: addr, name: recipient, shippingOption } = event;
+        console.log("Confirm event →", event);
       
-        // Use currentAmount which includes shipping fee instead of just amount
+        // Get the shipping fee - but ensure we're using the rate that was selected
+        const shippingAmount = shippingOption?.amount || 0;
+        const shippingFee = shippingAmount / 100; // Convert cents to dollars
+        
+        console.log(`Confirming payment with total: ${currentAmount} (includes shipping: ${shippingAmount})`);
+      
         const payload = {
           items,
           userId,
           checkoutId,
           paymentIntentId,
-          shippingFee, // Pass the shipping fee explicitly
-          totalAmount: currentAmount, // Include the updated total with shipping
+          shippingFee,
+          totalAmount: currentAmount, // This is our state that includes the shipping
           shipping: {
             name: recipient,
             address: {
@@ -111,6 +122,8 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
             },
           },
         };
+      
+        console.log("Sending payload:", payload);
       
         const res = await fetch(
           `${window.location.origin}/api/create-checkout-session`, // absolute path
