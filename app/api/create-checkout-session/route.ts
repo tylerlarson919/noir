@@ -25,17 +25,30 @@ type RequestBody = {
 export async function POST(req: NextRequest) {
   try {
     const { items, userId, customerEmail, checkoutId, shipping, paymentIntentId }:
-      RequestBody & { 
-        shipping?: { country: string; region?: string; postalCode?: string; },
-        paymentIntentId?: string
-      } = await req.json();
+    RequestBody & {
+      shipping?: {
+        name: string;
+        address: {
+          line1: string;
+          city: string;
+          state: string;
+          postal_code: string;
+          country: string;
+        };
+      };
+      paymentIntentId?: string;
+    } = await req.json();
       
     // compute subtotal
     const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
     
     // compute shipping
     const { fee: shippingFee, currency } = shipping
-      ? getShippingFee(shipping.country, shipping.region || null, subtotal)
+      ? getShippingFee(
+          shipping.address.country,
+          shipping.address.state || null,
+          subtotal
+        )
       : { fee: 0, currency: "usd" };
       
     const totalAmount = Math.round((subtotal + shippingFee) * 100); // in cents
@@ -52,10 +65,14 @@ export async function POST(req: NextRequest) {
     // If we have a payment intent ID and shipping changes, update the payment intent
     if (shipping && paymentIntentId) {
       const updatedIntent = await stripe.paymentIntents.update(paymentIntentId, {
-        amount: totalAmount,                // <— new total including shipping
+        amount: totalAmount,            // <— this is the key!
+        shipping: {
+          name:    shipping.name,
+          address: shipping.address,
+        },
         metadata: {
-          shippingFee: shippingFee.toString()
-        }
+          shippingFee: shippingFee.toString(),
+        },
       });
       
       return NextResponse.json({
