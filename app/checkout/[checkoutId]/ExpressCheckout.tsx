@@ -36,10 +36,11 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
           maxColumns: 3,
         }
       }}
-      onShippingAddressChange={async ({ shippingAddress, updateWith }: any) => {
-        // ➊ always answer the event – never early-return without updateWith
+      onShippingAddressChange={async (event: any) => {
+        const { shippingAddress, resolve, reject } = event;     // ← use resolve / reject
+      
         if (!shippingAddress) {
-          updateWith({ error: "Missing shipping address" });
+          reject({ error: "Missing shipping address" });
           return;
         }
       
@@ -56,21 +57,22 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
         };
       
         try {
-          // ➋ abort the request if it takes too long so we still resolve <20 s
+          // abort after 15 s – we must answer within Stripe’s 20 s window
           const controller = new AbortController();
-          const timeout = setTimeout(() => controller.abort(), 15_000); // 15 s
+          const timer = setTimeout(() => controller.abort(), 15_000);
+      
           const res = await fetch("/api/create-checkout-session", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
             signal: controller.signal,
           });
-          clearTimeout(timeout);
       
+          clearTimeout(timer);
           if (!res.ok) throw new Error("Failed to fetch shipping quote");
           const { shippingFee, totalAmount } = await res.json();
       
-          updateWith({
+          resolve({
             shippingOptions: [
               {
                 id: "standard",
@@ -83,8 +85,7 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
           });
         } catch (err) {
           console.error(err);
-          // ➌ ALWAYS resolve/reject so the 20-second timer in the browser stops
-          updateWith({ error: "Unable to calculate shipping, please try again." });
+          reject({ error: "Unable to calculate shipping, please try again." });
         }
       }}
       onConfirm={async (event: any) => {
