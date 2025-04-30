@@ -83,11 +83,16 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
           userId,
           checkoutId,
           paymentIntentId,
-          shippingFee,                     // 👈 send to backend
+          shippingFee,
           shipping: {
-            country: addr.country,
-            region: addr.state,
-            postalCode: addr.postal_code,
+            name: recipient,
+            address: {
+              line1: addr.addressLine?.[0] ?? "",
+              city:   addr.city,
+              state:  addr.state,
+              postal_code: addr.postal_code,
+              country: addr.country,
+            },
           },
         };
       
@@ -107,11 +112,11 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
           confirmParams: {
             return_url: `${window.location.origin}/checkout/success?payment_intent={PAYMENT_INTENT_ID}`,
             shipping: {
-              name: addr.recipient ?? "",
+              name: recipient,
               address: {
-                line1: "",
-                city: addr.city,
-                state: addr.state,
+                line1: addr.addressLine?.[0] ?? "",
+                city:   addr.city,
+                state:  addr.state,
                 postal_code: addr.postal_code,
                 country: addr.country,
               },
