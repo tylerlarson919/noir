@@ -39,13 +39,14 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
       }}
       onShippingAddressChange={async (event: any) => {
         const { shippingAddress, resolve, reject } = event;
+
+        // 👉 debug
+        console.log("shipping object", shippingAddress);
       
         if (!shippingAddress?.country || !shippingAddress?.postalCode) {
           reject({ error: "Invalid shipping address" });
           return;
         }
-        // 👉 debug
-        console.log("shipping object", shippingAddress);
 
         const { fee: shippingFee } = getShippingFee(
           shippingAddress.country,
