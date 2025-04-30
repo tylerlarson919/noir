@@ -1,5 +1,6 @@
 "use client";
 import { ExpressCheckoutElement, useElements, useStripe } from "@stripe/react-stripe-js";
+import { getShippingFee } from "@/lib/shipping";
 
 
 interface ExpressCheckoutProps {
@@ -37,82 +38,73 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
         }
       }}
       onShippingAddressChange={async (event: any) => {
-        const { shippingAddress, resolve, reject } = event;     // ← use resolve / reject
-      
-        if (!shippingAddress) {
+        const { shippingAddress, resolve, reject } = event;
+        if (!shippingAddress?.country) {
           reject({ error: "Missing shipping address" });
           return;
         }
       
+        /* ➊ calculate fee locally exactly once */
+        const { fee: shippingFee } = getShippingFee(
+          shippingAddress.country,
+          shippingAddress.region ?? null,
+          amount / 100 /* subtotal in major units */
+        );
+        const newTotal = amount + Math.round(shippingFee * 100);
+      
+        resolve({
+          shippingOptions: [
+            {
+              id: "standard",
+              label: "Standard Shipping",
+              amount: Math.round(shippingFee * 100),
+              detail:
+                shippingFee === 0 ? "Free Shipping" : "5-10 business days",
+            },
+          ],
+          total: { label: "Order total", amount: newTotal },
+        });
+      }}
+      
+      onConfirm={async (event: any) => {
+        /* ➋ create / update PI with the final shipping fee */
         const payload = {
           items,
           userId,
           checkoutId,
           paymentIntentId,
           shipping: {
-            country: shippingAddress.country,
-            region: shippingAddress.region,
-            postalCode: shippingAddress.postalCode,
+            country: event.shippingAddress?.country,
+            region: event.shippingAddress?.region,
+            postalCode: event.shippingAddress?.postalCode,
           },
         };
       
-        try {
-          // abort after 15 s – we must answer within Stripe’s 20 s window
-          const controller = new AbortController();
-          const timer = setTimeout(() => controller.abort(), 15_000);
-      
-          const res = await fetch("/api/create-checkout-session", {
+        const res = await fetch(
+          `${window.location.origin}/api/create-checkout-session`, // absolute path
+          {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
-            signal: controller.signal,
-          });
-      
-          clearTimeout(timer);
-          if (!res.ok) throw new Error("Failed to fetch shipping quote");
-          const { shippingFee, totalAmount } = await res.json();
-      
-          resolve({
-            shippingOptions: [
-              {
-                id: "standard",
-                label: "Standard Shipping",
-                detail: shippingFee === 0 ? "Free Shipping" : "5-10 business days",
-                amount: Math.round(shippingFee * 100),
-              },
-            ],
-            total: { label: "Order total", amount: totalAmount },
-          });
-        } catch (err) {
-          console.error(err);
-          reject({ error: "Unable to calculate shipping, please try again." });
-        }
-      }}
-      onConfirm={async (event: any) => {
-        // 1) hit your API to (re)create/update the PI and get back clientSecret
-        const res = await fetch("/api/create-checkout-session", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ /* same payload you already have */ }),
-        });
+          }
+        );
         const { checkoutSessionClientSecret } = await res.json();
-
-        // 2) confirm it
+      
         const { error } = await stripe.confirmPayment({
           elements,
           clientSecret: checkoutSessionClientSecret,
           confirmParams: {
             return_url: `${window.location.origin}/checkout/success?payment_intent={PAYMENT_INTENT_ID}`,
             shipping: {
-             name: (event as any).shippingAddress?.recipient || "",
-             address: {
-               line1: (event as any).shippingAddress?.addressLine?.[0] || "",
-               city: (event as any).shippingAddress?.city || "",
-               state: (event as any).shippingAddress?.region || "",
-               postal_code: (event as any).shippingAddress?.postalCode || "",
-               country: (event as any).shippingAddress?.country || "",
-             },
-           },
+              name: event.shippingAddress?.recipient ?? "",
+              address: {
+                line1: event.shippingAddress?.addressLine?.[0] ?? "",
+                city: event.shippingAddress?.city ?? "",
+                state: event.shippingAddress?.region ?? "",
+                postal_code: event.shippingAddress?.postalCode ?? "",
+                country: event.shippingAddress?.country ?? "",
+              },
+            },
           },
         });
         if (error) console.error(error);
