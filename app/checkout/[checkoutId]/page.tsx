@@ -8,6 +8,7 @@ import Image from "next/image";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import ExpressCheckout from "./ExpressCheckout";
+import WalletPayButton from "./WalletPayButton";
 import CheckoutForm from "./CheckoutForm";
 import { useParams, useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
@@ -214,12 +215,12 @@ export default function CheckoutPage() {
                       items={items}
                     />
                   </div>
-                  <button
-                    onClick={() => console.log("shopPay")}
-                    className="bg-[#5A31F4] text-white py-3 rounded"
-                  >
-                    Shop Pay
-                  </button>
+                  <WalletPayButton 
+                    amount={Math.round(orderTotal * 100)} 
+                    currency={currency} 
+                    clientSecret={clientSecret}
+                    items={items}
+                  />
                   <button
                     onClick={() => console.log("payPal")}
                     className="bg-[#FFC439] py-3 rounded"
