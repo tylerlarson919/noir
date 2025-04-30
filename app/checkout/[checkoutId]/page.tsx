@@ -259,7 +259,7 @@ export default function CheckoutPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </div>
-              <p className="text-xl font-medium">${totalPrice.toFixed(2)}</p>
+              <p className="text-xl font-medium">${(totalPrice ?? 0).toFixed(2)}</p>
             </button>
           </div>
           <div className={`${isSummaryVisible ? 'max-h-[1000px] mt-4' : 'max-h-0'} lg:max-h-[1000px] overflow-hidden transition-all duration-300 ease-in-out lg:overflow-visible`}>
@@ -315,7 +315,7 @@ export default function CheckoutPage() {
                 <span className="text-sm">
                   Subtotal • {items.reduce((total, item) => total + item.quantity, 0)} {items.reduce((total, item) => total + item.quantity, 0) === 1 ? 'item' : 'items'}
                 </span>
-                <span>${totalPrice.toFixed(2)}</span>
+                <span>${(totalPrice ?? 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between py-2">
                 <div className="flex flex-row items-center gap-2">
@@ -327,7 +327,7 @@ export default function CheckoutPage() {
                   </button>
                 </div>
                 {shippingAddress ? (
-                  <span>${shippingFee.toFixed(2)}</span>
+                  <span>${(shippingFee ?? 0).toFixed(2)}</span>
                 ) : (
                   <span className="text-gray-500 dark:text-gray-300 text-sm">Enter shipping address</span>
                 )}
@@ -341,7 +341,7 @@ export default function CheckoutPage() {
                     {currency.toUpperCase()}
                   </span>
                   <span className="font-medium text-lg">
-                    ${orderTotal.toFixed(2)}
+                    ${(orderTotal ?? 0).toFixed(2)}
                   </span>
                 </div>
               </div>
