@@ -47,6 +47,7 @@ export default function CheckoutPage() {
     postalCode?: string
   } | null>(null);
   const [paymentIntentId, setPaymentIntentId] = useState("");
+  const [isShippingCalculated, setIsShippingCalculated] = useState(false);
 
   useEffect(() => {
     setIsDarkMode(resolvedTheme === "dark");
@@ -152,6 +153,11 @@ export default function CheckoutPage() {
     );
   }
 
+  const handleShippingFeeSelected = (fee: number) => {
+    setShippingFee(fee);
+    setIsShippingCalculated(true);
+  };
+
   return (
     <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10 relative">
       <ShippingPolicyModal 
@@ -207,15 +213,16 @@ export default function CheckoutPage() {
                   Express checkout
                 </p>
                 <div className="w-full">
-                  <ExpressCheckout
-                    amount={Math.round(totalPrice * 100)}  // Start with just product price
-                    currency={currency}
-                    clientSecret={clientSecret}
-                    items={items}
-                    userId={user?.uid || "guest-user"}
-                    checkoutId={checkoutId}
-                    paymentIntentId={paymentIntentId}
-                  />
+                <ExpressCheckout
+                  amount={Math.round(totalPrice * 100)}  // Start with just product price
+                  currency={currency}
+                  clientSecret={clientSecret}
+                  items={items}
+                  userId={user?.uid || "guest-user"}
+                  checkoutId={checkoutId}
+                  paymentIntentId={paymentIntentId}
+                  onShippingChange={handleShippingFeeSelected}
+                />
                 </div>
                 <div className="flex items-center my-4">
                   <div className="flex-grow h-px bg-gray-200 dark:bg-textaccent/40 " />
@@ -319,14 +326,14 @@ export default function CheckoutPage() {
               </div>
               <div className="flex justify-between py-2">
                 <div className="flex flex-row items-center gap-2">
-                  <span className="text-sm">Shipping</span>
+                <span className="text-sm">Shipping</span>
                   <button onClick={openShippingPolicy}>
                     <svg className="w-4 h-4 text-gray-500 dark:text-gray-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                       <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
                     </svg>
                   </button>
                 </div>
-                {shippingAddress ? (
+                {isShippingCalculated ? (
                   <span>${(shippingFee ?? 0).toFixed(2)}</span>
                 ) : (
                   <span className="text-gray-500 dark:text-gray-300 text-sm">Enter shipping address</span>

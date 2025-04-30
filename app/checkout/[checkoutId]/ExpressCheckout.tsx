@@ -11,11 +11,23 @@ interface ExpressCheckoutProps {
   userId: string;
   checkoutId: string;
   paymentIntentId: string;
+  onShippingChange: (shippingFee: number, paymentIntentId: string) => void; // Updated prop
 }
 
-export default function ExpressCheckout({ amount, currency, clientSecret, items, userId, checkoutId, paymentIntentId }: ExpressCheckoutProps) {
+export default function ExpressCheckout({ 
+  amount, 
+  currency, 
+  clientSecret, 
+  items, 
+  userId, 
+  checkoutId, 
+  paymentIntentId, 
+  onShippingChange 
+}: ExpressCheckoutProps) {
   const stripe = useStripe();
   const elements = useElements();
+  const [shippingFee, setShippingFee] = useState(0);
+
   if (!stripe || !elements) return null;
 
   return (
@@ -37,7 +49,6 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
           maxColumns: 3,
         },
       }}
-      
       onShippingAddressChange={async (event) => {
         try {
           const { address: addr, resolve, reject } = event;
@@ -49,22 +60,25 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
           }
         
           // Calculate shipping fee
-          const { fee: shippingFee } = getShippingFee(
+          const { fee } = getShippingFee(
             addr.country,
             addr.state ?? null,
             amount / 100
           );
           
+          setShippingFee(fee);
+          onShippingChange(fee, paymentIntentId); // Notify parent with fee and paymentIntentId
+
           // Convert shipping fee to cents
-          const shippingAmount = Math.round(shippingFee * 100);
+          const shippingAmount = Math.round(fee * 100);
           
-          // Create a properly formatted payload for Stripe
+          // Create payload for Stripe
           const payload = {
             shippingRates: [
               {
                 id: "standard",
                 amount: shippingAmount,
-                displayName: shippingFee === 0 ? "Free Shipping" : "Standard Shipping",
+                displayName: fee === 0 ? "Free Shipping" : "Standard Shipping",
                 deliveryEstimate: {
                   minimum: {
                     unit: "business_day" as const,
@@ -79,16 +93,12 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
             ]
           };
           
-          // Call resolve with the payload
           resolve(payload);
         } catch (error) {
           console.error("Error in shipping address change handler:", error);
           event.reject();
         }
       }}
-      
-      
-      
       onConfirm={async (event) => {
         try {
           const { error } = await stripe.confirmPayment({
