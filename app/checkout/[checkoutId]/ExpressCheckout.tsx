@@ -19,7 +19,7 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items 
         billingAddressRequired: true,
         shippingAddressRequired: true,
         buttonType: {
-          applePay: "plain" // try "buy" also
+          applePay: "plain"
         },
         paymentMethods: {
           amazonPay: "never",
@@ -27,6 +27,10 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items 
           googlePay: "auto",
           link: "auto", 
           paypal: "auto",
+        },
+        layout: {
+          maxColumns: 3,
+          
         }
       }}
       onShippingAddressChange={async (event: any) => {
