@@ -5,174 +5,117 @@ import { useStripe, PaymentRequestButtonElement } from "@stripe/react-stripe-js"
 import type { PaymentRequest as StripePaymentRequest } from "@stripe/stripe-js"
 
 interface Props { amount: number; currency: string; clientSecret: string; items: any[];}
+// ExpressCheckout.tsx - Replace the component with this updated version
 export default function ExpressCheckout({ amount, currency, clientSecret, items }: Props) {
   const stripe = useStripe()
-  const [pr, setPr] = useState<StripePaymentRequest|null>(null)
-  const [ready, setReady] = useState(false)
+  const [paymentRequest, setPaymentRequest] = useState<StripePaymentRequest|null>(null)
+  const [canMakePayment, setCanMakePayment] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [platform, setPlatform] = useState<'apple' | 'google' | 'link' | null>(null)
-  const [paymentRequestOptions, setPaymentRequestOptions] = useState({
-    country: "US",
-    currency: currency.toLowerCase(),
-    total: { label: "Order Total", amount },
-    requestPayerName: true,
-    requestPayerEmail: true,
-    requestShipping: true,
-  });
-
-  // Detect platform on first render
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const userAgent = window.navigator.userAgent.toLowerCase()
-      
-      if (/iphone|ipad|ipod|macintosh|mac os/.test(userAgent)) {
-        setPlatform('apple')
-      } else if (/android/.test(userAgent)) {
-        setPlatform('google')
-      } else {
-        setPlatform('link')
-      }
-    }
-  }, [])
-  
 
   useEffect(() => {
     if (!stripe || !clientSecret) return;
-    setReady(false);
-    setPr(null);
-    setError(null);
     
-    try {
-        // Create payment request with the current options
-        const paymentRequest = stripe.paymentRequest(paymentRequestOptions);
+    setIsLoading(true);
+    
+    const pr = stripe.paymentRequest({
+      country: 'US',
+      currency: currency.toLowerCase(),
+      total: {
+        label: 'Order Total',
+        amount: amount,
+      },
+      requestPayerName: true,
+      requestPayerEmail: true,
+      requestShipping: true,
+    });
+    
+    // Set up event handlers
+    pr.on('paymentmethod', async (event) => {
+      try {
+        const { error: confirmError, paymentIntent } = await stripe.confirmCardPayment(
+          clientSecret,
+          { payment_method: event.paymentMethod.id },
+          { handleActions: false }
+        );
         
-        // Add a cancel event handler to clear state when popup is closed
-        paymentRequest.on('cancel', () => {
-          console.log('Payment request cancelled by user');
-          // Force reset of the payment request
-          setPr(null);
-          setReady(false);
+        if (confirmError) {
+          event.complete('fail');
+          setError(confirmError.message || 'Payment failed');
+        } else {
+          event.complete('success');
           
-          // Small delay before allowing to create a new payment request
-          setTimeout(() => {
-            setReady(true);
-            setPr(paymentRequest);
-          }, 100);
-        });
-
-        paymentRequest.on('shippingaddresschange', async (event) => {
-            try {
-              console.log('Shipping address changed:', event.shippingAddress);
-              
-              // Call your backend to calculate shipping options based on the address
-              const response = await fetch('/api/calculate-shipping', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  address: event.shippingAddress,
-                  items: items, 
-                  amount: amount
-                })
-              });
-              
-              const { shippingOptions, total } = await response.json();
-              
-              // Update the payment request with shipping options and total
-              event.updateWith({
-                status: 'success',
-                shippingOptions: shippingOptions,
-                total: {
-                  label: 'Order Total',
-                  amount: total
-                }
-              });
-            } catch (error) {
-              console.error('Error calculating shipping:', error);
-              // If there's an error, update with a failure status
-              event.updateWith({ status: 'invalid_shipping_address' });
-            }
-          });
-
-      // Improve the payment method handler
-      paymentRequest.on('paymentmethod', async (event) => {
-        try {
-          console.log('Payment method received:', event.paymentMethod.id);
-          
-          const { error: confirmError, paymentIntent } = await stripe.confirmCardPayment(
-            clientSecret,
-            { payment_method: event.paymentMethod.id },
-            { handleActions: false }
-          );
-          
-          if (confirmError) {
-            console.error('Express checkout error:', confirmError);
-            event.complete('fail');
-            setError(confirmError.message || 'Payment failed');
-          } else {
-            event.complete('success');
-            
-            // Let Stripe handle redirects for auth if needed
-            if (paymentIntent?.status === 'requires_action') {
-              console.log('Payment requires authentication');
-              const { error } = await stripe.confirmCardPayment(clientSecret);
-              if (error) {
-                console.error('Payment authentication failed:', error);
-                setError(error.message || 'Payment authentication failed');
-              } else if (paymentIntent?.id) {
-                // Successful authentication, redirect to success page
-                window.location.href = `${window.location.origin}/checkout/success?payment_intent=${paymentIntent.id}`;
-              }
+          if (paymentIntent?.status === 'requires_action') {
+            const { error } = await stripe.confirmCardPayment(clientSecret);
+            if (error) {
+              setError(error.message || 'Payment authentication failed');
             } else if (paymentIntent?.id) {
-              // Immediate success without authentication, redirect to success page
               window.location.href = `${window.location.origin}/checkout/success?payment_intent=${paymentIntent.id}`;
             }
-            
-            console.log('Payment successful!');
+          } else if (paymentIntent?.id) {
+            window.location.href = `${window.location.origin}/checkout/success?payment_intent=${paymentIntent.id}`;
           }
-        } catch (err) {
-          console.error('Payment handler error:', err);
-          event.complete('fail');
-          setError('Payment processing error');
         }
-      });
-      
-      // Check if the browser supports this payment method
-      paymentRequest.canMakePayment()
-      .then(result => {
-        if (result) {
-          console.log('Can make payment:', result);
-          // Only set the payment request if it's suitable for the platform
-          if ((platform === 'apple' && result.applePay) || 
-              (platform === 'google' && result.googlePay) ||
-              (platform === 'link')) {
-            setPr(paymentRequest);
-            setReady(true);
-          } else {
-            console.log('Payment method not appropriate for this platform');
-            setReady(false);
-          }
-        } else {
-          console.log('Cannot make payment - methods not available');
-          setReady(false);
-        }
-      })
-        .catch(err => {
-            console.error('canMakePayment error:', err);
-            setError('Could not initialize express checkout');
+      } catch (err) {
+        console.error('Payment handler error:', err);
+        event.complete('fail');
+        setError('Payment processing error');
+      }
+    });
+    
+    pr.on('shippingaddresschange', async (event) => {
+      try {
+        const response = await fetch('/api/calculate-shipping', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            address: event.shippingAddress,
+            items: items,
+            amount: amount
+          })
         });
-    } catch (err) {
-        console.error('Express checkout setup error:', err);
-        setError('Express checkout initialization failed');
-    }
-    // Cleanup function remains the same
+        
+        const { shippingOptions, total } = await response.json();
+        
+        event.updateWith({
+          status: 'success',
+          shippingOptions: shippingOptions,
+          total: {
+            label: 'Order Total',
+            amount: total
+          }
+        });
+      } catch (error) {
+        event.updateWith({ status: 'invalid_shipping_address' });
+      }
+    });
+    
+    // Check if Apple Pay or Google Pay is available
+    pr.canMakePayment().then(result => {
+      if (result) {
+        setPaymentRequest(pr);
+        setCanMakePayment(true);
+      } else {
+        setError('Apple Pay and Google Pay are not available on this device/browser');
+      }
+      setIsLoading(false);
+    });
+    
     return () => {
-        setReady(false);
-        setPr(null);
-        setError(null);
-      };
-    }, [stripe, amount, currency, clientSecret, paymentRequestOptions, items, platform]);
+      setPaymentRequest(null);
+      setCanMakePayment(false);
+    };
+  }, [stripe, amount, currency, clientSecret, items]);
 
-  if (error) {
+  if (isLoading) {
+    return (
+      <button disabled className="bg-gray-200 dark:bg-gray-700 text-gray-500 py-3 rounded w-full">
+        Loading payment options...
+      </button>
+    );
+  }
+
+  if (error || !canMakePayment || !paymentRequest) {
     return (
       <button disabled className="bg-gray-200 dark:bg-gray-700 text-gray-500 py-3 rounded w-full">
         Apple/Google Pay unavailable
@@ -180,32 +123,18 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items 
     );
   }
 
-if (!ready || !pr || !platform) return null;
-
-const buttonLabel = 
-  platform === 'apple' ? 'Apple Pay' :
-  platform === 'google' ? 'Google Pay' : 
-  'Link Payment';
-
-return (
-  <div className="w-full">
+  return (
     <PaymentRequestButtonElement 
       options={{ 
-        paymentRequest: pr,
+        paymentRequest: paymentRequest,
         style: {
           paymentRequestButton: {
-            height: '48px',
-            theme: platform === 'apple' ? 'dark' : 
-                  platform === 'google' ? 'light' : 'dark',
+            type: 'default', // 'default', 'book', 'buy', or 'donate'
+            theme: 'dark', // 'dark', 'light', or 'light-outline'
+            height: '48px'
           }
         }
       }}
     />
-    {error && (
-      <div className="text-xs text-red-500 mt-1">
-        {buttonLabel} not available: {error}
-      </div>
-    )}
-  </div>
-);
+  );
 }

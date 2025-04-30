@@ -206,9 +206,17 @@ export default function CheckoutPage() {
                   Express checkout
                 </p>
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
+                  <div className="col-span-2 lg:col-span-1">
+                    <ExpressCheckout 
+                      amount={Math.round(orderTotal * 100)} 
+                      currency={currency} 
+                      clientSecret={clientSecret} 
+                      items={items}
+                    />
+                  </div>
                   <button
                     onClick={() => console.log("shopPay")}
-                    className="bg-[#5A31F4] text-white py-3 rounded col-span-2 lg:col-span-1"
+                    className="bg-[#5A31F4] text-white py-3 rounded"
                   >
                     Shop Pay
                   </button>
@@ -218,7 +226,6 @@ export default function CheckoutPage() {
                   >
                     PayPal
                   </button>
-                  <ExpressCheckout amount={Math.round(orderTotal * 100)} currency={currency} clientSecret={clientSecret} items={items}/>
                 </div>
                 <div className="flex items-center my-4">
                   <div className="flex-grow h-px bg-gray-200 dark:bg-textaccent/40 " />
