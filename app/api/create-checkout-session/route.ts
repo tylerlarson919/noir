@@ -52,6 +52,7 @@ export async function POST(req: NextRequest) {
     // If we have a payment intent ID and shipping changes, update the payment intent
     if (shipping && paymentIntentId) {
       const updatedIntent = await stripe.paymentIntents.update(paymentIntentId, {
+        amount: totalAmount,                // <— new total including shipping
         metadata: {
           shippingFee: shippingFee.toString()
         }
