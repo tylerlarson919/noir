@@ -29,7 +29,7 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items 
           paypal: "auto",
         },
         layout: {
-          maxColumns: 3,
+          maxRows: 3,
           overflow: "never",
         }
       }}
