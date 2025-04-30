@@ -38,17 +38,17 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
         }
       }}
       onShippingAddressChange={async (event: any) => {
-        const { shippingAddress: addr, resolve, reject } = event;
-        console.log("shippingAddress", addr);
+        const { address: addr, resolve, reject } = event;
+        console.log("shipping address change →", addr);
         
-        if (!addr.country || !addr.postalCode) {
+        if (!addr.country || !addr.postal_code) {
           reject({ error: "Invalid shipping address" });
           return;
         }
 
         const { fee: shippingFee } = getShippingFee(
           addr.country,
-          addr.region ?? null,
+          addr.state ?? null,
           amount / 100
         );
         const newTotal = amount + Math.round(shippingFee * 100);
@@ -71,10 +71,10 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
       }}
       
       onConfirm={async (event: any) => {
-        const addr = event.shippingAddress;
+        const { address: addr, name: recipient } = event;
         const { fee: shippingFee } = getShippingFee(
           addr.country,
-          addr.region ?? null,
+          addr.state ?? null,
           amount / 100
         );
       
@@ -86,8 +86,8 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
           shippingFee,                     // 👈 send to backend
           shipping: {
             country: addr.country,
-            region: addr.region,
-            postalCode: addr.postalCode,
+            region: addr.state,
+            postalCode: addr.postal_code,
           },
         };
       
@@ -109,10 +109,10 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
             shipping: {
               name: addr.recipient ?? "",
               address: {
-                line1: addr.addressLine?.[0] ?? "",
+                line1: "",
                 city: addr.city,
-                state: addr.region,
-                postal_code: addr.postalCode,
+                state: addr.state,
+                postal_code: addr.postal_code,
                 country: addr.country,
               },
             },
