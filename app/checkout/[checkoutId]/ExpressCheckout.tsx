@@ -42,30 +42,24 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
       
       onShippingAddressChange={async (event: any) => {
         const { address: addr, resolve, reject } = event;
-        console.log("shipping address change →", addr);
         
         if (!addr.country || !addr.postal_code) {
           reject({ error: "Invalid shipping address" });
           return;
         }
       
-        // Calculate shipping fee based on the product amount (not including previous shipping)
+        // Calculate shipping fee
         const { fee: shippingFee } = getShippingFee(
           addr.country,
           addr.state ?? null,
-          amount / 100 // Convert cents to dollars for fee calculation
+          amount / 100
         );
         
         // Convert shipping fee to cents and add to base amount
         const shippingAmount = Math.round(shippingFee * 100);
         const newTotal = amount + shippingAmount;
-        
-        // Update component state
         setCurrentAmount(newTotal);
         
-        console.log(`Base amount: ${amount}, Shipping: ${shippingAmount}, New total: ${newTotal}`);
-        
-        // Provide the correct payload structure to Stripe
         resolve({
           shippingRates: [
             {
@@ -81,36 +75,30 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
           ],
           total: { 
             label: "Order total", 
-            amount: newTotal,
-            breakdown: {
-              discounts: [],
-              taxes: [],
-              shipping: {
-                amount: shippingAmount,
-                label: "Shipping"
-              }
-            }
+            amount: newTotal
           },
         });
       }}
       
+      
       onConfirm={async (event: any) => {
         const { address: addr, name: recipient, shippingOption } = event;
-        console.log("Confirm event →", event);
-      
-        // Get the shipping fee - but ensure we're using the rate that was selected
-        const shippingAmount = shippingOption?.amount || 0;
-        const shippingFee = shippingAmount / 100; // Convert cents to dollars
         
-        console.log(`Confirming payment with total: ${currentAmount} (includes shipping: ${shippingAmount})`);
-      
+        // Get shipping fee directly from event or recalculate it
+        const { fee: shippingFee } = getShippingFee(
+          addr.country,
+          addr.state ?? null,
+          amount / 100
+        );
+        
+        // Create a new payment intent with the correct total amount
         const payload = {
           items,
           userId,
           checkoutId,
           paymentIntentId,
           shippingFee,
-          totalAmount: currentAmount, // This is our state that includes the shipping
+          totalAmount: currentAmount,
           shipping: {
             name: recipient,
             address: {
@@ -122,37 +110,46 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
             },
           },
         };
-      
-        console.log("Sending payload:", payload);
-      
-        const res = await fetch(
-          `${window.location.origin}/api/create-checkout-session`, // absolute path
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          }
-        );
-        const { checkoutSessionClientSecret } = await res.json();
-      
-        const { error } = await stripe.confirmPayment({
-          elements,
-          clientSecret: checkoutSessionClientSecret,
-          confirmParams: {
-            return_url: `${window.location.origin}/checkout/success?payment_intent={PAYMENT_INTENT_ID}`,
-            shipping: {
-              name: recipient,
-              address: {
-                line1: addr.addressLine?.[0] ?? "",
-                city:   addr.city,
-                state:  addr.state,
-                postal_code: addr.postal_code,
-                country: addr.country,
+        
+        try {
+          const res = await fetch(
+            `${window.location.origin}/api/create-checkout-session`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            }
+          );
+          
+          if (!res.ok) throw new Error('Error creating checkout session');
+          
+          const data = await res.json();
+          const { checkoutSessionClientSecret } = data;
+          
+          const { error } = await stripe.confirmPayment({
+            elements,
+            clientSecret: checkoutSessionClientSecret,
+            confirmParams: {
+              return_url: `${window.location.origin}/checkout/success?payment_intent=${paymentIntentId}`,
+              shipping: {
+                name: recipient,
+                address: {
+                  line1: addr.addressLine?.[0] ?? "",
+                  city: addr.city,
+                  state: addr.state,
+                  postal_code: addr.postal_code,
+                  country: addr.country,
+                },
               },
             },
-          },
-        });
-        if (error) console.error(error);
+          });
+          
+          if (error) {
+            console.error('Payment confirmation error:', error);
+          }
+        } catch (err) {
+          console.error('Express checkout error:', err);
+        }
       }}
     />
   );
