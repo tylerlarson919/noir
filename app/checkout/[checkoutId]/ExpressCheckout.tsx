@@ -40,15 +40,24 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items 
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ address: addr, items, amount }),
         }).then(r => r.json());
-        (event as any).updateWith({
-          shippingOptions: shippingOptions.map((o: any) => ({
-           id: o.id,
-           displayName: o.label,
-           detail: o.detail,
-           amount: o.amount,
-         })),
-         total: { label: "Order total", amount: total },
-       });
+        event.updateWith({
+          shippingOptions: shippingOptions.map(
+            (
+              { id, label, detail, amount }: {
+                id: string;
+                label: string;
+                detail: string;
+                amount: number;
+              }
+            ) => ({
+              id,
+              label,
+              detail,
+              amount,
+            })
+          ),
+          total: { label: "Order total", amount: total },
+        });
       }}
       onConfirm={async (event: any) => {
         // 1) hit your API to (re)create/update the PI and get back clientSecret
