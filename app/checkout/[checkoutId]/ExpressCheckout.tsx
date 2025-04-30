@@ -44,7 +44,9 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
           reject({ error: "Invalid shipping address" });
           return;
         }
-      
+        // 👉 debug
+        console.log("shipping object", shippingAddress);
+
         const { fee: shippingFee } = getShippingFee(
           shippingAddress.country,
           shippingAddress.region ?? null,
@@ -59,7 +61,10 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
               amount: Math.round(shippingFee * 100),
               displayName:
                 shippingFee === 0 ? "Free Shipping" : "Standard Shipping",
-              deliveryEstimate: { unit: "business_day", min: 5, max: 10 }, // <- helps GP/AppleP
+                deliveryEstimate: {                              // correct Stripe format
+                  minimum: { unit: "business_day", value: 5 },
+                  maximum: { unit: "business_day", value: 10 },
+                },
             },
           ],
           total: { label: "Order total", amount: newTotal },
