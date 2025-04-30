@@ -41,87 +41,114 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
       }}
       
       onShippingAddressChange={async (event) => {
-        const { address: addr, resolve, reject } = event;
+        try {
+          const { address: addr, resolve, reject } = event;
+          
+          if (!addr || !addr.country || !addr.postal_code) {
+            console.log("Rejecting due to incomplete shipping address");
+            reject();
+            return;
+          }
         
-        if (!addr.country || !addr.postal_code) {
-          reject();
-          return;
-        }
-      
-        // Calculate shipping fee
-        const { fee: shippingFee } = getShippingFee(
-          addr.country,
-          addr.state ?? null,
-          amount / 100
-        );
-        
-        // Convert shipping fee to cents and add to base amount
-        const shippingAmount = Math.round(shippingFee * 100);
-        const newTotal = amount + shippingAmount;
-        setCurrentAmount(newTotal);
-        
-        // Update the payload with proper types for deliveryEstimate
-        const payload = {
-          shippingRates: [
-            {
-              id: "standard",
-              amount: shippingAmount,
-              displayName: shippingFee === 0 ? "Free Shipping" : "Standard Shipping",
-              // Format deliveryEstimate according to Stripe's expected type
-              deliveryEstimate: {
-                minimum: {
-                  unit: "business_day" as const, // Use 'as const' to ensure correct type
-                  value: 5
-                },
-                maximum: {
-                  unit: "business_day" as const,
-                  value: 10
+          // Calculate shipping fee
+          const { fee: shippingFee } = getShippingFee(
+            addr.country,
+            addr.state ?? null,
+            amount / 100
+          );
+          
+          // Convert shipping fee to cents and add to base amount
+          const shippingAmount = Math.round(shippingFee * 100);
+          const newTotal = amount + shippingAmount;
+          
+          // Update state with new total amount
+          setCurrentAmount(newTotal);
+          
+          // Create a properly formatted payload for Stripe
+          const payload = {
+            shippingRates: [
+              {
+                id: "standard",
+                amount: shippingAmount,
+                displayName: shippingFee === 0 ? "Free Shipping" : "Standard Shipping",
+                deliveryEstimate: {
+                  minimum: {
+                    unit: "business_day" as const,
+                    value: 5
+                  },
+                  maximum: {
+                    unit: "business_day" as const,
+                    value: 10
+                  }
                 }
               }
-            }
-          ],
-          // Optional: include line items
-          lineItems: items.map(item => ({
-            name: item.name,
-            amount: Math.round(item.price * item.quantity * 100)
-          }))
-        };
-        
-        resolve(payload);
+            ]
+          };
+          
+          // Call resolve with the payload
+          resolve(payload);
+        } catch (error) {
+          console.error("Error in shipping address change handler:", error);
+          // Reject on error to ensure the flow continues
+          event.reject();
+        }
       }}
       
       
-      onConfirm={async (event: any) => {
-        const { address: addr, name: recipient, shippingOption } = event;
-        
-        // Get shipping fee directly from event or recalculate it
-        const { fee: shippingFee } = getShippingFee(
-          addr.country,
-          addr.state ?? null,
-          amount / 100
-        );
-        
-        // Create a new payment intent with the correct total amount
-        const payload = {
-          items,
-          userId,
-          checkoutId,
-          paymentIntentId,
-          shippingFee,
-          totalAmount: currentAmount,
-          shipping: {
-            name: recipient,
-            address: {
-              line1: addr.addressLine?.[0] ?? "",
-              city: addr.city,
-              state: addr.state,
-              postal_code: addr.postal_code,
-              country: addr.country,
-            },
-          },
-        };
-        
+      
+      onConfirm={async (event: any) => { // Use explicit any for now, or create a proper interface
         try {
+          // Type assertion for the event properties we need
+          const eventData = event as { 
+            shipping?: { 
+              address?: any,
+              name?: string 
+            }
+          };
+          
+          // Extract the data safely with optional chaining
+          const shippingAddress = eventData.shipping?.address;
+          const recipient = eventData.shipping?.name || "Customer";
+          
+          // Check if address exists before proceeding
+          if (!shippingAddress || !shippingAddress.country) {
+            console.error("Missing shipping address in confirmation event");
+            return;
+          }
+          
+          // Calculate shipping fee
+          const { fee: shippingFee } = getShippingFee(
+            shippingAddress.country,
+            shippingAddress.state ?? null,
+            amount / 100
+          );
+          
+          // Convert shipping fee to cents for consistency
+          const shippingAmount = Math.round(shippingFee * 100);
+          
+          // Use the updated total amount with shipping
+          const finalAmount = currentAmount;
+          
+          const payload = {
+            items,
+            userId,
+            checkoutId,
+            paymentIntentId,
+            shippingFee,
+            totalAmount: finalAmount,
+            shipping: {
+              name: recipient,
+              address: {
+                line1: shippingAddress.addressLine?.[0] ?? "",
+                city: shippingAddress.city,
+                state: shippingAddress.state,
+                postal_code: shippingAddress.postal_code,
+                country: shippingAddress.country,
+              },
+            },
+          };
+          
+          // Create/update payment intent with the server
           const res = await fetch(
             `${window.location.origin}/api/create-checkout-session`,
             {
@@ -131,32 +158,42 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
             }
           );
           
-          if (!res.ok) throw new Error('Error creating checkout session');
+          if (!res.ok) {
+            const errorData = await res.text();
+            throw new Error(`Error creating checkout session: ${errorData}`);
+          }
           
           const data = await res.json();
-          const { checkoutSessionClientSecret } = data;
           
-          const { error } = await stripe.confirmPayment({
+          // Make sure we have a client secret
+          if (!data.checkoutSessionClientSecret) {
+            throw new Error('Missing client secret in response');
+          }
+          
+          // Confirm the payment with clear return URL
+          const confirmResult = await stripe.confirmPayment({
             elements,
-            clientSecret: checkoutSessionClientSecret,
+            clientSecret: data.checkoutSessionClientSecret,
             confirmParams: {
               return_url: `${window.location.origin}/checkout/success?payment_intent=${paymentIntentId}`,
+              payment_method_data: {
+                billing_details: {
+                  name: recipient
+                }
+              },
               shipping: {
                 name: recipient,
                 address: {
-                  line1: addr.addressLine?.[0] ?? "",
-                  city: addr.city,
-                  state: addr.state,
-                  postal_code: addr.postal_code,
-                  country: addr.country,
+                  line1: shippingAddress.addressLine?.[0] ?? "",
+                  city: shippingAddress.city,
+                  state: shippingAddress.state,
+                  postal_code: shippingAddress.postal_code,
+                  country: shippingAddress.country,
                 },
               },
             },
           });
           
-          if (error) {
-            console.error('Payment confirmation error:', error);
-          }
         } catch (err) {
           console.error('Express checkout error:', err);
         }
