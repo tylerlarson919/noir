@@ -197,9 +197,6 @@ export default function CheckoutPage() {
             <Elements
               stripe={stripePromise}
               options={({
-                mode: "payment",
-                amount: Math.round(orderTotal * 100),
-                currency,
                 clientSecret,
                 appearance: { theme: isDarkMode ? "night" : "stripe" },
               } as any)}
