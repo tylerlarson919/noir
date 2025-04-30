@@ -29,8 +29,7 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items 
           paypal: "auto",
         },
         layout: {
-          maxRows: 3,
-          overflow: "never",
+          maxColumns: 3,
         }
       }}
       onShippingAddressChange={async (event: any) => {
