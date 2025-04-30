@@ -224,7 +224,13 @@ export default function CheckoutPage() {
                 </div>
               </div>
               
-              <CheckoutForm onShippingChange={setShippingAddress} />
+             <CheckoutForm
+              paymentIntentId={paymentIntentId}
+              onShippingChange={({ country, region, postalCode, fee }) => {
+                setShippingAddress({ country, region, postalCode });
+                setShippingFee(fee);
+              }}
+            />
             </Elements>
           )}
         </div>

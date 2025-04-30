@@ -18,11 +18,14 @@ import { debounce } from "lodash";
 
 export default function CheckoutForm({
   onShippingChange,
+  paymentIntentId,
 }: {
+  paymentIntentId: string;
   onShippingChange: (addr: {
     country: string;
     region?: string;
     postalCode?: string;
+    fee: number;
   }) => void;
 }) {
   // pull the current checkoutId from the URL
@@ -49,7 +52,7 @@ export default function CheckoutForm({
               postal_code: addr.postalCode,
             },
           },
-          paymentIntentId: checkoutId, // pass your existing PI id here
+          paymentIntentId, // pass your existing PI id here
         }),
       });
       const { checkoutSessionClientSecret, shippingFee: fee } = await res.json();

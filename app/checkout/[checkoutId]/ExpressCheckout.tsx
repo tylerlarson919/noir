@@ -2,7 +2,7 @@
 import { ExpressCheckoutElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { getShippingFee } from "@/lib/shipping";
 import { SelectItem } from "@heroui/select";
-
+import { useState } from "react";
 
 interface ExpressCheckoutProps {
   amount: number;
@@ -15,6 +15,7 @@ interface ExpressCheckoutProps {
 }
 
 export default function ExpressCheckout({ amount, currency, clientSecret, items, userId, checkoutId, paymentIntentId }: ExpressCheckoutProps) {
+  const [currentAmount, setCurrentAmount] = useState(amount);
   const stripe = useStripe();
   const elements = useElements();
   if (!stripe || !elements) return null;
@@ -36,7 +37,7 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
         },
         layout: {
           maxColumns: 3,
-        }
+        },
       }}
       onShippingAddressChange={async (event: any) => {
         const { address: addr, resolve, reject } = event;
@@ -53,7 +54,8 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
           amount / 100
         );
         const newTotal = amount + Math.round(shippingFee * 100);
-      
+        setCurrentAmount(newTotal);
+
         resolve({
           shippingRates: [
             {
@@ -76,6 +78,7 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
         // when user picks another rate, recalc the total
         const { shippingOption, resolve } = event;
         const newTotal = amount + shippingOption.amount;
+        setCurrentAmount(newTotal);
         resolve({
           total: { label: "Order total", amount: newTotal },
         });
