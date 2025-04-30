@@ -38,19 +38,19 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
         }
       }}
       onShippingAddressChange={async (event: any) => {
-        const { shippingAddress, resolve, reject } = event;
-
-        // 👉 debug
-        console.log("shipping object", shippingAddress);
-      
-        if (!shippingAddress?.country || !shippingAddress?.postalCode) {
+        const { shipping, resolve, reject } = event;
+        console.log("shipping object", shipping);
+        
+        // address is under shipping.address
+        const addr = shipping.address;
+        if (!addr.country || !addr.postalCode) {
           reject({ error: "Invalid shipping address" });
           return;
         }
 
         const { fee: shippingFee } = getShippingFee(
-          shippingAddress.country,
-          shippingAddress.region ?? null,
+          addr.country,
+          addr.region ?? null,
           amount / 100
         );
         const newTotal = amount + Math.round(shippingFee * 100);
@@ -73,9 +73,10 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
       }}
       
       onConfirm={async (event: any) => {
+        const addr = event.shipping.address;
         const { fee: shippingFee } = getShippingFee(
-          event.shippingAddress?.country,
-          event.shippingAddress?.region ?? null,
+          addr.country,
+          addr.region ?? null,
           amount / 100
         );
       
@@ -86,9 +87,9 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
           paymentIntentId,
           shippingFee,                     // 👈 send to backend
           shipping: {
-            country: event.shippingAddress?.country,
-            region: event.shippingAddress?.region,
-            postalCode: event.shippingAddress?.postalCode,
+            country: addr.country,
+            region: addr.region,
+            postalCode: addr.postalCode,
           },
         };
       
@@ -108,13 +109,13 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
           confirmParams: {
             return_url: `${window.location.origin}/checkout/success?payment_intent={PAYMENT_INTENT_ID}`,
             shipping: {
-              name: event.shippingAddress?.recipient ?? "",
+              name: event.shipping.recipient ?? "",
               address: {
-                line1: event.shippingAddress?.addressLine?.[0] ?? "",
-                city: event.shippingAddress?.city ?? "",
-                state: event.shippingAddress?.region ?? "",
-                postal_code: event.shippingAddress?.postalCode ?? "",
-                country: event.shippingAddress?.country ?? "",
+                line1: addr.addressLine?.[0] ?? "",
+                city: addr.city,
+                state: addr.region,
+                postal_code: addr.postalCode,
+                country: addr.country,
               },
             },
           },
