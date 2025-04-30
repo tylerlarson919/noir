@@ -39,27 +39,31 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
       }}
       onShippingAddressChange={async (event: any) => {
         const { shippingAddress, resolve, reject } = event;
-        if (!shippingAddress?.country) {
-          reject({ error: "Missing shipping address" });
+      
+        if (
+          !shippingAddress?.country ||
+          !shippingAddress?.addressLine?.length ||
+          !shippingAddress?.postalCode
+        ) {
+          reject({ error: "Invalid shipping address" });
           return;
         }
       
-        /* ➊ calculate fee locally exactly once */
         const { fee: shippingFee } = getShippingFee(
           shippingAddress.country,
           shippingAddress.region ?? null,
-          amount / 100 /* subtotal in major units */
+          amount / 100           // subtotal in major units
         );
         const newTotal = amount + Math.round(shippingFee * 100);
       
         resolve({
-          shippingOptions: [
+          /* 👇 Stripe requires shippingRates when shippingAddressRequired = true */
+          shippingRates: [
             {
               id: "standard",
-              label: "Standard Shipping",
-              amount: Math.round(shippingFee * 100),
-              detail:
-                shippingFee === 0 ? "Free Shipping" : "5-10 business days",
+              amount: Math.round(shippingFee * 100), // minor units
+              displayName:
+                shippingFee === 0 ? "Free Shipping" : "Standard Shipping",
             },
           ],
           total: { label: "Order total", amount: newTotal },
@@ -67,12 +71,18 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
       }}
       
       onConfirm={async (event: any) => {
-        /* ➋ create / update PI with the final shipping fee */
+        const { fee: shippingFee } = getShippingFee(
+          event.shippingAddress?.country,
+          event.shippingAddress?.region ?? null,
+          amount / 100
+        );
+      
         const payload = {
           items,
           userId,
           checkoutId,
           paymentIntentId,
+          shippingFee,                     // 👈 send to backend
           shipping: {
             country: event.shippingAddress?.country,
             region: event.shippingAddress?.region,
