@@ -37,32 +37,55 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
         }
       }}
       onShippingAddressChange={async ({ shippingAddress, updateWith }: any) => {
-        if (!shippingAddress) return;
-        const res = await fetch("/api/create-checkout-session", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            items,
-            userId,
-            checkoutId,
-            paymentIntentId,
-            shipping: {
-              country:    shippingAddress.country,
-              region:     shippingAddress.region,
-              postalCode: shippingAddress.postalCode,
-            }
-          })
-        });
-        const { shippingFee, totalAmount } = await res.json();
-        updateWith({
-          shippingOptions: [{
-            id:     "standard",
-            label:  "Standard Shipping",
-            detail: shippingFee === 0 ? "Free Shipping" : "3-5 business days",
-            amount: Math.round(shippingFee * 100),
-          }],
-          total: { label: "Order total", amount: totalAmount },
-        });
+        // ➊ always answer the event – never early-return without updateWith
+        if (!shippingAddress) {
+          updateWith({ error: "Missing shipping address" });
+          return;
+        }
+      
+        const payload = {
+          items,
+          userId,
+          checkoutId,
+          paymentIntentId,
+          shipping: {
+            country: shippingAddress.country,
+            region: shippingAddress.region,
+            postalCode: shippingAddress.postalCode,
+          },
+        };
+      
+        try {
+          // ➋ abort the request if it takes too long so we still resolve <20 s
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 15_000); // 15 s
+          const res = await fetch("/api/create-checkout-session", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+            signal: controller.signal,
+          });
+          clearTimeout(timeout);
+      
+          if (!res.ok) throw new Error("Failed to fetch shipping quote");
+          const { shippingFee, totalAmount } = await res.json();
+      
+          updateWith({
+            shippingOptions: [
+              {
+                id: "standard",
+                label: "Standard Shipping",
+                detail: shippingFee === 0 ? "Free Shipping" : "5-10 business days",
+                amount: Math.round(shippingFee * 100),
+              },
+            ],
+            total: { label: "Order total", amount: totalAmount },
+          });
+        } catch (err) {
+          console.error(err);
+          // ➌ ALWAYS resolve/reject so the 20-second timer in the browser stops
+          updateWith({ error: "Unable to calculate shipping, please try again." });
+        }
       }}
       onConfirm={async (event: any) => {
         // 1) hit your API to (re)create/update the PI and get back clientSecret
