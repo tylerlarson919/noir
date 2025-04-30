@@ -25,24 +25,57 @@ export default function CheckoutForm({
     postalCode?: string;
   }) => void;
 }) {
+  // pull the current checkoutId from the URL
+  const params = useParams();
+  const checkoutId = params.checkoutId as string;
+
+  // Stripe hooks & local state must live inside the component
+  const elements = useElements();
+  const stripe = useStripe();
+  const [clientSecret, setClientSecret] = useState<string>();
+  const [shippingFee, setShippingFee] = useState<number>(0);
   const debouncedOnShippingChange = useRef(
-    debounce(onShippingChange, 500)
+    debounce(async (addr) => {
+      // 1) hit your backend to update the PI (shipping + no paymentIntentId => returns shippingFee & currency)
+      const res = await fetch("/api/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          shipping: {
+            // you may not have a name yet—Stripe only needs the address
+            address: {
+              country:    addr.country,
+              state:      addr.region,
+              postal_code: addr.postalCode,
+            },
+          },
+          paymentIntentId: checkoutId, // pass your existing PI id here
+        }),
+      });
+      const { checkoutSessionClientSecret, shippingFee: fee } = await res.json();
+  
+      // 2) stash the new client secret & fee in local state
+      setClientSecret(checkoutSessionClientSecret);
+      setShippingFee(fee);
+  
+      // 3) tell Elements to point at the new PI
+      if (elements && checkoutSessionClientSecret) {
+        ;(elements as any).update({ clientSecret: checkoutSessionClientSecret });
+      }
+  
+      // 4) bubble up the shipping data if you need it elsewhere
+      onShippingChange({ ...addr, fee });
+    }, 500)
   ).current;
   const [email, setEmail] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [billingDetailsComplete, setBillingDetailsComplete] = useState(false);
   const [receiveEmails, setReceiveEmails] = useState(false);
-  const [receiveTexts, setReceiveTexts] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const { user } = useAuth();
   const { clearCart } = useCart();
-  const router = useRouter();
-  const { items } = useCart();
-  const params = useParams();
-  const checkoutId = params.checkoutId as string;
-  const stripe = useStripe();
-  const elements = useElements();
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 

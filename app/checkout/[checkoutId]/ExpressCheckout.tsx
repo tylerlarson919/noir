@@ -1,6 +1,7 @@
 "use client";
 import { ExpressCheckoutElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { getShippingFee } from "@/lib/shipping";
+import { SelectItem } from "@heroui/select";
 
 
 interface ExpressCheckoutProps {
@@ -60,16 +61,26 @@ export default function ExpressCheckout({ amount, currency, clientSecret, items,
               amount: Math.round(shippingFee * 100),
               displayName:
                 shippingFee === 0 ? "Free Shipping" : "Standard Shipping",
-                deliveryEstimate: {                              // correct Stripe format
-                  minimum: { unit: "business_day", value: 5 },
-                  maximum: { unit: "business_day", value: 10 },
-                },
+              selected: true,
+              deliveryEstimate: {                              // correct Stripe format
+                minimum: { unit: "business_day", value: 5 },
+                maximum: { unit: "business_day", value: 10 },
+              },
             },
           ],
           total: { label: "Order total", amount: newTotal },
         });
       }}
       
+      onShippingRateChange={async (event: any) => {
+        // when user picks another rate, recalc the total
+        const { shippingOption, resolve } = event;
+        const newTotal = amount + shippingOption.amount;
+        resolve({
+          total: { label: "Order total", amount: newTotal },
+        });
+      }}
+
       onConfirm={async (event: any) => {
         const { address: addr, name: recipient } = event;
         const { fee: shippingFee } = getShippingFee(
