@@ -1,3 +1,4 @@
+// products/[id]/page.tsx
 import ProductDetails from "@/components/ProductDetails";
 import { notFound } from "next/navigation";
 import { getProductById, getFeaturedProducts } from "@/lib/products";

@@ -1,11 +1,13 @@
 "use client";
 import { ExpressCheckoutElement, useElements, useStripe } from "@stripe/react-stripe-js";
+import type { StripeExpressCheckoutElementOptions } from "@stripe/stripe-js";
 
 interface ExpressCheckoutProps {
   clientSecret: string;
   currency: string;
   paymentIntentId: string;
   onReady?: () => void;
+  type: 'productPage' | 'checkoutPage';
 }
 
 export default function ExpressCheckout({
@@ -13,9 +15,27 @@ export default function ExpressCheckout({
   currency,          // ← still here in case you want to surface it later
   paymentIntentId,
   onReady,
+  type,
 }: ExpressCheckoutProps) {
   const stripe   = useStripe();
   const elements = useElements();
+  const paymentMethods: StripeExpressCheckoutElementOptions['paymentMethods'] = type === 'productPage'
+   ? {
+       amazonPay: 'never',
+       applePay: 'auto',
+       googlePay: 'auto',
+       link:     'never',
+       paypal:   'never',
+     }
+   : {
+       amazonPay: 'never',
+       applePay: 'auto',
+       googlePay: 'auto',
+       link:     'auto',
+       paypal:   'auto',
+     };
+
+
 
   if (!stripe || !elements) return null;
 
@@ -26,13 +46,7 @@ export default function ExpressCheckout({
       options={{
         billingAddressRequired: true,
         shippingAddressRequired: true,
-        paymentMethods: {
-          amazonPay: "never",
-          applePay: "auto",
-          googlePay: "auto",
-          link: "auto",
-          paypal: "auto",
-        },
+        paymentMethods,
         paymentMethodOrder: ["googlePay", "applePay", "link", "klarna", "paypal"],
 
         shippingRates: [                              // <- single placeholder

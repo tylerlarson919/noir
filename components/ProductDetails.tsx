@@ -1,3 +1,4 @@
+//components/ProductDetails.tsx
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -18,6 +19,12 @@ import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/styles.css";
 import SizeChartModal from "@/components/sizeChartModal";
 import TrustItems from "@/components/trustItems";
+import { Elements } from "@stripe/react-stripe-js";
+import { stripePromise } from "@/lib/stripeClient";
+import ExpressCheckout from "@/components/ExpressCheckout";
+import { useAuth } from "@/context/AuthContext";
+import { v4 as uuidv4 } from "uuid";
+import { useTheme } from "next-themes";
 
 export default function ProductDetails({
   product,
@@ -38,6 +45,46 @@ export default function ProductDetails({
   const [slideIndex, setSlideIndex] = useState(0);
   const [isSizeChartOpen, setIsSizeChartOpen] = useState(false);
   const [expandedKeys, setExpandedKeys] = useState<Set<string>>(new Set([]));
+  const { user } = useAuth();
+  const { resolvedTheme } = useTheme();
+  
+  const [clientSecret, setClientSecret]     = useState("");
+  const [paymentIntentId, setPaymentIntentId] = useState("");
+  const [currency, setCurrency]             = useState("usd");
+  const [expressLoading, setExpressLoading] = useState(true);
+
+  useEffect(() => {
+    // whenever size/color changes, regen the PI
+    const initExpress = async () => {
+      setExpressLoading(true);
+      const payload = {
+        items: [{
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          quantity: 1,
+          size: selectedSize,
+          color: { name: selectedColor.name, value: selectedColor.hex },
+          image: product.images[selectedColor.images[0]],
+        }],
+        userId: user?.uid || "guest-user",
+        checkoutId: uuidv4(),
+      };
+      const res = await fetch("/api/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const { checkoutSessionClientSecret, paymentIntentId: piId, currency: respCurrency } = await res.json();
+      setClientSecret(checkoutSessionClientSecret);
+      setPaymentIntentId(piId);
+      setCurrency(respCurrency);
+      setExpressLoading(false);
+    };
+    initExpress();
+  }, [selectedSize, selectedColor, user]);
+  
+
 
   // Add this useEffect to handle transition timing
   useEffect(() => {
@@ -363,12 +410,25 @@ export default function ProductDetails({
               </button>
             </div>
             <div className="w-full">
-              <button
-                className="w-full py-4 px-6 bg-dark1 dark:bg-white button-grow-subtle text-white dark:text-black transition-color duration-300 rounded-sm text-sm"
-                onClick={addToBagClick}
+            {clientSecret && (
+              <Elements
+                stripe={stripePromise}
+                options={{
+                  clientSecret,
+                  appearance: { theme: resolvedTheme === "dark" ? "night" : "stripe" },
+                }}
               >
-                Google / Apple pay
-              </button>
+                {expressLoading
+                  ? <div className="h-[56px] w-full bg-gray-200 animate-pulse rounded-sm"/>
+                  : <ExpressCheckout
+                      clientSecret={clientSecret}
+                      currency={currency}
+                      paymentIntentId={paymentIntentId}
+                      type="productPage"
+                    />
+                }
+              </Elements>
+            )}
             </div>
             <button className="text-sm text-textaccentdarker dark:text-textaccent underline" onClick={addToBagClick} >More payment options</button>
           </div>

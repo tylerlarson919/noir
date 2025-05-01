@@ -12,7 +12,7 @@ import { useParams, useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
 import Link from "next/link";
 import ShippingPolicyModal from "@/components/shippingPolicyModal";
-import ExpressCheckout from "./ExpressCheckout";
+import ExpressCheckout from "../../../components/ExpressCheckout";
 import { memo } from "react";
 
 const StripeCheckoutShell = memo(function StripeCheckoutShell({
@@ -246,6 +246,7 @@ export default function CheckoutPage() {
                       currency={currency}
                       paymentIntentId={paymentIntentId}
                       onReady={() => setExpressReady(true)}
+                      type="checkoutPage"
                     />
                   </div>
                 <div className="flex items-center my-4">
