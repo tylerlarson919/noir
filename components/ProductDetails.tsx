@@ -81,7 +81,6 @@ export default function ProductDetails({
       setClientSecret(checkoutSessionClientSecret);
       setPaymentIntentId(piId);
       setCurrency(respCurrency);
-      setExpressLoading(false);
     };
     initExpress();
   }, [selectedSize, selectedColor, user]);
@@ -426,6 +425,7 @@ export default function ProductDetails({
                     clientSecret={clientSecret}
                     currency={currency}
                     paymentIntentId={paymentIntentId}
+                    onReady={() => setExpressLoading(false)}
                     type="productPage"
                   />
                 </Elements>
