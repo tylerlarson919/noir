@@ -1,7 +1,7 @@
 // /components/ReviewsClient.tsx
 
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { getReviews, Review, Summary } from '@/lib/reviews';
 
 export default function ReviewsClient({
@@ -14,11 +14,17 @@ export default function ReviewsClient({
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const loadMore = async () => {
+  const loadMore = () => {
     setLoading(true);
-    const more = await getReviews(productId, reviews[reviews.length-1].createdAt);
-    setReviews(r => [...r, ...more]);
-    setLoading(false);
+    getReviews(productId, reviews[reviews.length-1]?.createdAt)
+      .then(more => {
+        setReviews(r => [...r, ...more]);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setLoading(false);
+      });
   };
 
   const submitReview = async (e: React.FormEvent) => {

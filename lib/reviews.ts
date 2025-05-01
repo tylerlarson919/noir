@@ -20,13 +20,18 @@ export async function getSummary(productId: string): Promise<Summary> {
     return snap.data() as Summary;
   }
 
-export async function getReviews(productId: string, lastCreatedAt?: any): Promise<Review[]> {
-  let q = query(
-    collection(db, 'reviews', productId),
-    orderBy('createdAt', 'desc'),
-    limit(10)
-  );
-  if (lastCreatedAt) q = query(q, startAfter(lastCreatedAt));
-  const snap = await getDocs(q);
-  return snap.docs.map(d => ({ id: d.id, ...(d.data() as any) }));
-}
+  export async function getReviews(productId: string, lastCreatedAt?: any): Promise<Review[]> {
+    try {
+      let q = query(
+        collection(db, 'reviews', productId, 'reviews'), // Update path to match your API route
+        orderBy('createdAt', 'desc'),
+        limit(10)
+      );
+      if (lastCreatedAt) q = query(q, startAfter(lastCreatedAt));
+      const snap = await getDocs(q);
+      return snap.docs.map(d => ({ id: d.id, ...(d.data() as any) }));
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+      return [];
+    }
+  }
