@@ -48,7 +48,6 @@ export default function ProductDetails({
   const [expandedKeys, setExpandedKeys] = useState<Set<string>>(new Set([]));
   const { user } = useAuth();
   const { resolvedTheme } = useTheme();
-  
   const [clientSecret, setClientSecret]     = useState("");
   const [paymentIntentId, setPaymentIntentId] = useState("");
   const [currency, setCurrency]             = useState("usd");
@@ -58,7 +57,6 @@ export default function ProductDetails({
   useEffect(() => {
     // whenever size/color changes, regen the PI
     const initExpress = async () => {
-      setExpressLoading(true);
       const payload = {
         items: [{
           id: product.id,
@@ -84,8 +82,6 @@ export default function ProductDetails({
     };
     initExpress();
   }, [selectedSize, selectedColor, user]);
-  
-
 
   // Add this useEffect to handle transition timing
   useEffect(() => {
