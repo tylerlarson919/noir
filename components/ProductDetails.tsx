@@ -432,18 +432,23 @@ export default function ProductDetails({
               </button>
             </div>
             <div className="w-full">
-              {expressLoading ? (
-                <div className="min-h-[42px] w-full bg-gray-200 dark:bg-white/10 animate-pulse rounded-md" />
-              ) : (
+              {clientSecret ? (
                 <StripeCheckoutShell clientSecret={clientSecret}>
-                  <ExpressCheckout
-                    clientSecret={clientSecret}
-                    currency={currency}
-                    paymentIntentId={paymentIntentId}
-                    type="productPage"
-                    onReady={() => setExpressLoading(false)}
-                  />
+                  <div className="relative">
+                    {expressLoading && (
+                      <div className="absolute inset-0 min-h-[42px] w-full bg-gray-200 dark:bg-white/10 animate-pulse rounded-md z-10" />
+                    )}
+                    <ExpressCheckout
+                      clientSecret={clientSecret}
+                      currency={currency}
+                      paymentIntentId={paymentIntentId}
+                      type="productPage"
+                      onReady={() => setExpressLoading(false)}
+                    />
+                  </div>
                 </StripeCheckoutShell>
+              ) : (
+                <div className="min-h-[42px] w-full bg-gray-200 dark:bg-white/10 animate-pulse rounded-md" />
               )}
             </div>
             <button
