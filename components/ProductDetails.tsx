@@ -19,7 +19,7 @@ import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/styles.css";
 import SizeChartModal from "@/components/sizeChartModal";
 import TrustItems from "@/components/trustItems";
-import { Elements, useStripe, useElements } from "@stripe/react-stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
 import { stripePromise } from "@/lib/stripeClient";
 import ExpressCheckout from "@/components/ExpressCheckout";
 import { useAuth } from "@/context/AuthContext";
@@ -27,6 +27,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { memo } from "react";
+import Reviews from '@/components/Reviews';
 
 const StripeCheckoutShell = memo(function StripeCheckoutShell({
   clientSecret,
@@ -71,7 +72,6 @@ export default function ProductDetails({
   const [isSizeChartOpen, setIsSizeChartOpen] = useState(false);
   const [expandedKeys, setExpandedKeys] = useState<Set<string>>(new Set([]));
   const { user } = useAuth();
-  const { resolvedTheme } = useTheme();
   const [clientSecret, setClientSecret]     = useState("");
   const [paymentIntentId, setPaymentIntentId] = useState("");
   const [currency, setCurrency]             = useState("usd");
@@ -538,6 +538,9 @@ export default function ProductDetails({
           products={featuredProducts}
           title="You Might Also Like"
         />
+      </div>
+      <div className="mt-20">
+        <Reviews productId={product.id} />
       </div>
       <Lightbox
         open={open}
