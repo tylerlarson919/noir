@@ -30,6 +30,8 @@ export default function ExpressCheckout({
           link: "auto",
           paypal: "auto",
         },
+        paymentMethodOrder: ["googlePay", "applePay", "link", "klarna", "paypal"],
+
         shippingRates: [                              // <- single placeholder
           {
             id: "standard",
