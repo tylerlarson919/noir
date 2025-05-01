@@ -36,14 +36,11 @@ export async function POST(req: NextRequest) {
         0,
       );
 
-      // Flat-rate shipping fee ($9)
       const SHIPPING_FEE_CENTS = 900;
 
-      // Total = items + shipping
-      const total = subtotal + SHIPPING_FEE_CENTS;
     // Create a new PaymentIntent with subtotal only
     const params: Stripe.PaymentIntentCreateParams = {
-      amount: total, // Subtotal in cents, shipping added later
+      amount: subtotal, // Subtotal in cents, shipping added later
       currency: "usd", // Adjust if your app uses a different currency
       automatic_payment_methods: { enabled: true },
       metadata: {
