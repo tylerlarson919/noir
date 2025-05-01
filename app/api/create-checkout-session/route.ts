@@ -30,14 +30,20 @@ export async function POST(req: NextRequest) {
    const cents = (n: number) =>
        Number.isInteger(n) ? n : Math.round(n * 100);
 
-     // Compute subtotal (always integer, always in cents)
-     const subtotal = items.reduce(
-       (sum, i) => sum + cents(i.price) * i.quantity,
-       0,
-     );
+// Compute subtotal in cents
+    const subtotal = items.reduce(
+        (sum, i) => sum + cents(i.price) * i.quantity,
+        0,
+      );
+
+      // Flat-rate shipping fee ($9)
+      const SHIPPING_FEE_CENTS = 900;
+
+      // Total = items + shipping
+      const total = subtotal + SHIPPING_FEE_CENTS;
     // Create a new PaymentIntent with subtotal only
     const params: Stripe.PaymentIntentCreateParams = {
-      amount: subtotal, // Subtotal in cents, shipping added later
+      amount: total, // Subtotal in cents, shipping added later
       currency: "usd", // Adjust if your app uses a different currency
       automatic_payment_methods: { enabled: true },
       metadata: {
@@ -45,6 +51,7 @@ export async function POST(req: NextRequest) {
         checkoutId: checkoutId || "unknown",
         itemCount: items.length.toString(),
         subtotal: (subtotal / 100).toString(),
+        shippingFee: (SHIPPING_FEE_CENTS / 100).toString(),
         cartItems: JSON.stringify(
           items.map((item) => ({
             id: item.id,
@@ -65,7 +72,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       checkoutSessionClientSecret: paymentIntent.client_secret,
       paymentIntentId: paymentIntent.id,
-      currency: params.currency, 
+      shippingFee: SHIPPING_FEE_CENTS / 100,
     });
   } catch (error: any) {
     console.error("Error creating payment intent:", error);
