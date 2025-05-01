@@ -98,7 +98,7 @@ function CheckoutResultContent() {
       <div className="mx-4 flex flex-col justify-start items-center">
         <div className="flex flex-col w-full h-full items-center justify-start mt-28 gap-4 max-w-[800px] text-center">
           <div className="animate-pulse">
-            <div className="h-24 w-24 mx-auto rounded-full bg-gray-200 dark:bg-gray-700"></div>
+            <div className="h-24 w-24 mx-auto rounded-full bg-gray-200 dark:bg-white/10"></div>
           </div>
           <div className="h-8 w-3/4 bg-gray-200 dark:bg-gray-700 rounded"></div>
           <div className="h-4 w-2/3 bg-gray-200 dark:bg-gray-700 rounded mt-4"></div>
@@ -277,9 +277,9 @@ export default function CheckoutSuccessPage() {
     <Suspense fallback={
       <div className="mx-4 flex flex-col justify-start items-center mt-28">
         <div className="animate-pulse flex flex-col items-center">
-          <div className="h-24 w-24 bg-gray-200 dark:bg-gray-700 rounded-full mb-6"></div>
-          <div className="h-8 w-64 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
-          <div className="h-4 w-48 bg-gray-200 dark:bg-gray-700 rounded"></div>
+          <div className="h-24 w-24 bg-gray-200 dark:bg-white/10 rounded-full mb-6"></div>
+          <div className="h-8 w-64 bg-gray-200 dark:bg-white/10 rounded mb-4"></div>
+          <div className="h-4 w-48 bg-gray-200 dark:bg-white/10 rounded"></div>
         </div>
       </div>
     }>

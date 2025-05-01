@@ -405,32 +405,31 @@ export default function ProductDetails({
             </button>
             <div className="w-full">
               <button
-                className="w-full h-[42px] py-auto px-6 bg-dark1 dark:bg-white button-grow-subtle text-white dark:text-black transition-color duration-300 rounded-md font-medium"
+                className="w-full h-[42px] py-auto px-6 bg-dark1 dark:bg-white text-white dark:text-black transition-color duration-300 rounded-md font-medium"
                 onClick={addToBagClick}
               >
                 Add to cart
               </button>
             </div>
             <div className="w-full">
-            {clientSecret && (
-              <Elements
-                stripe={stripePromise}
-                options={{
-                  clientSecret,
-                  appearance: { theme: resolvedTheme === "dark" ? "night" : "stripe" },
-                }}
-              >
-                {expressLoading
-                  ? <div className="h-[56px] w-full bg-gray-200 animate-pulse rounded-sm"/>
-                  : <ExpressCheckout
-                      clientSecret={clientSecret}
-                      currency={currency}
-                      paymentIntentId={paymentIntentId}
-                      type="productPage"
-                    />
-                }
-              </Elements>
-            )}
+              {(expressLoading || !clientSecret) ? (
+                <div className="min-h-[42px] w-full bg-gray-200 dark:bg-white/10 animate-pulse rounded-md" />
+              ) : (
+                <Elements
+                  stripe={stripePromise}
+                  options={{
+                    clientSecret,
+                    appearance: { theme: resolvedTheme === "dark" ? "night" : "stripe" },
+                  }}
+                >
+                  <ExpressCheckout
+                    clientSecret={clientSecret}
+                    currency={currency}
+                    paymentIntentId={paymentIntentId}
+                    type="productPage"
+                  />
+                </Elements>
+              )}
             </div>
             <button
               className="text-sm text-textaccentdarker dark:text-textaccent underline"
