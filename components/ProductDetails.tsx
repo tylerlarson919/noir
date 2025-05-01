@@ -432,7 +432,7 @@ export default function ProductDetails({
               </button>
             </div>
             <div className="w-full">
-              {!clientSecret ? (
+              {expressLoading ? (
                 <div className="min-h-[42px] w-full bg-gray-200 dark:bg-white/10 animate-pulse rounded-md" />
               ) : (
                 <StripeCheckoutShell clientSecret={clientSecret}>
