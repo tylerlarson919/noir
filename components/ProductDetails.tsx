@@ -25,6 +25,7 @@ import ExpressCheckout from "@/components/ExpressCheckout";
 import { useAuth } from "@/context/AuthContext";
 import { v4 as uuidv4 } from "uuid";
 import { useTheme } from "next-themes";
+import { useRouter } from "next/navigation";
 
 export default function ProductDetails({
   product,
@@ -52,7 +53,8 @@ export default function ProductDetails({
   const [paymentIntentId, setPaymentIntentId] = useState("");
   const [currency, setCurrency]             = useState("usd");
   const [expressLoading, setExpressLoading] = useState(true);
-
+  const router = useRouter();
+  
   useEffect(() => {
     // whenever size/color changes, regen the PI
     const initExpress = async () => {
@@ -403,7 +405,7 @@ export default function ProductDetails({
             </button>
             <div className="w-full">
               <button
-                className="w-full py-4 px-6 bg-dark1 dark:bg-white button-grow-subtle text-white dark:text-black transition-color duration-300 rounded-sm text-sm"
+                className="w-full py-4 px-6 bg-dark1 dark:bg-white button-grow-subtle text-white dark:text-black transition-color duration-300 rounded-md text-sm font-medium"
                 onClick={addToBagClick}
               >
                 Add to cart
@@ -430,7 +432,30 @@ export default function ProductDetails({
               </Elements>
             )}
             </div>
-            <button className="text-sm text-textaccentdarker dark:text-textaccent underline" onClick={addToBagClick} >More payment options</button>
+            <button
+              className="text-sm text-textaccentdarker dark:text-textaccent underline"
+              onClick={() => {
+                if (!selectedSize) {
+                  alert("Please select a size");
+                  return;
+                }
+                addItem({
+                  id: product.id,
+                  name: product.name,
+                  price: product.price,
+                  quantity: 1,
+                  size: selectedSize,
+                  color: selectedColor,
+                  image:
+                    product.images[selectedColor.images[0]] ||
+                    product.images[0] ||
+                    "/images/placeholder.jpg",
+                });
+                router.push("/checkout/new");
+              }}
+            >
+              More payment options
+            </button>
           </div>
 
           <TrustItems/>

@@ -1,4 +1,5 @@
 "use client";
+// @ts-ignore
 import { ExpressCheckoutElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import type { StripeExpressCheckoutElementOptions } from "@stripe/stripe-js";
 
@@ -19,21 +20,22 @@ export default function ExpressCheckout({
 }: ExpressCheckoutProps) {
   const stripe   = useStripe();
   const elements = useElements();
-  const paymentMethods: StripeExpressCheckoutElementOptions['paymentMethods'] = type === 'productPage'
+  const paymentMethods = type === 'productPage'
    ? {
        amazonPay: 'never',
        applePay: 'auto',
        googlePay: 'auto',
        link:     'never',
        paypal:   'never',
-     }
+       klarna: 'never',
+     } as any
    : {
        amazonPay: 'never',
        applePay: 'auto',
        googlePay: 'auto',
        link:     'auto',
        paypal:   'auto',
-     };
+     } as any;
 
 
 
