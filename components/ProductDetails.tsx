@@ -434,9 +434,9 @@ export default function ProductDetails({
             <div className="w-full">
               {clientSecret ? (
                 <StripeCheckoutShell clientSecret={clientSecret}>
-                  <div className="relative ">
+                  <div className="relative">
                     {expressLoading && (
-                      <div className="min-h-[42px] w-full bg-gray-200 dark:bg-white/10 animate-pulse rounded-md z-10" />
+                      <div className="p-1 pb-2 min-h-[42px] w-full bg-gray-200 dark:bg-white/10 animate-pulse rounded-md z-10" />
                     )}
                     <ExpressCheckout
                       clientSecret={clientSecret}
@@ -448,7 +448,7 @@ export default function ProductDetails({
                   </div>
                 </StripeCheckoutShell>
               ) : (
-                <div className="min-h-[42px] w-full bg-gray-200 dark:bg-white/10 animate-pulse rounded-md" />
+                <div className="p-1 min-h-[42px] w-full bg-gray-200 dark:bg-white/10 animate-pulse rounded-md" />
               )}
             </div>
             <button
