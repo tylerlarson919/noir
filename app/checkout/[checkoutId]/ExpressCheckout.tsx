@@ -25,7 +25,7 @@ export default function ExpressCheckout({
         shippingRates: [                              // <- single placeholder
           {
             id: "standard",
-            amount: 0,                                // flat-rate placeholder
+            amount: 9,                                // flat-rate placeholder
             displayName: "Standard Shipping",
             deliveryEstimate: {
               minimum: { unit: "business_day", value: 3 },
