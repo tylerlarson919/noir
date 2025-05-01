@@ -221,7 +221,7 @@ export default function CheckoutForm({
         >
           All transactions are secure and encrypted.
         </p>
-        <div className="border rounded p-4 mb-4">
+        <div className="mb-4">
           <PaymentElement />
         </div>
       </div>
