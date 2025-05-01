@@ -139,19 +139,13 @@ export default function ProductDetails({
   }));
 
   const ExpressCheckoutWrapper = () => {
-    const stripe = useStripe();
-    const elements = useElements();
-    useEffect(() => {
-      if (stripe && elements) {
-        setExpressLoading(false);
-      }
-    }, [stripe, elements]);
     return (
       <ExpressCheckout
         clientSecret={clientSecret}
         currency={currency}
         paymentIntentId={paymentIntentId}
         type="productPage"
+        onReady={() => setExpressLoading(false)}
       />
     );
   };
