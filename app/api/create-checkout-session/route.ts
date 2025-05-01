@@ -77,10 +77,14 @@ export async function POST(req: NextRequest) {
         };
       }
 
-      await stripe.paymentIntents.update(paymentIntentId, updateParams);
-
+      const pi = await stripe.paymentIntents.update(
+        paymentIntentId,
+        { ...updateParams, expand: ['client_secret'] }
+      );
+      
       return NextResponse.json({
-        shippingFee: SHIPPING_FEE_CENTS / 100, // dollars
+        shippingFee: SHIPPING_FEE_CENTS / 100,  // dollars
+        clientSecret: pi.client_secret,
       });
     }
 

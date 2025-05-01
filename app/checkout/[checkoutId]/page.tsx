@@ -260,14 +260,15 @@ export default function CheckoutPage() {
                 </div>
               )}
               <div className={`fade-in ${formReady ? 'show' : ''}`}>
-                <CheckoutForm
-                  paymentIntentId={paymentIntentId}
-                  onReady={() => setFormReady(true)}
-                  onShippingChange={({ country, region, postalCode, fee }) => {
-                    setShippingAddress({ country, region, postalCode });
-                    setShippingFee(fee);
-                  }}
-                />
+              <CheckoutForm
+                paymentIntentId={paymentIntentId}
+                onReady={() => setFormReady(true)}
+                onShippingChange={({ country, region, postalCode, fee, clientSecret: newSecret }) => {
+                  setShippingAddress({ country, region, postalCode });
+                  setShippingFee(fee);
+                  setClientSecret(newSecret);
+                }}
+              />
               </div>
             </StripeCheckoutShell>
           )}
