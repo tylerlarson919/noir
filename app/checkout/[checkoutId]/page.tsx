@@ -237,7 +237,7 @@ export default function CheckoutPage() {
                 </p>
                   {/* Skeleton while Stripe mounts */}
                   {!expressReady && (
-                    <div className="h-[56px] w-full bg-gray-200 dark:bg-white/10 animate-pulse rounded-sm mb-4">
+                    <div className="h-[46px] w-full bg-gray-200 dark:bg-white/10 animate-pulse rounded-sm mb-4">
                     </div>
                   )}
                   <div className={`fade-in ${expressReady ? 'show' : ''}`}>

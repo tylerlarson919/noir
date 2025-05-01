@@ -19,14 +19,13 @@ import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/styles.css";
 import SizeChartModal from "@/components/sizeChartModal";
 import TrustItems from "@/components/trustItems";
-import { Elements } from "@stripe/react-stripe-js";
+import { Elements, useStripe, useElements } from "@stripe/react-stripe-js";
 import { stripePromise } from "@/lib/stripeClient";
 import ExpressCheckout from "@/components/ExpressCheckout";
 import { useAuth } from "@/context/AuthContext";
 import { v4 as uuidv4 } from "uuid";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
-
 export default function ProductDetails({
   product,
   featuredProducts,
@@ -138,6 +137,25 @@ export default function ProductDetails({
     src: product.images[imageIndex] || "/images/placeholder.jpg",
     alt: `${product.name} - ${selectedColor.name}`,
   }));
+
+  const ExpressCheckoutWrapper = () => {
+    const stripe = useStripe();
+    const elements = useElements();
+    useEffect(() => {
+      if (stripe && elements) {
+        setExpressLoading(false);
+      }
+    }, [stripe, elements]);
+    return (
+      <ExpressCheckout
+        clientSecret={clientSecret}
+        currency={currency}
+        paymentIntentId={paymentIntentId}
+        type="productPage"
+      />
+    );
+  };
+
 
   return (
     <div className="mx-4 relative flex flex-col justify-start items-center">
@@ -419,13 +437,7 @@ export default function ProductDetails({
                     appearance: { theme: resolvedTheme === "dark" ? "night" : "stripe" },
                   }}
                 >
-                  <ExpressCheckout
-                    clientSecret={clientSecret}
-                    currency={currency}
-                    paymentIntentId={paymentIntentId}
-                    onReady={() => setExpressLoading(false)}
-                    type="productPage"
-                  />
+                  <ExpressCheckoutWrapper />
                 </Elements>
               )}
             </div>

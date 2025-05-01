@@ -37,8 +37,6 @@ export default function ExpressCheckout({
        paypal:   'auto',
      } as any;
 
-
-
   if (!stripe || !elements) return null;
 
   return (
