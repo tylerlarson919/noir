@@ -14,8 +14,6 @@ import Link from "next/link";
 import ShippingPolicyModal from "@/components/shippingPolicyModal";
 import ExpressCheckout from "./ExpressCheckout";
 
-
-
 // Initialize Stripe outside of component
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
@@ -37,14 +35,14 @@ export default function CheckoutPage() {
   const [shippingAddress, setShippingAddress] = useState<{
     country: string;
     region?: string;
-    postalCode?: string
+    postalCode?: string;
   } | null>(null);
   const [shippingFee, setShippingFee] = useState(0);
   const [orderTotal, setOrderTotal] = useState(totalPrice);
   const addressRef = useRef<{
     country: string;
     region?: string;
-    postalCode?: string
+    postalCode?: string;
   } | null>(null);
   const [paymentIntentId, setPaymentIntentId] = useState("");
   const [isShippingCalculated, setIsShippingCalculated] = useState(false);
@@ -53,8 +51,6 @@ export default function CheckoutPage() {
     setIsDarkMode(resolvedTheme === "dark");
   }, [resolvedTheme]);
 
-  // Create payment intent and get client secret
-  // 1) create PI immediately on items (no shipping)
   useEffect(() => {
     if (!items.length) return;
     const createIntent = async () => {
@@ -62,7 +58,7 @@ export default function CheckoutPage() {
         items,
         userId: user?.uid || "guest-user",
         ...(user?.email && { customerEmail: user.email }),
-        checkoutId
+        checkoutId,
       };
       const res = await fetch("/api/create-checkout-session", {
         method: "POST",
@@ -71,29 +67,27 @@ export default function CheckoutPage() {
       });
       const { checkoutSessionClientSecret, paymentIntentId: piId, currency: respCurrency } = await res.json();
       setClientSecret(checkoutSessionClientSecret);
-      setPaymentIntentId(piId || ""); // Store the payment intent ID
+      setPaymentIntentId(piId || "");
       setCurrency(respCurrency);
       setLoading(false);
     };
     createIntent();
   }, [items, user, checkoutId]);
 
-    // Update total price when shipping fee changes
   useEffect(() => {
     setOrderTotal(totalPrice + shippingFee);
   }, [totalPrice, shippingFee]);
 
-  // Update when shipping changes and API returns
   useEffect(() => {
     if (shippingAddress === null) return;
-    
-    // Check if country, region OR postal code has changed
-    if (addressRef.current?.country !== shippingAddress.country || 
-        addressRef.current?.region !== shippingAddress.region ||
-        addressRef.current?.postalCode !== shippingAddress.postalCode) {
-      
+
+    if (
+      addressRef.current?.country !== shippingAddress.country ||
+      addressRef.current?.region !== shippingAddress.region ||
+      addressRef.current?.postalCode !== shippingAddress.postalCode
+    ) {
       addressRef.current = shippingAddress;
-      
+
       const updateShippingOnly = async () => {
         const payload = {
           items,
@@ -101,18 +95,18 @@ export default function CheckoutPage() {
           ...(user?.email && { customerEmail: user.email }),
           checkoutId,
           shipping: shippingAddress,
-          paymentIntentId 
+          paymentIntentId,
         };
-        
+
         try {
           const res = await fetch("/api/create-checkout-session", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
           });
-          
+
           const { shippingFee: newFee, currency: respCurrency } = await res.json();
-          if (newFee!==undefined) {
+          if (newFee !== undefined) {
             setShippingFee(newFee);
             setCurrency(respCurrency);
           }
@@ -120,18 +114,15 @@ export default function CheckoutPage() {
           console.error("Error updating shipping:", error);
         }
       };
-      
+
       updateShippingOnly();
     } else {
-      // If it's the same address, don't reload
       setLoading(false);
     }
   }, [shippingAddress, items, user, checkoutId, paymentIntentId]);
 
-  // Ensure we have a checkout ID in the URL
   useEffect(() => {
     if (!checkoutId || checkoutId === "new") {
-      // Generate a new checkout ID and redirect
       const newCheckoutId = uuidv4();
       router.replace(`/checkout/${newCheckoutId}`);
     }
@@ -140,7 +131,7 @@ export default function CheckoutPage() {
   const openShippingPolicy = () => {
     setIsShippingPolicyOpen(true);
   };
-  
+
   const closeShippingPolicy = () => {
     setIsShippingPolicyOpen(false);
   };
@@ -158,11 +149,25 @@ export default function CheckoutPage() {
     setIsShippingCalculated(true);
   };
 
+  // Transform items to match ExpressCheckoutProps
+  const transformedItems = items.map((item) => ({
+    id: item.id,
+    name: item.name,
+    price: item.price,
+    quantity: item.quantity,
+    size: item.size,
+    color: {
+      name: item.color.name,
+      value: item.color.hex, // Use hex as value
+    },
+    image: item.image,
+  }));
+
   return (
     <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10 relative">
-      <ShippingPolicyModal 
-        isOpen={isShippingPolicyOpen} 
-        onClose={closeShippingPolicy} 
+      <ShippingPolicyModal
+        isOpen={isShippingPolicyOpen}
+        onClose={closeShippingPolicy}
       />
       <div className="py-6 flex justify-between items-center border-b dark:border-textaccent/40">
         <Link aria-label="Noir Home" href="/">
@@ -176,36 +181,37 @@ export default function CheckoutPage() {
           />
         </Link>
         <Link
-            aria-label="Open shopping cart"
-            className="relative p-2 text-black hover:text-black/70 dark:text-white dark:hover:text-white/70 transition-colors"
-            href="/cart"
+          aria-label="Open shopping cart"
+          className="relative p-2 text-black hover:text-black/70 dark:text-white dark:hover:text-white/70 transition-colors"
+          href="/cart"
+        >
+          <svg
+            className="size-8"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            <svg
-              className="size-8"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                clipRule="evenodd"
-                d="M7.5 6v.75H5.513c-.96 0-1.764.724-1.865 1.679l-1.263 12A1.875 1.875 0 0 0 4.25 22.5h15.5a1.875 1.875 0 0 0 1.865-2.071l-1.263-12a1.875 1.875 0 0 0-1.865-1.679H16.5V6a4.5 4.5 0 1 0-9 0ZM12 3a3 3 0 0 0-3 3v.75h6V6a3 3 0 0 0-3-3Zm-3 8.25a3 3 0 1 0 6 0v-.75a.75.75 0 0 1 1.5 0v.75a4.5 4.5 0 1 1-9 0v-.75a.75.75 0 0 1 1.5 0v.75Z"
-                fillRule="evenodd"
-              />
-            </svg>
-          </Link>
+            <path
+              clipRule="evenodd"
+              d="M7.5 6v.75H5.513c-.96 0-1.764.724-1.865 1.679l-1.263 12A1.875 1.875 0 0 0 4.25 22.5h15.5a1.875 1.875 0 0 0 1.865-2.071l-1.263-12a1.875 1.875 0 0 0-1.865-1.679H16.5V6a4.5 4.5 0 1 0-9 0ZM12 3a3 3 0 0 0-3 3v.75h6V6a3 3 0 0 0-3-3Zm-3 8.25a3 3 0 1 0 6 0v-.75a.75.75 0 0 1 1.5 0v.75a4.5 4.5 0 1 1-9 0v-.75a.75.75 0 0 1 1.5 0v.75Z"
+              fillRule="evenodd"
+            />
+          </svg>
+        </Link>
       </div>
       <div className="flex flex-col-reverse lg:flex-row gap-8 pb-10 relative">
         {/* Left column */}
         <div className="lg:w-3/5 pt-0 lg:pt-10">
-
           {/* Express checkout */}
           {clientSecret && (
             <Elements
               stripe={stripePromise}
-              options={({
-                clientSecret,
-                appearance: { theme: isDarkMode ? "night" : "stripe" },
-              } as any)}
+              options={
+                {
+                  clientSecret,
+                  appearance: { theme: isDarkMode ? "night" : "stripe" },
+                } as any
+              }
             >
               {/* Express checkout */}
               <div className="mb-8">
@@ -213,23 +219,25 @@ export default function CheckoutPage() {
                   Express checkout
                 </p>
                 <div className="w-full">
-                <ExpressCheckout
-                  amount={Math.round(totalPrice * 100)}  // Start with just product price
-                  currency={currency}
-                  clientSecret={clientSecret}
-                  items={items}
-                  userId={user?.uid || "guest-user"}
-                  checkoutId={checkoutId}
-                  paymentIntentId={paymentIntentId}
-                />
+                  <ExpressCheckout
+                    amount={Math.round(totalPrice * 100)}
+                    currency={currency}
+                    clientSecret={clientSecret}
+                    items={transformedItems} // Use transformed items here
+                    userId={user?.uid || "guest-user"}
+                    checkoutId={checkoutId}
+                    paymentIntentId={paymentIntentId}
+                  />
                 </div>
                 <div className="flex items-center my-4">
                   <div className="flex-grow h-px bg-gray-200 dark:bg-textaccent/40 " />
-                  <span className="px-3 text-gray-500 dark:text-textaccent text-sm">OR</span>
+                  <span className="px-3 text-gray-500 dark:text-textaccent text-sm">
+                    OR
+                  </span>
                   <div className="flex-grow h-px bg-gray-200 dark:bg-textaccent/40" />
                 </div>
               </div>
-              
+
               <CheckoutForm
                 paymentIntentId={paymentIntentId}
                 onShippingChange={({ country, region, postalCode, fee }) => {
@@ -242,35 +250,49 @@ export default function CheckoutPage() {
         </div>
 
         {/* Right column - Summary */}
-        <div 
+        <div
           className="w-full lg:w-2/5 bg-[#f5f5f5] dark:bg-darkaccent p-6 lg:px-6 lg:pt-10 rounded-sm"
-          style={{ fontFamily: 'Apple System, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}
-
+          style={{
+            fontFamily:
+              'Apple System, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+          }}
         >
           {/* Toggle button for mobile */}
           <div className="lg:hidden">
-            <button 
+            <button
               onClick={() => setIsSummaryVisible(!isSummaryVisible)}
               className="flex justify-between w-full items-center text-blue-600 hover:text-blue-800 transition-colors"
             >
               <div className="flex flex-row gap-3 items-center">
                 <span className="font-medium">Order Summary</span>
-                <svg 
-                  className={`w-5 h-5 transition-transform ${isSummaryVisible ? 'rotate-180' : ''}`}
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24" 
+                <svg
+                  className={`w-5 h-5 transition-transform ${
+                    isSummaryVisible ? "rotate-180" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
                 </svg>
               </div>
-              <p className="text-xl font-medium">${(totalPrice ?? 0).toFixed(2)}</p>
+              <p className="text-xl font-medium">
+                ${(totalPrice ?? 0).toFixed(2)}
+              </p>
             </button>
           </div>
-          <div className={`${isSummaryVisible ? 'max-h-[1000px] mt-4' : 'max-h-0'} lg:max-h-[1000px] overflow-hidden transition-all duration-300 ease-in-out lg:overflow-visible`}>
+          <div
+            className={`${
+              isSummaryVisible ? "max-h-[1000px] mt-4" : "max-h-0"
+            } lg:max-h-[1000px] overflow-hidden transition-all duration-300 ease-in-out lg:overflow-visible`}
+          >
             <div className="max-h-80 overflow-y-auto mb-6">
-
               {items.map((item, i) => (
                 <div
                   key={`${item.id}-${i}`}
@@ -299,7 +321,7 @@ export default function CheckoutPage() {
                 </div>
               ))}
             </div>
-          
+
             <div className="mb-4">
               <div className="flex items-center gap-4">
                 <input
@@ -319,23 +341,44 @@ export default function CheckoutPage() {
             <div className="mb-4">
               <div className="flex justify-between py-2">
                 <span className="text-sm">
-                  Subtotal • {items.reduce((total, item) => total + item.quantity, 0)} {items.reduce((total, item) => total + item.quantity, 0) === 1 ? 'item' : 'items'}
+                  Subtotal •{" "}
+                  {items.reduce((total, item) => total + item.quantity, 0)}{" "}
+                  {items.reduce((total, item) => total + item.quantity, 0) ===
+                  1
+                    ? "item"
+                    : "items"}
                 </span>
                 <span>${(totalPrice ?? 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between py-2">
                 <div className="flex flex-row items-center gap-2">
-                <span className="text-sm">Shipping</span>
+                  <span className="text-sm">Shipping</span>
                   <button onClick={openShippingPolicy}>
-                    <svg className="w-4 h-4 text-gray-500 dark:text-gray-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                    <svg
+                      className="w-4 h-4 text-gray-500 dark:text-gray-300"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                      />
                     </svg>
                   </button>
                 </div>
                 {isShippingCalculated ? (
                   <span>${(shippingFee ?? 0).toFixed(2)}</span>
                 ) : (
-                  <span className="text-gray-500 dark:text-gray-300 text-sm">Enter shipping address</span>
+                  <span className="text-gray-500 dark:text-gray-300 text-sm">
+                    Enter shipping address
+                  </span>
                 )}
               </div>
             </div>

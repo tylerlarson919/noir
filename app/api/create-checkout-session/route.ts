@@ -1,7 +1,6 @@
 // src/app/api/create-checkout-session/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { getShippingFee } from '@/lib/shipping';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-03-31.basil",
@@ -11,7 +10,7 @@ type RequestBody = {
   items: {
     id: string;
     name: string;
-    price: number;
+    price: number; // in cents
     quantity: number;
     size: string;
     color: { name: string; value: string };
@@ -20,93 +19,38 @@ type RequestBody = {
   userId: string | null;
   customerEmail?: string;
   checkoutId?: string;
-  totalAmount?: number;
 };
 
 export async function POST(req: NextRequest) {
   try {
-    const { items, userId, customerEmail, checkoutId, shipping, paymentIntentId, totalAmount: requestTotalAmount }:
-    RequestBody & {
-      shipping?: {
-        name: string;
-        address: {
-          line1: string;
-          city: string;
-          state: string;
-          postal_code: string;
-          country: string;
-        };
-      };
-      paymentIntentId?: string;
-    } = await req.json();
-      
-    // compute subtotal
+    const { items, userId, customerEmail, checkoutId }: RequestBody = await req.json();
+
+    // Compute subtotal in cents
     const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
-    
-    // compute shipping
-    const { fee: shippingFee, currency } = shipping
-      ? getShippingFee(
-          shipping.address.country,
-          shipping.address.state || null,
-          subtotal
-        )
-      : { fee: 0, currency: "usd" };
-      
-      const totalAmount = requestTotalAmount || Math.round((subtotal + shippingFee) * 100);
-    
-    // If we have a shipping update only without changing payment intent
-    if (shipping && !paymentIntentId) {
-      // Return the shipping fee to update the UI
-      return NextResponse.json({
-        shippingFee: shippingFee,
-        currency: currency
-      });
-    }
-    
-    // If we have a payment intent ID and shipping changes, update the payment intent
-    if (shipping && paymentIntentId) {
-      const updatedIntent = await stripe.paymentIntents.update(paymentIntentId, {
-        amount: totalAmount,            // <— this is the key!
-        shipping: {
-          name:    shipping.name,
-          address: shipping.address,
-        },
-        metadata: {
-          shippingFee: shippingFee.toString(),
-        },
-      });
-      
-      return NextResponse.json({
-        checkoutSessionClientSecret: updatedIntent.client_secret,
-        shippingFee: shippingFee,
-        currency: currency
-      });
-    }
-    
-    // Create a new payment intent
+
+    // Create a new PaymentIntent with subtotal only
     const params: Stripe.PaymentIntentCreateParams = {
-      amount: totalAmount,
-      currency,
+      amount: subtotal, // Subtotal in cents, shipping added later
+      currency: "usd", // Adjust if your app uses a different currency
       automatic_payment_methods: { enabled: true },
       metadata: {
-        shippingFee: shippingFee.toString(),
         userId: userId || "guest",
         checkoutId: checkoutId || "unknown",
         itemCount: items.length.toString(),
-        totalAmount: (totalAmount / 100).toString(),
-        cartItems: JSON.stringify(items.map(item => ({
-          id: item.id,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity,
-          size: item.size,
-          color: item.color.name,
-          image: item.image
-        }))),
-        // only include if set
+        subtotal: (subtotal / 100).toString(),
+        cartItems: JSON.stringify(
+          items.map((item) => ({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            size: item.size,
+            color: item.color.name,
+            image: item.image,
+          }))
+        ),
         ...(customerEmail ? { userEmail: customerEmail } : {}),
       },
-      // only send receipt_email if we actually got one
       ...(customerEmail ? { receipt_email: customerEmail } : {}),
     };
     const paymentIntent = await stripe.paymentIntents.create(params);
@@ -114,8 +58,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       checkoutSessionClientSecret: paymentIntent.client_secret,
       paymentIntentId: paymentIntent.id,
-      shippingFee: shippingFee,
-      currency: currency
     });
   } catch (error: any) {
     console.error("Error creating payment intent:", error);
