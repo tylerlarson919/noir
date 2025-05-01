@@ -30,3 +30,4 @@ if (!getApps().length) {
 
 // Export firestore with admin privileges
 export const adminDb = getFirestore();
+export const db = adminDb;

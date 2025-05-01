@@ -3,8 +3,6 @@
 'use client';
 import { useState } from 'react';
 import { getReviews, Review, Summary } from '@/lib/reviews';
-import { db } from "@/lib/firebaseConfig";
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 export default function ReviewsClient({
   productId,
@@ -14,6 +12,7 @@ export default function ReviewsClient({
   const [reviews, setReviews] = useState<Review[]>(initialSummary.recent);
   const [showAll, setShowAll] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const loadMore = async () => {
     setLoading(true);
@@ -24,16 +23,41 @@ export default function ReviewsClient({
 
   const submitReview = async (e: React.FormEvent) => {
     e.preventDefault();
-    const form = new FormData(e.target as HTMLFormElement);
-    await addDoc(collection(db, 'reviews', productId), {
-      name: form.get('name'),
-      stars: Number(form.get('stars')),
-      text: form.get('text'),
-      photoURL: form.get('photo') || null,
-      createdAt: serverTimestamp()
-    });
-    // summary will update via Cloud Function + ISR
-    (e.target as HTMLFormElement).reset();
+    setSubmitting(true);
+    
+    try {
+      const form = new FormData(e.target as HTMLFormElement);
+      const reviewData = {
+        productId,
+        name: form.get('name'),
+        stars: Number(form.get('stars')),
+        text: form.get('text'),
+        photoURL: form.get('photo') || null,
+      };
+      
+      // Send review to API route instead of directly to Firestore
+      const response = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(reviewData),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to submit review');
+      }
+      
+      // Reload the page to show the updated reviews
+      // Alternatively, you could update the UI optimistically
+      window.location.reload();
+    } catch (error) {
+      console.error('Error submitting review:', error);
+      alert('Failed to submit review. Please try again.');
+    } finally {
+      setSubmitting(false);
+      (e.target as HTMLFormElement).reset();
+    }
   };
 
   return (
@@ -49,7 +73,7 @@ export default function ReviewsClient({
           <p className="text-sm">{r.text}</p>
         </div>
       ))}
-      {!showAll && (
+      {!showAll && summary.reviewCount > reviews.length && (
         <button className="underline mt-4" onClick={() => { setShowAll(true); loadMore(); }}>
           See all reviews
         </button>
@@ -63,7 +87,13 @@ export default function ReviewsClient({
         </select>
         <textarea name="text" placeholder="Your review" required className="border p-2" />
         <input name="photo" placeholder="Image URL (optional)" className="border p-2" />
-        <button type="submit" className="bg-black text-white py-2 mt-2">Submit Review</button>
+        <button 
+          type="submit" 
+          className="bg-black text-white py-2 mt-2 disabled:bg-gray-400"
+          disabled={submitting}
+        >
+          {submitting ? 'Submitting...' : 'Submit Review'}
+        </button>
       </form>
     </section>
   );
