@@ -66,25 +66,12 @@ export async function POST(req: NextRequest) {
 
     /* ----- 1) UPDATE existing PaymentIntent ------------------ */
     if (paymentIntentId) {
-      const updateParams: Stripe.PaymentIntentUpdateParams = {
-        amount: total,
-      };
+      const updateParams: Stripe.PaymentIntentUpdateParams = { amount: total };
 
-      if (shipping) {
-        updateParams.shipping = {
-          name: shipping.name ?? "Recipient",
-          address: shipping.address,
-        };
-      }
+      await stripe.paymentIntents.update(paymentIntentId, updateParams);
 
-      const pi = await stripe.paymentIntents.update(
-        paymentIntentId,
-        { ...updateParams, expand: ['client_secret'] }
-      );
-      
       return NextResponse.json({
-        shippingFee: SHIPPING_FEE_CENTS / 100,  // dollars
-        clientSecret: pi.client_secret,
+        shippingFee: SHIPPING_FEE_CENTS / 100, // dollars
       });
     }
 

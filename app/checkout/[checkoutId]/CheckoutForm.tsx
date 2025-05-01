@@ -26,7 +26,6 @@ export default function CheckoutForm({
       region?: string;
       postalCode?: string;
       fee: number;
-      clientSecret: string;
     }) => void;
     onReady?: () => void;
   }) {
@@ -46,22 +45,18 @@ export default function CheckoutForm({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          items,                                 // from useCart()
-          userId: user?.uid || null,             // from useAuth()
-          customerEmail: email || user?.email,   // your billing email
-          checkoutId,                            // from useParams()
-          paymentIntentId,
           shipping: {
+            // you may not have a name yet—Stripe only needs the address
             address: {
               country:    addr.country,
               state:      addr.region,
               postal_code: addr.postalCode,
             },
           },
+          paymentIntentId, // pass your existing PI id here
         }),
       });
-      // now also grab the new clientSecret:
-      const { shippingFee: fee, clientSecret } = await res.json();
+      const { shippingFee: fee } = await res.json();
   
       // 2) stash the new client secret & fee in local state
       setShippingFee(Number(fee));
@@ -70,7 +65,7 @@ export default function CheckoutForm({
 
   
       // 4) bubble up the shipping data if you need it elsewhere
-      onShippingChange({ ...addr, fee, clientSecret });
+      onShippingChange({ ...addr, fee });
     }, 500)
   ).current;
   const [email, setEmail] = useState("");
@@ -80,7 +75,7 @@ export default function CheckoutForm({
   const [receiveEmails, setReceiveEmails] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const { user } = useAuth();
-  const { items, clearCart } = useCart();
+  const { clearCart } = useCart();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -283,5 +278,4 @@ export default function CheckoutForm({
     </form>
   );
 }
-
 
