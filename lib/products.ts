@@ -1,3 +1,5 @@
+// lib/products.ts
+
 export type Product = {
   id: string;
   supplierLink: string;
