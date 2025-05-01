@@ -26,8 +26,15 @@ export async function POST(req: NextRequest) {
     const { items, userId, customerEmail, checkoutId }: RequestBody = await req.json();
 
     // Compute subtotal in cents
-    const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+// Helper – force each price into cents as an integer
+   const cents = (n: number) =>
+       Number.isInteger(n) ? n : Math.round(n * 100);
 
+     // Compute subtotal (always integer, always in cents)
+     const subtotal = items.reduce(
+       (sum, i) => sum + cents(i.price) * i.quantity,
+       0,
+     );
     // Create a new PaymentIntent with subtotal only
     const params: Stripe.PaymentIntentCreateParams = {
       amount: subtotal, // Subtotal in cents, shipping added later
@@ -58,6 +65,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       checkoutSessionClientSecret: paymentIntent.client_secret,
       paymentIntentId: paymentIntent.id,
+      currency: params.currency, 
     });
   } catch (error: any) {
     console.error("Error creating payment intent:", error);
