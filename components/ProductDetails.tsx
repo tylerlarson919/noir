@@ -57,6 +57,7 @@ export default function ProductDetails({
   useEffect(() => {
     // whenever size/color changes, regen the PI
     const initExpress = async () => {
+      setExpressLoading(true);
       const payload = {
         items: [{
           id: product.id,
@@ -411,6 +412,7 @@ export default function ProductDetails({
                 <div className="min-h-[42px] w-full bg-gray-200 dark:bg-white/10 animate-pulse rounded-md" />
               ) : (
                 <Elements
+                  key={clientSecret}
                   stripe={stripePromise}
                   options={{
                     clientSecret,
