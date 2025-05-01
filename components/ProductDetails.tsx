@@ -54,7 +54,7 @@ export default function ProductDetails({
   const [currency, setCurrency]             = useState("usd");
   const [expressLoading, setExpressLoading] = useState(true);
   const router = useRouter();
-  
+
   useEffect(() => {
     // whenever size/color changes, regen the PI
     const initExpress = async () => {
@@ -405,7 +405,7 @@ export default function ProductDetails({
             </button>
             <div className="w-full">
               <button
-                className="w-full py-4 px-6 bg-dark1 dark:bg-white button-grow-subtle text-white dark:text-black transition-color duration-300 rounded-md text-sm font-medium"
+                className="w-full h-[42px] py-auto px-6 bg-dark1 dark:bg-white button-grow-subtle text-white dark:text-black transition-color duration-300 rounded-md font-medium"
                 onClick={addToBagClick}
               >
                 Add to cart
