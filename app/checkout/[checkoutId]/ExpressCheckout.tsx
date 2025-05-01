@@ -5,12 +5,14 @@ interface ExpressCheckoutProps {
   clientSecret: string;
   currency: string;
   paymentIntentId: string;
+  onReady?: () => void;
 }
 
 export default function ExpressCheckout({
   clientSecret,
   currency,          // ← still here in case you want to surface it later
   paymentIntentId,
+  onReady,
 }: ExpressCheckoutProps) {
   const stripe   = useStripe();
   const elements = useElements();
@@ -20,6 +22,7 @@ export default function ExpressCheckout({
   return (
     <ExpressCheckoutElement
       className="express-checkout"
+      onReady={onReady}
       options={{
         billingAddressRequired: true,
         shippingAddressRequired: true,

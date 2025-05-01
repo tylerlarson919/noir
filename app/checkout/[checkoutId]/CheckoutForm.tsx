@@ -19,6 +19,7 @@ import { debounce } from "lodash";
 export default function CheckoutForm({
     onShippingChange,
     paymentIntentId,
+    onReady,
   }: {
     paymentIntentId: string;
     onShippingChange: (addr: {
@@ -27,6 +28,7 @@ export default function CheckoutForm({
       postalCode?: string;
       fee: number;
     }) => void;
+    onReady?: () => void;
   }) {
   // pull the current checkoutId from the URL
   const params = useParams();
@@ -189,6 +191,7 @@ export default function CheckoutForm({
               }, 
             },
           }}
+          onReady={onReady}
           onChange={event => {
             // Still update billing completion status
             if (event.complete) {

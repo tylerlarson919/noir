@@ -202,3 +202,15 @@ html {
 .animate-cross-fade-in {
   animation: crossFadeIn 300ms ease-in-out forwards;
 }
+
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity .35s ease, transform .35s ease;
+  }
+  
+  .fade-in.show {
+  opacity: 1;
+  transform: translateY(0);
+  }

@@ -48,6 +48,9 @@ export default function CheckoutPage() {
   } | null>(null);
   const [paymentIntentId, setPaymentIntentId] = useState("");
   const [isShippingCalculated, setIsShippingCalculated] = useState(false);
+  const [expressReady, setExpressReady] = useState(false);
+  const [formReady, setFormReady] = useState(false);
+
 
   useEffect(() => {
     setIsDarkMode(resolvedTheme === "dark");
@@ -222,27 +225,40 @@ export default function CheckoutPage() {
                 <p className="text-center text-sm text-gray-500 dark:text-textaccent mb-3">
                   Express checkout
                 </p>
-                <div className="w-full">
-                <ExpressCheckout
-                  clientSecret={clientSecret}
-                  currency={currency}
-                  paymentIntentId={paymentIntentId}
-                />
-                </div>
+                  {/* Skeleton while Stripe mounts */}
+                  {!expressReady && (
+                    <div className="h-[56px] w-full bg-gray-200 dark:bg-textaccent/20 animate-pulse rounded-sm mb-4">
+                    </div>
+                  )}
+                  <div className={`fade-in ${expressReady ? 'show' : ''}`}>
+                    <ExpressCheckout
+                      clientSecret={clientSecret}
+                      currency={currency}
+                      paymentIntentId={paymentIntentId}
+                      onReady={() => setExpressReady(true)}
+                    />
+                  </div>
                 <div className="flex items-center my-4">
                   <div className="flex-grow h-px bg-gray-200 dark:bg-textaccent/40 " />
                   <span className="px-3 text-gray-500 dark:text-textaccent text-sm">OR</span>
                   <div className="flex-grow h-px bg-gray-200 dark:bg-textaccent/40" />
                 </div>
               </div>
-              
-              <CheckoutForm
-                paymentIntentId={paymentIntentId}
-                onShippingChange={({ country, region, postalCode, fee }) => {
-                  setShippingAddress({ country, region, postalCode });
-                  setShippingFee(fee);
-                }}
-              />
+
+              {!formReady && (
+                <div className="h-[420px] w-full bg-gray-200 dark:bg-textaccent/20 animate-pulse rounded-sm">
+                </div>
+              )}
+              <div className={`fade-in ${formReady ? 'show' : ''}`}>
+                <CheckoutForm
+                  paymentIntentId={paymentIntentId}
+                  onReady={() => setFormReady(true)}
+                  onShippingChange={({ country, region, postalCode, fee }) => {
+                    setShippingAddress({ country, region, postalCode });
+                    setShippingFee(fee);
+                  }}
+                />
+              </div>
             </Elements>
           )}
         </div>
