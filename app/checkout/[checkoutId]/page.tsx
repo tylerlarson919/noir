@@ -353,7 +353,7 @@ export default function CheckoutPage() {
                 <span className="font-medium text-lg">Total</span>
                 <div>
                   <span className="text-xs text-gray-500 dark:text-gray-300 mr-2">
-                    {currency.toUpperCase()}
+                    {currency?.toUpperCase() || 'USD'}
                   </span>
                   <span className="font-medium text-lg">
                     ${(orderTotal ?? 0).toFixed(2)}
