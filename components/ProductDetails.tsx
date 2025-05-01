@@ -27,7 +27,6 @@ import { v4 as uuidv4 } from "uuid";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { memo } from "react";
-import Reviews from '@/components/Reviews';
 
 const StripeCheckoutShell = memo(function StripeCheckoutShell({
   clientSecret,
@@ -538,9 +537,6 @@ export default function ProductDetails({
           products={featuredProducts}
           title="You Might Also Like"
         />
-      </div>
-      <div className="mt-20">
-        <Reviews productId={product.id} />
       </div>
       <Lightbox
         open={open}
