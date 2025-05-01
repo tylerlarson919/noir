@@ -431,24 +431,22 @@ export default function ProductDetails({
                 Add to cart
               </button>
             </div>
-            <div className="w-full">
+            <div className="w-full relative h-[52px] min-h-[52px] max-h-[52px]">
               {clientSecret ? (
                 <StripeCheckoutShell clientSecret={clientSecret}>
-                  <div className="relative max-h-[42px]">
-                    {expressLoading && (
-                      <div className="absolute inset-0 p-1 pb-[2px] min-h-[42px] w-full bg-gray-200 dark:bg-white/10 animate-pulse rounded-md z-[10]" />
-                    )}
-                    <ExpressCheckout
-                      clientSecret={clientSecret}
-                      currency={currency}
-                      paymentIntentId={paymentIntentId}
-                      type="productPage"
-                      onReady={() => setExpressLoading(false)}
-                    />
-                  </div>
+                  {expressLoading && (
+                    <div className="absolute inset-0 mt-[5px] mb-[5px] min-h-[42px] w-full bg-gray-200 dark:bg-white/10 animate-pulse rounded-md z-[10]" />
+                  )}
+                  <ExpressCheckout
+                    clientSecret={clientSecret}
+                    currency={currency}
+                    paymentIntentId={paymentIntentId}
+                    type="productPage"
+                    onReady={() => setExpressLoading(false)}
+                  />
                 </StripeCheckoutShell>
               ) : (
-                <div className="p-1 pb-[2px] min-h-[42px] w-full bg-gray-200 dark:bg-white/10 animate-pulse rounded-md" />
+                <div className="mt-[5px] mb-[5px] min-h-[42px] w-full bg-gray-200 dark:bg-white/10 animate-pulse rounded-md" />
               )}
             </div>
             <button
