@@ -1,7 +1,7 @@
 // /components/ReviewsClient.tsx
 
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { getReviews, Review, Summary } from '@/lib/reviews';
 
 export default function ReviewsClient({
@@ -16,55 +16,39 @@ export default function ReviewsClient({
 
   const loadMore = () => {
     setLoading(true);
-    getReviews(productId, reviews[reviews.length-1]?.createdAt)
-      .then(more => {
-        setReviews(r => [...r, ...more]);
-        setLoading(false);
+    getReviews(productId, reviews[reviews.length - 1]?.createdAt)
+      .then((more) => {
+        setReviews((r) => [...r, ...more]);
       })
-      .catch(err => {
-        console.error(err);
-        setLoading(false);
-      });
+      .catch(console.error)
+      .finally(() => setLoading(false));
   };
 
-  const submitReview = async (e: React.FormEvent) => {
+  const submitReview = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitting(true);
-    
     try {
-      const form = new FormData(e.target as HTMLFormElement);
-      const reviewData = {
-        productId,
-        name: form.get('name'),
-        stars: Number(form.get('stars')),
-        text: form.get('text'),
-        photoURL: form.get('photo') || null,
-      };
-      
-      // Send review to API route instead of directly to Firestore
-      const response = await fetch('/api/reviews', {
+      const form = new FormData(e.currentTarget);
+      await fetch('/api/reviews', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(reviewData),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productId,
+          name: form.get('name'),
+          stars: Number(form.get('stars')),
+          text: form.get('text'),
+          photoURL: form.get('photo') || null,
+        }),
       });
-      
-      if (!response.ok) {
-        throw new Error('Failed to submit review');
-      }
-      
-      // Reload the page to show the updated reviews
-      // Alternatively, you could update the UI optimistically
       window.location.reload();
-    } catch (error) {
-      console.error('Error submitting review:', error);
+    } catch {
       alert('Failed to submit review. Please try again.');
     } finally {
       setSubmitting(false);
-      (e.target as HTMLFormElement).reset();
+      e.currentTarget.reset();
     }
   };
+
 
   return (
     <section className="mt-12">

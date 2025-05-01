@@ -2,8 +2,7 @@
 
 // Server wrapper: fetches summary & injects JSON-LD
 import ReviewsClient from './ReviewsClient';
-import { getSummary, Summary } from '@/lib/reviews';
-import { Metadata } from 'next';
+import { getSummary } from '@/lib/reviews';
 
 export default async function Reviews({ productId }: {productId: string}) {
     try {
