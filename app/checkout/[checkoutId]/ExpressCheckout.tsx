@@ -21,11 +21,18 @@ export default function ExpressCheckout({
     <ExpressCheckoutElement
       options={{
         billingAddressRequired: true,
-        shippingAddressRequired: true,                // let Stripe collect it
+        shippingAddressRequired: true,
+        paymentMethods: {
+          amazonPay: "never",
+          applePay: "auto",
+          googlePay: "auto",
+          link: "auto",
+          paypal: "auto",
+        },
         shippingRates: [                              // <- single placeholder
           {
             id: "standard",
-            amount: 9,                                // flat-rate placeholder
+            amount: 900,                                // flat-rate placeholder
             displayName: "Standard Shipping",
             deliveryEstimate: {
               minimum: { unit: "business_day", value: 3 },
