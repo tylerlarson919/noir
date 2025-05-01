@@ -6,9 +6,19 @@ export type Review = { id: string; name: string; stars: number; text: string; ph
 export type Summary = { reviewCount: number; avgStars: number; recent: Review[] };
 
 export async function getSummary(productId: string): Promise<Summary> {
-  const snap = await getDoc(doc(db, 'summaries', productId));
-  return snap.data() as Summary;
-}
+    const snap = await getDoc(doc(db, 'summaries', productId));
+    
+    // Return a default summary if no document exists
+    if (!snap.exists()) {
+      return {
+        reviewCount: 0,
+        avgStars: 0,
+        recent: []
+      };
+    }
+    
+    return snap.data() as Summary;
+  }
 
 export async function getReviews(productId: string, lastCreatedAt?: any): Promise<Review[]> {
   let q = query(
