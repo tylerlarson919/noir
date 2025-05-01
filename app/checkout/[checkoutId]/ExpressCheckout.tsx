@@ -19,6 +19,7 @@ export default function ExpressCheckout({
 
   return (
     <ExpressCheckoutElement
+      className="express-checkout"
       options={{
         billingAddressRequired: true,
         shippingAddressRequired: true,
@@ -41,7 +42,7 @@ export default function ExpressCheckout({
           },
         ],
         buttonType: { applePay: "plain" },
-        layout: { maxColumns: 3 },
+        layout: { },
       }}
       onConfirm={async () => {
         await stripe.confirmPayment({
@@ -54,4 +55,4 @@ export default function ExpressCheckout({
       }}
     />
   );
-}
+} 
