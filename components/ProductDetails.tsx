@@ -434,7 +434,7 @@ export default function ProductDetails({
             <div className="w-full">
               {clientSecret ? (
                 <StripeCheckoutShell clientSecret={clientSecret}>
-                  <div className="relative">
+                  <div className="relative min-h-[42px]">
                     {expressLoading && (
                       <div className="absolute inset-0 min-h-[42px] w-full bg-gray-200 dark:bg-white/10 animate-pulse rounded-md z-10" />
                     )}
