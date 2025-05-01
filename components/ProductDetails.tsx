@@ -26,6 +26,31 @@ import { useAuth } from "@/context/AuthContext";
 import { v4 as uuidv4 } from "uuid";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
+import { memo } from "react";
+
+const StripeCheckoutShell = memo(function StripeCheckoutShell({
+  clientSecret,
+  children,
+}: {
+  clientSecret: string;
+  children: React.ReactNode;
+}) {
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
+
+  return (
+    <Elements
+      stripe={stripePromise}
+      options={{
+        clientSecret,
+        appearance: { theme: isDark ? "night" : "stripe" },
+      }}
+    >
+      {children}
+    </Elements>
+  );
+});
+
 export default function ProductDetails({
   product,
   featuredProducts,
@@ -137,19 +162,6 @@ export default function ProductDetails({
     src: product.images[imageIndex] || "/images/placeholder.jpg",
     alt: `${product.name} - ${selectedColor.name}`,
   }));
-
-  const ExpressCheckoutWrapper = () => {
-    return (
-      <ExpressCheckout
-        clientSecret={clientSecret}
-        currency={currency}
-        paymentIntentId={paymentIntentId}
-        type="productPage"
-        onReady={() => setExpressLoading(false)}
-      />
-    );
-  };
-
 
   return (
     <div className="mx-4 relative flex flex-col justify-start items-center">
@@ -423,16 +435,15 @@ export default function ProductDetails({
               {(expressLoading || !clientSecret) ? (
                 <div className="min-h-[42px] w-full bg-gray-200 dark:bg-white/10 animate-pulse rounded-md" />
               ) : (
-                <Elements
-                  key={clientSecret}
-                  stripe={stripePromise}
-                  options={{
-                    clientSecret,
-                    appearance: { theme: resolvedTheme === "dark" ? "night" : "stripe" },
-                  }}
-                >
-                  <ExpressCheckoutWrapper />
-                </Elements>
+                <StripeCheckoutShell clientSecret={clientSecret}>
+                  <ExpressCheckout
+                    clientSecret={clientSecret}
+                    currency={currency}
+                    paymentIntentId={paymentIntentId}
+                    type="productPage"
+                    onReady={() => setExpressLoading(false)}
+                  />
+                </StripeCheckoutShell>
               )}
             </div>
             <button
