@@ -44,7 +44,7 @@ export default function ExpressCheckout({
           },
         ],
         buttonType: { applePay: "plain" },
-        layout: { },
+        layout: { maxRows: 2 },
       }}
       onConfirm={async () => {
         await stripe.confirmPayment({
