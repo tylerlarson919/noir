@@ -39,8 +39,8 @@ export default function CheckoutPage() {
     region?: string;
     postalCode?: string
   } | null>(null);
-  const [shippingFee, setShippingFee] = useState(0);
-  const [orderTotal, setOrderTotal] = useState(totalPrice);
+  const [shippingFee, setShippingFee] = useState<number>(0);
+  const [orderTotal, setOrderTotal] = useState<number>(totalPrice || 0);
   const addressRef = useRef<{
     country: string;
     region?: string;
@@ -78,19 +78,19 @@ export default function CheckoutPage() {
     createIntent();
   }, [items, user, checkoutId]);
 
-    // Update total price when shipping fee changes
   useEffect(() => {
-    setOrderTotal(totalPrice + shippingFee);
+    /* guard against undefined → NaN */
+    const price   = typeof totalPrice   === 'number' ? totalPrice   : 0;
+    const shipfee = typeof shippingFee  === 'number' ? shippingFee  : 0;
+    setOrderTotal(price + shipfee);
   }, [totalPrice, shippingFee]);
 
   // Update when shipping changes and API returns
   useEffect(() => {
     if (shippingAddress === null) return;
     
-    // Check if country, region OR postal code has changed
-    if (addressRef.current?.country !== shippingAddress.country || 
-        addressRef.current?.region !== shippingAddress.region ||
-        addressRef.current?.postalCode !== shippingAddress.postalCode) {
+    // React to a change of *country* only
+    if (addressRef.current?.country !== shippingAddress.country) {
       
       addressRef.current = shippingAddress;
       
@@ -112,9 +112,10 @@ export default function CheckoutPage() {
           });
           
           const { shippingFee: newFee, currency: respCurrency } = await res.json();
-          if (newFee!==undefined) {
+          if (typeof newFee === 'number') {
             setShippingFee(newFee);
             setCurrency(respCurrency);
+            setIsShippingCalculated(true);
           }
         } catch (error) {
           console.error("Error updating shipping:", error);
@@ -352,7 +353,7 @@ export default function CheckoutPage() {
                     {currency?.toUpperCase() || 'USD'}
                   </span>
                   <span className="font-medium text-lg">
-                    ${(orderTotal ?? 0).toFixed(2)}
+                    ${(orderTotal || 0).toFixed(2)}
                   </span>
                 </div>
               </div>

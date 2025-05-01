@@ -37,6 +37,7 @@ export default function CheckoutForm({
   const stripe = useStripe();
   const [clientSecret, setClientSecret] = useState<string>();
   const [shippingFee, setShippingFee] = useState<number>(0);
+  const lastCountry = useRef<string>();
   const debouncedOnShippingChange = useRef(
     debounce(async (addr) => {
       // 1) hit your backend to update the PI (shipping + no paymentIntentId => returns shippingFee & currency)
@@ -59,7 +60,7 @@ export default function CheckoutForm({
   
       // 2) stash the new client secret & fee in local state
       setClientSecret(checkoutSessionClientSecret);
-      setShippingFee(fee);
+      setShippingFee(Number(fee));
   
       // 3) tell Elements to point at the new PI
       if (elements && checkoutSessionClientSecret) {
@@ -198,12 +199,14 @@ export default function CheckoutForm({
             
             // Trigger shipping calculation when country or postal code changes,
             // even if the entire form isn't complete yet
-            if (event.value?.address?.country) {
-              debouncedOnShippingChange({
-                country:    event.value.address.country,
-                region:     event.value.address.state || undefined,
-                postalCode: event.value.address.postal_code,
-              });
+            if (event.value?.address?.country &&
+                event.value.address.country !== lastCountry.current) {
+                  lastCountry.current = event.value.address.country;
+                  debouncedOnShippingChange({
+                    country:    event.value.address.country,
+                    region:     event.value.address.state || undefined,
+                    postalCode: event.value.address.postal_code,
+                  });
             }
           }}
         />
