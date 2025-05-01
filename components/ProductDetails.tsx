@@ -253,11 +253,8 @@ export default function ProductDetails({
                         alt={`${product.name} - ${selectedColor.name} - View ${index + 1}`}
                         className="object-contain"
                         loading={index === 0 ? "eager" : "lazy"}
-                        priority={index === 0}
-                        src={
-                          product.images[imageIndex] ||
-                          "/images/placeholder.jpg"
-                        }
+                        priority={index === 0 && index < 2} // Only prioritize the first visible image
+                        src={product.images[imageIndex] || "/images/placeholder.jpg"}
                       />
                     </div>
                   </SwiperSlide>
@@ -292,13 +289,9 @@ export default function ProductDetails({
                     alt={`${product.name} - ${selectedColor.name} - View ${index + 1}`}
                     className={`object-contain ${isTransitioning ? "animate-cross-fade-in" : ""}`}
                     loading={index === 0 ? "eager" : "lazy"}
-                    priority={index === 0}
-                    src={
-                      product.images[imageIndex] || "/images/placeholder.jpg"
-                    }
-                    onTransitionEnd={
-                      index === 0 ? () => setIsTransitioning(false) : undefined
-                    }
+                    priority={index === 0 && index < 2} // Only prioritize the first visible image
+                    src={product.images[imageIndex] || "/images/placeholder.jpg"}
+                    onTransitionEnd={index === 0 ? () => setIsTransitioning(false) : undefined}
                   />
                 </div>
               ))}
