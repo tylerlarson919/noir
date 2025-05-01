@@ -41,6 +41,7 @@ const StripeCheckoutShell = memo(function StripeCheckoutShell({
   return (
     <Elements
       stripe={stripePromise}
+      key={clientSecret}
       options={{
         clientSecret,
         appearance: { theme: isDark ? "night" : "stripe" },
