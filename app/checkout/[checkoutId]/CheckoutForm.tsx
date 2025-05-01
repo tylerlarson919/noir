@@ -1,9 +1,8 @@
 // src/app/checkout/[checkoutId]/CheckoutForm.tsx
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "next/navigation";
 import {
   PaymentElement,
   AddressElement,
@@ -37,7 +36,6 @@ export default function CheckoutForm({
   // Stripe hooks & local state must live inside the component
   const elements = useElements();
   const stripe = useStripe();
-  const [clientSecret, setClientSecret] = useState<string>();
   const [shippingFee, setShippingFee] = useState<number>(0);
   const lastCountry = useRef<string>();
   const debouncedOnShippingChange = useRef(
@@ -58,16 +56,13 @@ export default function CheckoutForm({
           paymentIntentId, // pass your existing PI id here
         }),
       });
-      const { checkoutSessionClientSecret, shippingFee: fee } = await res.json();
+      const { shippingFee: fee } = await res.json();
   
       // 2) stash the new client secret & fee in local state
-      setClientSecret(checkoutSessionClientSecret);
       setShippingFee(Number(fee));
   
       // 3) tell Elements to point at the new PI
-      if (elements && checkoutSessionClientSecret) {
-        ;(elements as any).update({ clientSecret: checkoutSessionClientSecret });
-      }
+
   
       // 4) bubble up the shipping data if you need it elsewhere
       onShippingChange({ ...addr, fee });

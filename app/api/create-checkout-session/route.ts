@@ -1,16 +1,26 @@
-// src/app/api/create-checkout-session/route.ts
+/* -----------------------------------------------------------
+   Stripe – create / update PaymentIntent (Edge Runtime)
+----------------------------------------------------------- */
+
+/* 1.  Tell Next.js to run this route on the Edge and never cache */
+export const runtime = "edge";
+export const dynamic = "force-dynamic";
+
+/* 2.  Imports -------------------------------------------------- */
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
+/* 3.  Stripe client ------------------------------------------- */
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-03-31.basil",
 });
 
+/* 4.  Expected request body ----------------------------------- */
 type RequestBody = {
-  items: {
+  items?: {
     id: string;
     name: string;
-    price: number; // in cents
+    price: number;      // dollars or cents – will convert to cents below
     quantity: number;
     size: string;
     color: { name: string; value: string };
@@ -19,32 +29,65 @@ type RequestBody = {
   userId: string | null;
   customerEmail?: string;
   checkoutId?: string;
+  paymentIntentId?: string;
+  shipping?: {
+    name?: string;
+    address: {
+      country: string;
+      postal_code?: string;
+      state?: string;
+    };
+  };
 };
 
+/* 5.  Route handler ------------------------------------------- */
 export async function POST(req: NextRequest) {
   try {
-    const { items, userId, customerEmail, checkoutId }: RequestBody = await req.json();
+    const {
+      items = [],
+      userId,
+      customerEmail,
+      checkoutId,
+      paymentIntentId,
+      shipping,
+    }: RequestBody = await req.json();
 
-    // Compute subtotal in cents
-// Helper – force each price into cents as an integer
-   const cents = (n: number) =>
-       Number.isInteger(n) ? n : Math.round(n * 100);
+    /* ----- totals -------------------------------------------- */
+    const cents = (n: number) =>
+      Number.isInteger(n) ? n : Math.round(n * 100);
 
-// Compute subtotal in cents
     const subtotal = items.reduce(
-        (sum, i) => sum + cents(i.price) * i.quantity,
-        0,
-      );
+      (sum, i) => sum + cents(i.price) * i.quantity,
+      0
+    );
 
-      // Flat-rate shipping fee ($9)
-      const SHIPPING_FEE_CENTS = 900;
+    const SHIPPING_FEE_CENTS = 900;          // $9 flat rate
+    const total = subtotal + SHIPPING_FEE_CENTS;
 
-      // Total = items + shipping
-      const total = subtotal + SHIPPING_FEE_CENTS;
-    // Create a new PaymentIntent with subtotal only
+    /* ----- 1) UPDATE existing PaymentIntent ------------------ */
+    if (paymentIntentId) {
+      const updateParams: Stripe.PaymentIntentUpdateParams = {
+        amount: total,
+      };
+
+      if (shipping) {
+        updateParams.shipping = {
+          name: shipping.name ?? "Recipient",
+          address: shipping.address,
+        };
+      }
+
+      await stripe.paymentIntents.update(paymentIntentId, updateParams);
+
+      return NextResponse.json({
+        shippingFee: SHIPPING_FEE_CENTS / 100, // dollars
+      });
+    }
+
+    /* ----- 2) CREATE new PaymentIntent ----------------------- */
     const params: Stripe.PaymentIntentCreateParams = {
-      amount: total, // Subtotal in cents, shipping added later
-      currency: "usd", // Adjust if your app uses a different currency
+      amount: total,
+      currency: "usd",
       automatic_payment_methods: { enabled: true },
       metadata: {
         userId: userId || "guest",
@@ -53,29 +96,30 @@ export async function POST(req: NextRequest) {
         subtotal: (subtotal / 100).toString(),
         shippingFee: (SHIPPING_FEE_CENTS / 100).toString(),
         cartItems: JSON.stringify(
-          items.map((item) => ({
-            id: item.id,
-            name: item.name,
-            price: item.price,
-            quantity: item.quantity,
-            size: item.size,
-            color: item.color.name,
-            image: item.image,
+          items.map((i) => ({
+            id: i.id,
+            name: i.name,
+            price: i.price,
+            quantity: i.quantity,
+            size: i.size,
+            color: i.color.name,
+            image: i.image,
           }))
         ),
         ...(customerEmail ? { userEmail: customerEmail } : {}),
       },
       ...(customerEmail ? { receipt_email: customerEmail } : {}),
     };
+
     const paymentIntent = await stripe.paymentIntents.create(params);
 
     return NextResponse.json({
       checkoutSessionClientSecret: paymentIntent.client_secret,
       paymentIntentId: paymentIntent.id,
-      shippingFee: SHIPPING_FEE_CENTS / 100,
+      shippingFee: SHIPPING_FEE_CENTS / 100, // dollars
     });
   } catch (error: any) {
-    console.error("Error creating payment intent:", error);
+    console.error("Error creating / updating payment intent:", error);
     return NextResponse.json(
       { error: error.message || "Failed to create payment intent" },
       { status: 500 }

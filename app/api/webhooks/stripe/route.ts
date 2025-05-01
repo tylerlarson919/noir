@@ -3,7 +3,7 @@ export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { headers } from "next/headers";
-import { Firestore, FieldValue } from "@google-cloud/firestore";
+import { Firestore } from "@google-cloud/firestore";
 
 const adminDb = new Firestore({
     projectId: process.env.FIREBASE_PROJECT_ID,

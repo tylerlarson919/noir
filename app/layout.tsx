@@ -9,6 +9,7 @@ import { Navbar } from "@/components/navbar";
 import Footer from "@/components/layout/Footer";
 import CartModal from "@/components/cart/CartModal";
 import HeaderModal, { HeaderModalProvider } from "@/components/HeaderModal";
+import "@/lib/stripeClient";
 
 export const metadata: Metadata = {
   title: {
@@ -35,7 +36,14 @@ export default function RootLayout({
 }) {
   return (
     <html suppressHydrationWarning lang="en">
-      <head />
+      <head>
+        {/* --- Stripe pre-connects / DNS prefetch -------------------- */}
+        <link rel="dns-prefetch" href="https://js.stripe.com" />
+        <link rel="preconnect"    href="https://js.stripe.com"  crossOrigin="" />
+        <link rel="preconnect"    href="https://m.stripe.com"   crossOrigin="" />
+        <link rel="preconnect"    href="https://api.stripe.com" crossOrigin="" />
+        {/* ----------------------------------------------------------- */}
+      </head>
       <body
         className={clsx(
           "min-h-screen bg-background font-sans antialiased",

@@ -5,7 +5,7 @@ import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "next-themes";
 import Image from "next/image";
-import { loadStripe } from "@stripe/stripe-js";
+import { stripePromise } from "@/lib/stripeClient";
 import { Elements } from "@stripe/react-stripe-js";
 import CheckoutForm from "./CheckoutForm";
 import { useParams, useRouter } from "next/navigation";
@@ -13,13 +13,30 @@ import { v4 as uuidv4 } from "uuid";
 import Link from "next/link";
 import ShippingPolicyModal from "@/components/shippingPolicyModal";
 import ExpressCheckout from "./ExpressCheckout";
+import { memo } from "react";
 
+const StripeCheckoutShell = memo(function StripeCheckoutShell({
+  clientSecret,
+  children,
+}: {
+  clientSecret: string;
+  children: React.ReactNode;
+}) {
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
 
-
-// Initialize Stripe outside of component
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
-);
+  return (
+    <Elements
+      stripe={stripePromise}
+      options={{
+        clientSecret,
+        appearance: { theme: isDark ? "night" : "stripe" },
+      }}
+    >
+      {children}
+    </Elements>
+  );
+});
 
 export default function CheckoutPage() {
   const { totalPrice, items } = useCart();
@@ -114,10 +131,9 @@ export default function CheckoutPage() {
             body: JSON.stringify(payload),
           });
           
-          const { shippingFee: newFee, currency: respCurrency } = await res.json();
+          const { shippingFee: newFee } = await res.json();
           if (typeof newFee === 'number') {
             setShippingFee(newFee);
-            setCurrency(respCurrency);
             setIsShippingCalculated(true);
           }
         } catch (error) {
@@ -212,14 +228,8 @@ export default function CheckoutPage() {
         <div className="lg:w-3/5 pt-0 lg:pt-10">
 
           {/* Express checkout */}
-          {clientSecret && (
-            <Elements
-              stripe={stripePromise}
-              options={({
-                clientSecret,
-                appearance: { theme: isDarkMode ? "night" : "stripe" },
-              } as any)}
-            >
+           {clientSecret && (
+             <StripeCheckoutShell clientSecret={clientSecret}>
               {/* Express checkout */}
               <div className="mb-8">
                 <p className="text-center text-sm text-gray-500 dark:text-textaccent mb-3">
@@ -259,7 +269,7 @@ export default function CheckoutPage() {
                   }}
                 />
               </div>
-            </Elements>
+            </StripeCheckoutShell>
           )}
         </div>
 
