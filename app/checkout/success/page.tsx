@@ -142,7 +142,7 @@ function CheckoutResultContent() {
             Please check your payment method and try again. If you believe this is an error, please contact our
             customer support team.
           </p>
-          <p className="text-center text-gray-600 text-sm">
+          <p className="text-center text-gray-600 dark:text-textaccent text-sm">
             If your payment was processed but you&apos;re seeing this message, please email us at 
             <a href="mailto:support@yourdomain.com" className="ml-1 underline">
               support@noir-clothing.com
@@ -218,10 +218,10 @@ function CheckoutResultContent() {
                   </div>
                   <div>
                     <h3 className="font-medium">{item.name}</h3>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600 dark:text-textaccent">
                       {item.size} / {item.color?.name}
                     </p>
-                    <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+                    <p className="text-sm text-gray-600 dark:text-textaccent">Quantity: {item.quantity}</p>
                   </div>
                 </div>
                 <p className="font-medium">${item.price.toFixed(2)}</p>
@@ -257,7 +257,7 @@ function CheckoutResultContent() {
             here
           </Link>.
         </p>
-        <p className="text-center text-gray-600 text-sm">
+        <p className="text-center text-gray-600 dark:text-textaccent text-sm">
           If you have any questions about your order, please contact our customer support team.
         </p>
       </div>
