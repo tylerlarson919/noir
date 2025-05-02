@@ -14,7 +14,6 @@ import Link from "next/link";
 import ShippingPolicyModal from "@/components/shippingPolicyModal";
 import ExpressCheckout from "../../../components/ExpressCheckout";
 import { memo } from "react";
-
 const StripeCheckoutShell = memo(function StripeCheckoutShell({
   clientSecret,
   children,
@@ -67,7 +66,9 @@ export default function CheckoutPage() {
   const [isShippingCalculated, setIsShippingCalculated] = useState(false);
   const [expressReady, setExpressReady] = useState(false);
   const [formReady, setFormReady] = useState(false);
-
+  const [couponCode, setCouponCode] = useState("");
+  const [discount, setDiscount] = useState(0);
+  
 
   useEffect(() => {
     setIsDarkMode(resolvedTheme === "dark");
@@ -102,8 +103,8 @@ export default function CheckoutPage() {
     /* guard against undefined → NaN */
     const price   = typeof totalPrice   === 'number' ? totalPrice   : 0;
     const shipfee = typeof shippingFee  === 'number' ? shippingFee  : 0;
-    setOrderTotal(price + shipfee);
-  }, [totalPrice, shippingFee]);
+    setOrderTotal(price + shipfee - discount);
+  }, [totalPrice, shippingFee, discount]);
 
   // Update when shipping changes and API returns
   useEffect(() => {
@@ -173,19 +174,23 @@ export default function CheckoutPage() {
     );
   }
 
-  // Transform items to match ExpressCheckoutProps
-  const transformedItems = items.map((item) => ({
-    id: item.id,
-    name: item.name,
-    price: item.price,
-    quantity: item.quantity,
-    size: item.size,
-    color: {
-      name: item.color.name,
-      value: item.color.hex, // Use hex as value
-    },
-    image: item.image,
-  }));
+  async function applyCoupon() {
+    const res = await fetch("/api/apply-coupon", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        couponCode,
+        items,
+        checkoutId,
+        paymentIntentId,
+        shipping: shippingAddress,
+      }),
+    });
+    const { valid, amount_off, message } = await res.json();
+    if (!valid) return alert(message);
+    setDiscount(amount_off / 100);
+  }
+
 
   return (
     <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10 relative">
@@ -336,12 +341,15 @@ export default function CheckoutPage() {
             <div className="mb-4">
               <div className="flex items-center gap-4">
                 <input
+                  value={couponCode}
+                  onChange={e => setCouponCode(e.target.value.trim())}
                   type="text"
                   placeholder="Discount code"
                   className="flex-grow p-3 border dark:border-textaccent/40 rounded-sm focus:outline-none focus:ring-1 focus:ring-green-500"
                 />
                 <button
-                  onClick={() => console.log("apply discount")}
+                  onClick={applyCoupon}
+                  disabled={!couponCode}
                   className="px-4 py-3 bg-white dark:bg-black rounded-sm hover:bg-gray-300 dark:hover:bg-black/80 transition-colors"
                 >
                   Apply
@@ -351,6 +359,12 @@ export default function CheckoutPage() {
 
             <div className="mb-4">
               <div className="flex justify-between py-2">
+                {discount > 0 && (
+                  <div className="flex justify-between py-2 text-green-600">
+                    <span>Discount</span>
+                    <span>- ${discount.toFixed(2)}</span>
+                  </div>
+                )}
                 <span className="text-sm">
                   Subtotal • {items.reduce((total, item) => total + item.quantity, 0)} {items.reduce((total, item) => total + item.quantity, 0) === 1 ? 'item' : 'items'}
                 </span>
