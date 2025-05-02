@@ -136,7 +136,7 @@ function CheckoutResultContent() {
           {error || "There was a problem processing your payment."}
         </p>
   
-        <div className="my-4 p-6 border border-gray-200 rounded-lg w-full">
+        <div className="my-4 p-6 ordber border-gray-200 dark:border-textaccent/40 rounded-lg w-full">
           <h2 className="text-2xl font-bold mb-4">What to do next</h2>
           <p className="mb-4">
             Please check your payment method and try again. If you believe this is an error, please contact our
@@ -145,7 +145,7 @@ function CheckoutResultContent() {
           <p className="text-center text-gray-600 text-sm">
             If your payment was processed but you&apos;re seeing this message, please email us at 
             <a href="mailto:support@yourdomain.com" className="ml-1 underline">
-              support@yourdomain.com
+              support@noir-clothing.com
             </a>
             .
           </p>
@@ -160,7 +160,7 @@ function CheckoutResultContent() {
           </button>
           <button
             onClick={() => router.push("/")}
-            className="px-8 py-3 border border-gray-300 text-gray-700 font-medium rounded-md hover:bg-gray-50 transition"
+            className="px-8 py-3 border border-gray-200 dark:border-textaccent/40 text-gray-700 font-medium rounded-md hover:bg-gray-50 transition"
           >
             Return Home
           </button>
@@ -195,7 +195,7 @@ function CheckoutResultContent() {
       </p>
   
       {orderDetails && (
-        <div className="my-4 p-6 border border-gray-200 rounded-lg w-full">
+        <div className="my-4 p-6 border border-gray-200 dark:border-textaccent/40 rounded-lg w-full">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-medium">Order #{paymentIntentId?.substring(3, 9)}</h2>
             <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm capitalize">
@@ -229,7 +229,7 @@ function CheckoutResultContent() {
             ))}
           </div>
           
-          <div className="border-t pt-4 mt-4">
+          <div className="border-t pt-4 mt-4 border-gray-200 dark:border-textaccent/40">
             <div className="flex justify-between items-center mb-2">
               <h3 className="text-md">Subtotal</h3>
               <p>${(orderDetails.amount?.subtotal || 0).toFixed(2)}</p>
@@ -241,7 +241,7 @@ function CheckoutResultContent() {
                   ? orderDetails.amount.shipping.toFixed(2) 
                   : ((orderDetails.amount?.total || 0) - (orderDetails.amount?.subtotal || 0)).toFixed(2)}</p>
             </div>
-            <div className="flex justify-between items-center pt-2 border-t border-gray-100">
+            <div className="flex justify-between items-center pt-2 border-t border-gray-200 dark:border-textaccent/40">
               <h3 className="text-lg font-bold">Total</h3>
               <p className="text-lg font-bold">${(orderDetails.amount?.total || 0).toFixed(2)}</p>
             </div>
@@ -264,7 +264,7 @@ function CheckoutResultContent() {
   
       <button
         onClick={() => router.push("/")}
-        className="mt-4 px-8 py-3 bg-black text-white font-medium rounded-md hover:bg-gray-800 transition"
+        className="mt-4 px-8 py-3 bg-black text-white font-medium rounded-md hover:bg-black/60 transition"
       >
         Continue Shopping
       </button>
