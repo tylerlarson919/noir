@@ -112,7 +112,7 @@ export default function AccountPage() {
                           {order.items && order.items.map((item: any, idx: number) => (
                             <div key={idx} className="py-4 flex justify-between items-center">
                               <div className="flex items-center">
-                                <div className="w-16 h-16 mr-4 bg-gray-100 rounded-md overflow-hidden">
+                                <div className="w-16 h-16 mr-4 bg-gray-100 rounded overflow-hidden">
                                   <img
                                     src={item.image || "/placeholder.png"}
                                     alt={item.name}
