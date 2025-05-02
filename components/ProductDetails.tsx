@@ -382,13 +382,13 @@ export default function ProductDetails({
                   setSelectedColor(c);
                 }}
               />
-              <hr role="seperator" className="shrink-0 bg-divider border-none w-full h-divider"/>
+              <hr className="shrink-0 bg-divider border-none w-full h-divider"/>
               <SizePicker
                 sizes={product.sizes}
                 selected={selectedSize}
                 onSelect={(s) => setSelectedSize(s)}
               />
-              <hr role="seperator" className="shrink-0 bg-divider border-none w-full h-divider"/>
+              <hr className="shrink-0 bg-divider border-none w-full h-divider"/>
             </div>
             <button className="text-sm flex items-center gap-2 underline" onClick={openSizeChart}>
               <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
