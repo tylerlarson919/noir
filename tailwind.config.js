@@ -24,6 +24,11 @@ const config = {
         textaccent: "#949494",
         textaccentdarker: "#505050",
         secondary: "#7828C8",
+
+        noirdark1: "#0f0f0f",
+        noirdark2: "#222124",
+        noirdark3: "#",
+        noiraccentdark: "#7d7f83",
       },
       animation: {
         "fade-in": "fadeIn 0.5s ease-in-out",

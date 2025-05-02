@@ -345,12 +345,12 @@ export default function CheckoutPage() {
                   onChange={e => setCouponCode(e.target.value.trim())}
                   type="text"
                   placeholder="Discount code"
-                  className="flex-grow p-3 border dark:border-textaccent/40 rounded-sm focus:outline-none focus:ring-1 focus:ring-green-500"
+                  className="flex-grow px-3 h-[44px] border dark:border-textaccent/40 rounded-sm focus:outline-none focus:ring-1 focus:ring-green-500 bg-white dark:bg-[#30313d]"
                 />
                 <button
                   onClick={applyCoupon}
                   disabled={!couponCode}
-                  className="px-4 py-3 bg-white dark:bg-black rounded-sm hover:bg-gray-300 dark:hover:bg-black/80 transition-colors"
+                  className="px-4 py-3 bg-white dark:bg-white/10 rounded-sm hover:bg-gray-300 dark:hover:bg-noirdark1 transition-colors"
                 >
                   Apply
                 </button>

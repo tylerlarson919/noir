@@ -78,10 +78,10 @@ export const Navbar = () => {
     ${isScrollingDown && !isAtTop ? "-translate-y-full" : "translate-y-0"} 
     ${
       !isAtTop
-        ? "bg-white dark:bg-darkaccent shadow-md"
+        ? "bg-white dark:bg-noirdark1 shadow-md"
         : isMainPage
-          ? "bg-transparent hover:bg-white dark:hover:bg-darkaccent text-white hover:text-black dark:hover:text-white"
-          : "bg-transparent hover:bg-white dark:hover:bg-darkaccent"
+          ? "bg-transparent hover:bg-white dark:hover:bg-noirdark1 text-white hover:text-black dark:hover:text-white"
+          : "bg-transparent hover:bg-white dark:hover:bg-noirdark1"
     }
   `;
 

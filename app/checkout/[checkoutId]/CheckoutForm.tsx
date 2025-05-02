@@ -139,7 +139,7 @@ export default function CheckoutForm({
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-3 border dark:border-textaccent/40 rounded focus:outline-none focus:ring-1 focus:ring-green-500 drop-shadow-sm dark:bg-[#30313d]"
+            className="w-full px-3 h-[44px] py-auto border dark:border-textaccent/40 rounded focus:outline-none focus:ring-1 focus:ring-green-500 drop-shadow-sm dark:bg-[#30313d]"
             style={{ fontFamily: 'Apple System, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}
             required
           />

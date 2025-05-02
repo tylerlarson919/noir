@@ -109,7 +109,7 @@ export default function HeaderModal() {
       {/* Modal content */}
       <div
         aria-modal="true"
-        className={`relative z-[100] w-full h-full p-6 overflow-x-hidden overflow-y-auto bg-white border-r dark:bg-darkaccent md:max-w-md border-gray-600 dark:border-darkaccent2/60 ${
+        className={`relative z-[100] w-full h-full p-6 overflow-x-hidden overflow-y-auto bg-white border-r dark:bg-noirdark1 md:max-w-md border-gray-600 dark:border-darkaccent2/60 ${
           isClosing ? "drawer-animation-exit" : "drawer-animation"
         }`}
         ref={menuRef}

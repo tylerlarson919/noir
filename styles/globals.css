@@ -11,6 +11,18 @@ input:-webkit-autofill:active {
   transition: background-color 5000s ease-in-out 0s;
 }
 
+:root {
+  /* Light mode variables */
+  --background: #ffffff;
+  --foreground: #000000;
+}
+
+.dark {
+  /* Dark mode variables */
+  --background: #0c0c0c; /* Change this to your preferred dark shade instead of pure black */
+  --foreground: #ffffff;
+}
+
 
 .modal-open {
   overflow: hidden !important;
