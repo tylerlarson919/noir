@@ -35,21 +35,22 @@ export const Navbar = () => {
       const currentScrollY = window.scrollY;
 
       // Determine scroll direction
-      if (currentScrollY > prevScrollY) {
-        setIsScrollingDown(true);
-      } else {
-        setIsScrollingDown(false);
-      }
+        if (currentScrollY > prevScrollY) {
+          setIsScrollingDown(true);
+        } else {
+          setIsScrollingDown(false);
+        }
+ 
 
       // Check if at the top of the page - use a small threshold for mobile
-      setIsAtTop(currentScrollY <= 10); // More forgiving threshold instead of exactly 0
+      setIsAtTop(currentScrollY <= 30); // More forgiving threshold instead of exactly 0
 
       // Update previous scroll position
       setPrevScrollY(currentScrollY);
     };
 
     // Ensure initial state is correct
-    setIsAtTop(window.scrollY <= 10);
+    setIsAtTop(window.scrollY <= 30);
 
     window.addEventListener("scroll", handleScroll, { passive: true });
 
@@ -60,7 +61,7 @@ export const Navbar = () => {
       () => {
         // Force check at the end of touch scroll
         setTimeout(() => {
-          setIsAtTop(window.scrollY <= 10);
+          setIsAtTop(window.scrollY <= 30);
         }, 100);
       },
       { passive: true },
