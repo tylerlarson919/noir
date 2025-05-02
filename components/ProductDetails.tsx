@@ -398,7 +398,7 @@ export default function ProductDetails({
             </button>
             <div className="w-full">
               <button
-                className="w-full h-[42px] py-auto px-6 bg-dark1 dark:bg-white text-white dark:text-black transition-color duration-300 rounded-md font-medium text-lg"
+                className="w-full h-[42px] py-auto px-6 bg-dark1 dark:bg-white text-white dark:text-black transition-color duration-300 rounded-md font-semibold text-lg"
                 onClick={addToBagClick}
               >
                 Add to cart
