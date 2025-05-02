@@ -226,3 +226,22 @@ html {
   opacity: 1;
   transform: translateY(0);
   }
+
+
+
+  /* Fade-in utility triggered via Intersection Observer */
+.will-fade {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.fade {
+  animation: fadeIn 0.9s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
