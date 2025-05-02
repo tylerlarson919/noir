@@ -3,7 +3,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { Select, SelectItem } from "@heroui/select";
 import { Breadcrumbs, BreadcrumbItem } from "@heroui/breadcrumbs";
 import { Accordion, AccordionItem } from "@heroui/accordion";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -27,6 +26,69 @@ import { v4 as uuidv4 } from "uuid";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { memo } from "react";
+
+type Color = { name: string; hex: string; images: number[] };
+
+const ColorPicker = ({
+  colors,
+  selected,
+  onSelect,
+  productImages,
+}: {
+  colors: Color[];
+  selected: Color;
+  onSelect: (c: Color) => void;
+  productImages: string[];
+}) => (
+  <div className="flex gap-3">
+    {colors.map((c) => (
+      <button
+        key={c.name}
+        className={`w-12 h-12 rounded border-1 overflow-hidden transition flex items-center justify-center ${
+          selected.name === c.name
+            ? "border-black dark:border-white"
+            : "border-transparent hover:border-gray-400 dark:hover:border-white/20"
+        }`}
+        onClick={() => onSelect(c)}
+      >
+        <Image
+          src={productImages[c.images[0]]}
+          alt={`${c.name} thumbnail`}
+          width={40}
+          height={40}
+          className="object-cover"
+        />
+      </button>
+    ))}
+  </div>
+);
+
+const SizePicker = ({
+  sizes,
+  selected,
+  onSelect,
+}: {
+  sizes: string[];
+  selected: string;
+  onSelect: (s: string) => void;
+}) => (
+  <div className="flex gap-2 items-center justify-start">
+    {sizes.map((s) => (
+      <button
+        key={s}
+        className={`w-20 border rounded transition-all text-xs w-[50px] h-[45px] ${
+          selected === s
+            ? "border-black dark:border-white bg-black text-white dark:bg-white dark:text-black font-semibold"
+            : "font-semibold border-transparent hover:border-gray-500 dark:hover:border-white/40"
+        }`}
+        onClick={() => onSelect(s)}
+      >
+        {s}
+      </button>
+    ))}
+  </div>
+);
+
 
 const StripeCheckoutShell = memo(function StripeCheckoutShell({
   clientSecret,
@@ -308,107 +370,25 @@ export default function ProductDetails({
             </p>
           </div>
 
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-row gap-4">
-              <Select
-                className="w-1/2"
-                classNames={{
-                  trigger:
-                    "bg-transparent border-1 border-black/30 dark:border-textaccent/30",
-                  popoverContent: "rounded-none",
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-4">
+              <ColorPicker
+                colors={product.colors}
+                productImages={product.images}
+                selected={selectedColor}
+                onSelect={(c) => {
+                  setPreviousColor(selectedColor);
+                  setIsTransitioning(true);
+                  setSelectedColor(c);
                 }}
-                defaultSelectedKeys={[product.colors[0].name]}
-                items={product.colors.map((color) => ({
-                  id: color.name,
-                  label: color.name,
-                  color,
-                }))}
-                label="Color"
-                labelPlacement="outside"
-                listboxProps={{
-                  itemClasses: {
-                    base: [
-                      "data-[hover=true]:rounded-none",
-                      "data-[focus-visible=true]:rounded-none",
-                    ],
-                  },
-                }}
-                placeholder="Select a Color"
-                radius="none"
-                startContent={
-                  <div
-                    className="min-w-5 min-h-5 rounded-full mr-1"
-                    style={{ backgroundColor: selectedColor?.hex || "#000000" }}
-                  />
-                }
-                onSelectionChange={(keys) => {
-                  const selectedKey = Array.from(keys)[0];
-
-                  if (selectedKey) {
-                    const newColor = product.colors.find(
-                      (c) => c.name === selectedKey,
-                    );
-
-                    if (newColor && newColor.name !== selectedColor.name) {
-                      setPreviousColor(selectedColor);
-                      setIsTransitioning(true);
-                      setSelectedColor(newColor);
-                    }
-                  }
-                }}
-              >
-                {(item) => (
-                  <SelectItem
-                    key={(item as any).id}
-                    startContent={
-                      <div
-                        className="w-4 h-4 rounded-full"
-                        style={{ backgroundColor: (item as any).color.hex }}
-                      />
-                    }
-                  >
-                    {(item as any).label}
-                  </SelectItem>
-                )}
-              </Select>
-              <Select
-                className="w-1/2"
-                classNames={{
-                  trigger:
-                    "bg-transparent border-1 border-black/30 dark:border-textaccent/30 !overflow-visible",
-                  popoverContent: "rounded-none",
-                }}
-                defaultSelectedKeys={[product.sizes[0]]}
-                items={product.sizes.map((size) => ({ id: size, label: size }))}
-                label="Size"
-                labelPlacement="outside"
-                listboxProps={{
-                  itemClasses: {
-                    base: [
-                      "data-[hover=true]:rounded-none",
-                      "data-[focus-visible=true]:rounded-none",
-                    ],
-                  },
-                }}
-                placeholder="Select a size"
-                radius="none"
-                onSelectionChange={(keys) => {
-                  // Convert keys (Set) to Array and get the first item
-                  const selectedKey = Array.from(keys)[0];
-
-                  if (selectedKey) {
-                    setSelectedSize(selectedKey.toString());
-                  } else {
-                    setSelectedSize(product.sizes[0]);
-                  }
-                }}
-              >
-                {(item) => (
-                  <SelectItem key={(item as any).id}>
-                    {(item as any).label}
-                  </SelectItem>
-                )}
-              </Select>
+              />
+              <hr role="seperator" className="shrink-0 bg-divider border-none w-full h-divider"/>
+              <SizePicker
+                sizes={product.sizes}
+                selected={selectedSize}
+                onSelect={(s) => setSelectedSize(s)}
+              />
+              <hr role="seperator" className="shrink-0 bg-divider border-none w-full h-divider"/>
             </div>
             <button className="text-sm flex items-center gap-2 underline" onClick={openSizeChart}>
               <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -526,10 +506,10 @@ export default function ProductDetails({
       </div>
 
       {/* Related Products Section */}
-      <div className="mt-20">
+      <div className="">
         <FeaturedProducts
           products={featuredProducts}
-          title="You Might Also Like"
+          title="You May Also Like"
         />
       </div>
       <Lightbox

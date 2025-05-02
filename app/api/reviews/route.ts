@@ -32,12 +32,16 @@ export async function POST(request: Request) {
     const count = querySnapshot.size;
     let total = 0;
     const recent: any[] = [];
+    const starCounts: Record<number, number> = {1:0, 2:0, 3:0, 4:0, 5:0};
 
     querySnapshot.docs.forEach((d, i) => {
-      const dt = d.data();
-      total += dt.stars;
-      if (i < 3) recent.push({...dt, id: d.id});
-    });
+        const dt = d.data() as { stars: number; [k: string]: any };
+        total += dt.stars;
+        const s = dt.stars;
+        // Now this will work with the index signature
+        if (s >= 1 && s <= 5) starCounts[s]++;
+        if (i < 3) recent.push({...dt, id: d.id});
+      });
 
     const avg = Math.round((total/count)*10)/10;
     
@@ -46,6 +50,7 @@ export async function POST(request: Request) {
       reviewCount: count,
       avgStars: avg,
       recent,
+      starCounts,
     });
 
     // Revalidate the product page

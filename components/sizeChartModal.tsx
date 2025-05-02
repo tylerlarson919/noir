@@ -53,7 +53,7 @@ export default function SizeChartModal({ isOpen, onClose, productSizeChart }: Si
           />
           <div 
             ref={modalContentRef}
-            className={`rounded-lg shadow-xl w-fit max-h-[80vh] flex flex-col transition-transform duration-300 relative ${
+            className={`rounded-lg shadow-xl w-fit max-h-1/2 flex flex-col transition-transform duration-300 relative ${
               isAnimating ? 'scale-100' : 'scale-95'
             }`}
             role="dialog"
@@ -72,10 +72,10 @@ export default function SizeChartModal({ isOpen, onClose, productSizeChart }: Si
               </button>
             </div>
         
-        <div className="p-0 w-full h-full">
-            <Image alt="Size Chart" className="w-fit max-h-1/4 rounded-lg" src={productSizeChart} height={800} width={400}/>
+            <div className="p-0 w-full h-full">
+                <Image alt="Size Chart" className="w-fit max-h-1/4 rounded-lg" src={productSizeChart} height={800} width={400}/>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  );
+      );
 }

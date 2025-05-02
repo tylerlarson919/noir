@@ -4,24 +4,22 @@
 import { useState } from 'react';
 import { getReviews, Review, Summary } from '@/lib/reviews';
 
-export default function ReviewsClient({
-  productId,
-  initialSummary
-}: { productId: string; initialSummary: Summary; }) {
-  const [summary, setSummary] = useState(initialSummary);
+export default function ReviewsClient({ productId, initialSummary }: { productId: string; initialSummary: Summary; }) {
+  const [summary] = useState(initialSummary);
   const [reviews, setReviews] = useState<Review[]>(initialSummary.recent);
-  const [showAll, setShowAll] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const loadMore = () => {
+  const loadMore = async () => {
     setLoading(true);
-    getReviews(productId, reviews[reviews.length - 1]?.createdAt)
-      .then((more) => {
-        setReviews((r) => [...r, ...more]);
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    try {
+      const more = await getReviews(productId, reviews[reviews.length - 1]?.createdAt);
+      setReviews(prev => [...prev, ...more]);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const submitReview = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -49,58 +47,98 @@ export default function ReviewsClient({
     }
   };
 
-
   return (
-    <section className="mt-12 py-4">
-      <h2 className="font-medium text-lg">Reviews ({summary.reviewCount ?? 0})</h2>
-      <div className="flex items-center gap-2">
-        {Array.from({ length: 5 }).map((_, i) => (
+    <section className="max-w-xl mx-auto px-4 py-8 space-y-6">
+      {/* Rating Summary */}
+      <div className="text-center space-y-1">
+        <div className="flex justify-center gap-1">
+          {[1, 2, 3, 4, 5].map(star => (
             <svg
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg" 
-                width="24" 
-                height="24" 
-                fill="currentColor" 
-                viewBox="0 0 24 24" 
-                key={i}
-                className={`size-6
-                ${i < Math.round(summary.avgStars)
-                    ? 'text-yellow-500'
-                    : 'text-gray-200'}
-                `}
+              key={star}
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              className={
+                star <= Math.round(summary.avgStars)
+                  ? 'text-yellow-500'
+                  : 'text-gray-400 dark:text-gray-600'
+              }
             >
-                <path d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z"/>
-            </svg> 
-        ))}
-        <span>{summary.avgStars.toFixed(1) ?? 0}</span>
-      </div>
-      {reviews.map(r => (
-        <div key={r.id} className="mt-4">
-          <p className="font-semibold">{r.name} <span>({r.stars}★)</span></p>
-          <p className="text-sm">{r.text}</p>
+              <path d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z" />
+            </svg>
+          ))}
         </div>
-      ))}
-      {!showAll && summary.reviewCount > reviews.length && (
-        <button className="underline mt-4" onClick={() => { setShowAll(true); loadMore(); }}>
-          See all reviews
-        </button>
-      )}
-      {loading && <p>Loading…</p>}
+        <p className="text-xl font-semibold">{summary.avgStars.toFixed(1)} / 5</p>
+        <p className="text-sm text-gray-500">{summary.reviewCount} reviews</p>
+      </div>
 
-      <form onSubmit={submitReview} className="mt-8 flex flex-col gap-2">
-        <input name="name" placeholder="Your name" required className="border p-2" />
-        <select name="stars" required className="border p-2">
-          {[5,4,3,2,1].map(n => <option key={n} value={n}>{n} Stars</option>)}
-        </select>
-        <textarea name="text" placeholder="Your review" required className="border p-2" />
-        <input name="photo" placeholder="Image URL (optional)" className="border p-2" />
-        <button 
-          type="submit" 
-          className="bg-black text-white py-2 mt-2 disabled:bg-gray-400"
-          disabled={submitting}
+      {/* Reviews List */}
+      <div className="space-y-4">
+        {reviews.map(r => (
+          <div key={r.id} className="border p-4 rounded">
+            <div className="flex justify-between items-center">
+              <p className="font-medium">{r.name}</p>
+              <p className="text-sm text-gray-500">{r.stars}★</p>
+            </div>
+            <p className="mt-2 text-gray-700">{r.text}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Load More */}
+      {summary.reviewCount > reviews.length && (
+        <div className="text-center">
+          <button
+            onClick={loadMore}
+            disabled={loading}
+            className="text-blue-500 hover:underline disabled:text-gray-400"
+          >
+            {loading ? 'Loading...' : 'Load more reviews'}
+          </button>
+        </div>
+      )}
+
+      {/* Submit Form */}
+      <form onSubmit={submitReview} className="space-y-4">
+        <input
+          name="name"
+          placeholder="Your name"
+          required
+          className="w-full border-b border-gray-300 py-2 focus:outline-none placeholder-gray-400"
+        />
+        <select
+          name="stars"
+          required
+          className="w-full border-b border-gray-300 py-2 focus:outline-none"
         >
-          {submitting ? 'Submitting...' : 'Submit Review'}
-        </button>
+          {[5, 4, 3, 2, 1].map(n => (
+            <option key={n} value={n}>{n} Stars</option>
+          ))}
+        </select>
+        <textarea
+          name="text"
+          placeholder="Your review"
+          required
+          rows={3}
+          className="w-full border-b border-gray-300 py-2 focus:outline-none placeholder-gray-400"
+        />
+        <input
+          name="photo"
+          placeholder="Image URL (optional)"
+          className="w-full border-b border-gray-300 py-2 focus:outline-none placeholder-gray-400"
+        />
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            disabled={submitting}
+            className="bg-black text-white py-2 px-4 rounded disabled:bg-gray-400"
+          >
+            {submitting ? 'Submitting...' : 'Submit review'}
+          </button>
+        </div>
       </form>
     </section>
   );

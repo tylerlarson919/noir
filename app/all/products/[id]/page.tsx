@@ -1,8 +1,7 @@
 // products/[id]/page.tsx
 import ProductDetails from "@/components/ProductDetails";
 import { notFound } from "next/navigation";
-import { getProductById, getFeaturedProducts } from "@/lib/products";
-import Reviews        from '@/components/Reviews';
+import { getProductById, getProductsBySubCategory } from "@/lib/products";
 type Props = {
   params: Promise<{ id: string }>;
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -19,16 +18,13 @@ export default async function ProductPage({ params, searchParams }: Props) {
     notFound();
   }
 
-  const featuredProducts = (await getFeaturedProducts())
+  const featuredProducts = (await getProductsBySubCategory(product.subCategory))
     .filter((p) => p.id !== product.id)
     .slice(0, 4);
 
   return (
     <>
     <ProductDetails product={product} featuredProducts={featuredProducts} />
-      <div className="mt-20">
-        <Reviews productId={product.id} />
-      </div>
     </>
   );
 }
