@@ -23,18 +23,18 @@ export default function AboutPage() {
   }, []);
 
   return (
-    <main className="bg-white text-neutral-900 overflow-x-hidden">
+    <main className="overflow-x-hidden">
       {/* 1. Hero */}
       <section className="relative flex flex-col items-center justify-center min-h-[80vh] px-6 pb-20">
         <Image
-          src="/placeholder-hero.jpg"        /* A cinematic black-and-white shot of flowing silk */
-          alt="Noir luxury fabric"
+          src="/noir-studio.jpg" /* A sleek, minimalist studio shot representing the Virginia studio */
+          alt="Noir visionary studio"
           fill
           priority
           className="object-cover object-center -z-10"
         />
         <div className="max-w-4xl text-center space-y-6 will-fade">
-          <h1 className="font-serif text-5xl md:text-7xl tracking-tight">
+          <h1 className="font-medium text-5xl md:text-7xl tracking-tight">
             Noir
           </h1>
           <p className="md:text-xl tracking-wide">
@@ -49,18 +49,21 @@ export default function AboutPage() {
           <div className="space-y-6 will-fade">
             <h2 className="font-semibold text-3xl md:text-4xl">Our Beginning</h2>
             <p className="leading-relaxed">
-              Noir started in a tiny Paris atelier where our founder, tired of
-              watching mark-ups eclipse craftsmanship, asked a simple question:
-              “What if elegance didn’t come with a hidden tax?” We began by
-              sourcing the same mills favored by heritage fashion houses—and
-              skipped the endless middlemen. What remained was pure:
-              <span className="italic">luxury stripped of pretense.</span>
+              Noir emerged in 2025 from a visionary studio in Virginia, challenging the 
+              conventions of luxury fashion. In a world where technology and sustainability 
+              intersect, our founder sought to create a brand that honors craftsmanship 
+              while embracing innovation.
+            </p>
+            <p className="leading-relaxed">
+              Nestled in the serene landscape of Virginia, far from the traditional fashion 
+              epicenters, Noir represents a bold departure from the past. Here, artisans 
+              trained in centuries-old techniques work alongside material scientists and 
+              digital innovators to craft garments that are both timeless and ahead of their time.
             </p>
           </div>
-
           <Image
-            src="/placeholder-origin.jpg"   /* A candid photo of a sunlit Parisian studio with pattern sketches */
-            alt="Noir atelier"
+            src="/virginia-studio.jpg" /* Image of a modern studio nestled in Virginia's landscape */
+            alt="Noir studio in Virginia"
             width={800}
             height={600}
             className="rounded-lg will-fade"
@@ -69,24 +72,30 @@ export default function AboutPage() {
       </section>
 
       {/* 3. The Philosophy */}
-      <section className="bg-neutral-100 px-6 md:px-20 lg:px-32 py-24">
+      <section className="bg-neutral-100 dark:bg-noirdark1 px-6 md:px-20 lg:px-32 py-24">
         <div className="max-w-4xl mx-auto space-y-16">
           <div className="space-y-6 text-center will-fade">
             <h2 className="font-semibold text-3xl md:text-4xl">
               The Noir Philosophy
             </h2>
             <p className="leading-relaxed md:text-lg">
-              We obsess over silhouette, drape, and fabric science—then let
-              minimalism speak for itself. Every collection is built on three
-              pillars:
+              At Noir, transparency is not just a promise—it’s a practice. Through blockchain 
+              technology, we offer an unprecedented look into our supply chain. Every garment 
+              comes with a digital passport, detailing its journey from sustainably sourced 
+              materials to the skilled hands that brought it to life.
+            </p>
+            <p className="leading-relaxed md:text-lg">
+              Our design philosophy is simple yet profound: minimalism with a futuristic soul.
+              Noir pieces are designed to transcend fleeting trends, becoming staples in your 
+              wardrobe for years to come. Each collection is a testament to the belief that 
+              true luxury lies in quality, not excess.
             </p>
           </div>
-
           <div className="grid md:grid-cols-3 gap-12">
             {[
-              ['Masterful Craft', '/placeholder-craft.jpg', 'Close-up of skilled hands sewing a lapel'],
-              ['Radical Transparency', '/placeholder-transparency.jpg', 'Glass pricing chart overlaid on fabric'],
-              ['Timeless Design', '/placeholder-timeless.jpg', 'Model wearing a classic, monochrome trench against marble']
+              ['Transparency', '/blockchain.jpg', 'Blockchain technology for supply chain transparency'],
+              ['Minimalism', '/futuristic-garment.jpg', 'Minimalist design with futuristic elements'],
+              ['Value', '/cost-breakdown.jpg', 'Anatomy of a Noir jacket with cost breakdown']
             ].map(([title, src, alt]) => (
               <div key={title} className="space-y-4 will-fade">
                 <Image
@@ -98,12 +107,12 @@ export default function AboutPage() {
                 />
                 <h3 className="font-medium text-xl">{title}</h3>
                 <p className="text-sm leading-relaxed">
-                  {title === 'Masterful Craft' &&
-                    'Italian-spun wool, Japanese hardware, and stitches counted in the hundreds per inch.'}
-                  {title === 'Radical Transparency' &&
-                    'We reveal every cost—from fabric to freight—because trust is the ultimate luxury.'}
-                  {title === 'Timeless Design' &&
-                    'Noir pieces outlive seasons and trends, existing beyond the calendar.'}
+                  {title === 'Transparency' &&
+                    'Through blockchain, we offer an unprecedented look into our supply chain.'}
+                  {title === 'Minimalism' &&
+                    'Our design philosophy: minimalism with a futuristic soul.'}
+                  {title === 'Value' &&
+                    'We reject exorbitant markups, making luxury accessible.'}
                 </p>
               </div>
             ))}
@@ -115,27 +124,40 @@ export default function AboutPage() {
       <section className="px-6 md:px-20 lg:px-32 py-24 space-y-12">
         <div className="will-fade space-y-6 max-w-3xl">
           <h2 className="font-semibold text-3xl md:text-4xl">
-            Dissecting the Mark-up Myth
+            Redefining Value
           </h2>
           <p className="leading-relaxed">
-            Traditional luxury brands mark garments up 6-10× their true cost.
-            Noir keeps the margin modest, investing in fabric, not inflated
-            logos. Below, the anatomy of a Noir blazer:
+            We reject the industry’s tradition of exorbitant markups. By leveraging direct-to-consumer 
+            models and efficient production methods, we make luxury accessible without sacrificing 
+            excellence. Consider the anatomy of a Noir jacket:
           </p>
         </div>
-
         <div className="relative max-w-4xl will-fade">
           <Image
-            src="/placeholder-blazer.jpg"  /* Flat-lay of a tailored black blazer with call-out lines */
-            alt="Noir blazer price transparency"
+            src="/noir-jacket.jpg" /* Image of a Noir jacket with a clean, minimalist background */
+            alt="Noir jacket price transparency"
             width={1200}
             height={800}
             className="rounded-lg"
           />
-          {/* Example overlay (purely decorative) */}
-          <div className="absolute top-4 left-4 bg-white/80 backdrop-blur px-4 py-2 text-sm rounded">
-            Fabric €78  •  Craft €45  •  Logistics €9  •  You pay €210
+          <div className="absolute top-4 left-4 bg-black/20 dark:bg-white/20 backdrop-blur px-4 py-2 text-sm rounded">
+            <ul className="list-disc">
+              <li>Fabric: €90 (eco-friendly, high-performance textiles)</li>
+              <li>Craft: €50 (artisanal expertise meets digital precision)</li>
+              <li>Technology: €15 (blockchain traceability and virtual try-on)</li>
+              <li>Logistics: €10 (sustainable packaging and carbon-neutral shipping)</li>
+              <li>Your investment: €220</li>
+            </ul>
           </div>
+        </div>
+        <div className="space-y-6 max-w-3xl will-fade">
+          <p className="leading-relaxed">
+            Noir is more than a brand; it’s a movement towards a more honest, innovative, 
+            and sustainable future in fashion.
+          </p>
+          <p className="leading-relaxed italic">
+            Embrace the new luxury. Discover Noir.
+          </p>
         </div>
       </section>
 
