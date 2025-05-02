@@ -219,7 +219,7 @@ function CheckoutResultContent() {
                   <div>
                     <h3 className="font-medium">{item.name}</h3>
                     <p className="text-sm text-gray-600 dark:text-textaccent">
-                      {item.size} / {item.color?.name}
+                      {item.size} / {item.color ? JSON.stringify(item.color) : ""}
                     </p>
                     <p className="text-sm text-gray-600 dark:text-textaccent">Quantity: {item.quantity}</p>
                   </div>
