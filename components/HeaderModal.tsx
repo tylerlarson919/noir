@@ -196,24 +196,28 @@ export default function HeaderModal() {
           <Link
             className="w-full text-gray-600 dark:text-textaccent hover:text-black dark:hover:text-white transition-all duration-300 text-xl hover-underline"
             href="/all?category=featured"
+            onClick={handleClose}
           >
             New In
           </Link>
           <Link
             className="w-full text-gray-600 dark:text-textaccent hover:text-black dark:hover:text-white transition-all duration-300 text-xl hover-underline"
             href="/about"
+            onClick={handleClose}
           >
             About Us
           </Link>
           <Link
             className="w-full text-gray-600 dark:text-textaccent hover:text-black dark:hover:text-white transition-all duration-300 text-xl hover-underline"
             href="/contact"
+            onClick={handleClose}
           >
             Contact
           </Link>
           <Link
             className="w-full text-gray-600 dark:text-textaccent hover:text-black dark:hover:text-white transition-all duration-300 text-xl hover-underline"
             href="/track-order"
+            onClick={handleClose}
           >
             Track Order
           </Link>
