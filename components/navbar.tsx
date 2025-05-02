@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import clsx from "clsx";
 
 import { ThemeSwitch } from "@/components/theme-switch";
 import { useCart } from "@/context/CartContext";
@@ -73,17 +74,17 @@ export const Navbar = () => {
   }, [prevScrollY]);
 
   // Combine classes conditionally
-  const headerClasses = `
-    fixed top-0 z-50 left-0 right-0 py-6 px-4 flex flex-row items-center justify-center w-full transition-all duration-300 ease-in-out group
-    ${isScrollingDown && !isAtTop ? "-translate-y-full" : "translate-y-0"} 
-    ${
+    const headerClasses = clsx(
+      "fixed left-0 right-0 z-50 py-6 px-4 flex items-center justify-center w-full transition-all duration-300 ease-in-out group",
+      // when banner is visible, push down 36px; otherwise stick to top
+      isAtTop ? "top-[36px]" : "top-0",
+      isScrollingDown && !isAtTop ? "-translate-y-full" : "translate-y-0",
       !isAtTop
         ? "bg-white dark:bg-noirdark1 shadow-md"
         : isMainPage
           ? "bg-transparent hover:bg-white dark:hover:bg-noirdark1 text-white hover:text-black dark:hover:text-white"
           : "bg-transparent hover:bg-white dark:hover:bg-noirdark1"
-    }
-  `;
+    );
 
   // Prevent rendering on checkout pages
   if (pathname.startsWith('/checkout')) {

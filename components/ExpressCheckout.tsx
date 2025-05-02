@@ -1,7 +1,7 @@
 "use client";
 // @ts-ignore
 import { ExpressCheckoutElement, useElements, useStripe } from "@stripe/react-stripe-js";
-import type { StripeExpressCheckoutElementOptions } from "@stripe/stripe-js";
+import { useCart } from "@/context/CartContext";
 
 interface ExpressCheckoutProps {
   clientSecret: string;
@@ -20,6 +20,9 @@ export default function ExpressCheckout({
 }: ExpressCheckoutProps) {
   const stripe   = useStripe();
   const elements = useElements();
+  const { totalPrice } = useCart()
+
+  const standardRate = totalPrice > 100 ? 0 : 900;
   const paymentMethods = type === 'productPage'
    ? {
        amazonPay: 'never',
@@ -52,7 +55,7 @@ export default function ExpressCheckout({
         shippingRates: [                              // <- single placeholder
           {
             id: "standard",
-            amount: 900,                                // flat-rate placeholder
+            amount: standardRate,                                // flat-rate placeholder
             displayName: "Standard Shipping",
             deliveryEstimate: {
               minimum: { unit: "business_day", value: 3 },

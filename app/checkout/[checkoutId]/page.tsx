@@ -303,7 +303,7 @@ export default function CheckoutPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </div>
-              <p className="text-xl font-medium">${(totalPrice ?? 0).toFixed(2)}</p>
+              <p className="text-xl font-medium">${(orderTotal ?? 0).toFixed(2)}</p>
             </button>
           </div>
           <div className={`${isSummaryVisible ? 'max-h-[1000px] mt-4' : 'max-h-0'} lg:max-h-[1000px] overflow-hidden transition-all duration-300 ease-in-out lg:overflow-visible`}>

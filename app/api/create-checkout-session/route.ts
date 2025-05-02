@@ -61,7 +61,10 @@ export async function POST(req: NextRequest) {
       0
     );
 
-    const SHIPPING_FEE_CENTS = 900;          // $9 flat rate
+    const SHIPPING_THRESHOLD_CENTS = 100 * 100; // $100 → 10000¢
+    const SHIPPING_FEE_CENTS =
+      subtotal > SHIPPING_THRESHOLD_CENTS ? 0 : 900; // free over $100
+      
     const total = subtotal + SHIPPING_FEE_CENTS;
 
     /* ----- 1) UPDATE existing PaymentIntent ------------------ */

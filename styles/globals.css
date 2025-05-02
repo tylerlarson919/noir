@@ -245,3 +245,40 @@ html {
     transform: translateY(0);
   }
 }
+
+
+
+.top-banner {
+  position: relative;
+  height: 36px;
+  overflow: hidden;
+  text-align: center;
+  line-height: 36px;
+  font-size: 14px;
+}
+
+.message {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+  opacity: 0;
+}
+
+.enter {
+  animation: enterAnim 0.6s forwards;
+}
+
+.exit {
+  animation: exitAnim 0.6s forwards;
+}
+
+@keyframes enterAnim {
+  from { transform: translateY(-100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+@keyframes exitAnim {
+  from { transform: translateY(0);    opacity: 1; }
+  to   { transform: translateY(100%); opacity: 0; }
+}

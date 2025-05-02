@@ -84,7 +84,7 @@ function CheckoutResultContent() {
     // Add a small delay before first fetch
     const timer = setTimeout(() => {
       fetchOrderDetails();
-    }, 1000);
+    }, 2000);
     
     // Clean up function
     return () => {

@@ -28,7 +28,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   return (
     <div className="group">
       <Link href={`/all/products/${product.id}`}>
-        <div className="relative overflow-hidden aspect-square rounded-xl">
+        <div className="relative overflow-hidden aspect-square rounded-xl mb-2">
           <div
             className="relative w-full h-full"
             onMouseEnter={() => setIsHovering(true)}

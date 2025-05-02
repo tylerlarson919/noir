@@ -10,6 +10,8 @@ import Footer from "@/components/layout/Footer";
 import CartModal from "@/components/cart/CartModal";
 import HeaderModal, { HeaderModalProvider } from "@/components/HeaderModal";
 import "@/lib/stripeClient";
+import CookieBanner from "@/components/CookieBanner";
+import TopBanner from "@/components/TopBanner";
 
 export const metadata: Metadata = {
   title: {
@@ -59,12 +61,14 @@ export default function RootLayout({
             <CartModal />
             <HeaderModal />
             <div className="relative flex flex-col min-h-screen">
+              <TopBanner />
               <Navbar />
               <main className="w-full flex-grow pt-0 relative">{children}</main>
               <Footer />
             </div>
           </HeaderModalProvider>
         </Providers>
+        <CookieBanner />
         <SpeedInsights />
       </body>
     </html>

@@ -121,6 +121,14 @@ const Footer: React.FC = () => {
                   Return Policy
                 </Link>
               </li>
+              <li>
+                <Link
+                  className="text-gray-600 hover:text-black dark:hover:text-white text-xs"
+                  href="/cookie-policy"
+                >
+                  Cookies
+                </Link>
+              </li>
             </ul>
           </div>
 

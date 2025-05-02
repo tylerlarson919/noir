@@ -2,7 +2,7 @@
 import Link from "next/link";
 export default function ReturnPolicyPage() {
   return (
-    <div className="mx-4 md:mx-16 mt-24 mb-20 flex flex-col items-center justify-center">
+    <div className="mx-4 md:mx-16 mt-28 mb-20 flex flex-col items-center justify-center">
       <h1 className="text-2xl font-medium mb-4 text-center">Return Policy</h1>
       <div className="flex flex-col items-start justify-center leading-relaxed gap-2">
         <p className="text-gray-600 dark:text-gray-400 mb-4 text-left">
