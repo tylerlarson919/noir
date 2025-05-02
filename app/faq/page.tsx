@@ -10,7 +10,8 @@ export default function FaqPage() {
       content: (
         <>
           The fit of our products is oversized. You can also check the sizing of each 
-          product in the corresponding product size guide on the product page. <br/>
+          product in the corresponding product size guide on the product page.
+          <div className="my-4" />
           If you still have doubts regarding which size you should order, please 
           do not hesitate to contact us{' '}
           <a href="/contact" className="underline">
@@ -24,9 +25,9 @@ export default function FaqPage() {
       title: "Which payment methods do you accept?",
       content: (
         <>
-        We currently accept the following payment methods: <br/>
-        Visa, MasterCard, American Express, 
-        Link (Shop) Pay, Apple Pay, Google Pay, Amazon Pay, Cash App Pay, and Klarna.
+          We currently accept the following payment methods:
+          <div className="my-4" />
+          Visa, MasterCard, American Express, Link (Shop) Pay, Apple Pay, Google Pay, Amazon Pay, Cash App Pay, and Klarna.
         </>
       ),
     },
@@ -38,7 +39,8 @@ export default function FaqPage() {
           If your order hasn’t been prepared yet, we can modify it or cancel it without any problems. To do this, please contact us stating your order number and any other relevant information{' '}
           <a href="/contact" className="underline">
             here
-          </a>. <br/>
+          </a>.
+          <div className="my-4" />
           If we cannot modify or cancel your order, you will need to request a return.
         </>
       ),
@@ -68,6 +70,7 @@ export default function FaqPage() {
       ),
     },
   ];
+
   const faqs2 = [
     {
       key: "q1",
@@ -92,11 +95,12 @@ export default function FaqPage() {
       title: "How can I track my package?",
       content: (
         <>
-          When your order ships, you will receive an email containing the tracking information of your order.<br/>
+          When your order ships, you will receive an email containing the tracking information of your order.
+          <div className="my-4" />
           You can also track your order{' '}
           <a href="/track-order" className="underline">
             here
-          </a>{' '}, once you've placed an order.
+          </a>, once you've placed an order.
         </>
       ),
     },
@@ -105,7 +109,8 @@ export default function FaqPage() {
       title: "Is my order subject to custom fees?",
       content: (
         <>
-          No. All taxes are covered by Noir<br/>
+          No. All taxes are covered by Noir.
+          <div className="my-4" />
           For more information check our{' '}
           <a href="/shipping-and-returns" className="underline">
             Shipping Policy
@@ -114,28 +119,29 @@ export default function FaqPage() {
       ),
     },
   ];
+
   const faqs3 = [
     {
       key: "q1",
-      title: "If I’m not happy with my purchase, can I return / exchange it?",
+      title: "If I’m not happy with my purchase, can I return it?",
       content: (
         <>
           If you are not entirely satisfied with your recent Scuffers order, we will gladly accept any 
           items that are in new condition and have not been worn, washed, or altered.
-          <br/>
-          For more information regarding costs for returns and exchanges you can check our{' '}
+          <div className="my-4" />
+          For more information regarding return costs you can check our{' '}
           <a href="/shipping-and-returns" className="underline">
-            Return and Exchange Policy
+            Returns Policy
           </a>.
         </>
       ),
     },
     {
       key: "q2",
-      title: "How long do I have to request a return or exchange?",
+      title: "How long do I have to request a return?",
       content: (
         <>
-          We allow up to{' '}<a className="font-bold">14 days</a>{' '}since you received your order, or placed your purchase in-store to request a return or exchange.
+          We allow up to{' '}<a className="font-bold">14 days</a>{' '}since you received your order, or placed your purchase in-store to request a return.
         </>
       ),
     },
@@ -144,7 +150,8 @@ export default function FaqPage() {
       title: "Is there a charge for making a return?",
       content: (
         <>
-          Yes. All returns and exchanges will incur a charge.<br/>
+          Yes. All returns will incur a charge.
+          <div className="my-4" />
           For more information check our{' '}
           <a href="/shipping-and-returns" className="underline">
             Returns Policy
@@ -160,7 +167,7 @@ export default function FaqPage() {
           Please allow up to{' '}
           <a className="font-bold">
             14 days
-          </a>{' '}for us to receive and process your return. You will receive an email notification upon the fullfilment of return processing.
+          </a>{' '}for us to receive and process your return. You will receive an email notification upon the fulfillment of return processing.
         </>
       ),
     },
@@ -168,35 +175,43 @@ export default function FaqPage() {
 
   return (
     <div className="mx-4 md:mx-16 mt-28 mb-16 flex justify-center">
-      <div className="flex flex-col w-full max-w-[800px]">
-        <h1 className="text-4xl font-medium mb-4">FAQs</h1>
-        <hr className="shrink-0 bg-divider border-none w-full h-divider"/>
-        <h2 className="text-2xl font-semibold mt-8 mb-2">Order & Payment</h2>
-        <Accordion className="px-0">
-          {faqs1.map(({ key, title, content }) => (
-            <AccordionItem key={key} aria-label={title} title={title} classNames={{ title: "text-sm font-medium" }}>
-              <p className="text-gray-800 dark:text-gray-400 text-sm">{content}</p>
-            </AccordionItem>
-          ))}
-        </Accordion>
-        <hr className="shrink-0 bg-divider border-none w-full h-divider"/>
-        <h2 className="text-2xl font-semibold mt-8 mb-2">Shipping</h2>
-        <Accordion className="px-0">
-          {faqs2.map(({ key, title, content }) => (
-            <AccordionItem key={key} aria-label={title} title={title} classNames={{ title: "text-sm font-medium" }}>
-              <p className="text-gray-800 dark:text-gray-400 text-sm">{content}</p>
-            </AccordionItem>
-          ))}
-        </Accordion>
-        <hr className="shrink-0 bg-divider border-none w-full h-divider"/>
-        <h2 className="text-2xl font-semibold mt-8 mb-2">Returns</h2>
-        <Accordion className="px-0">
-          {faqs3.map(({ key, title, content }) => (
-            <AccordionItem key={key} aria-label={title} title={title} classNames={{ title: "text-sm font-medium" }}>
-              <p className="text-gray-800 dark:text-gray-400 text-sm">{content}</p>
-            </AccordionItem>
-          ))}
-        </Accordion>
+      <div className="flex flex-col w-full max-w-[800px] stagger-fadein">
+        <div>
+          <h1 className="text-4xl font-medium mb-4">FAQs</h1>
+          <hr className="shrink-0 bg-divider border-none w-full h-divider"/>
+        </div>
+        <div>
+          <h2 className="text-2xl font-semibold mt-8 mb-2">Order & Payment</h2>
+          <Accordion className="px-0">
+            {faqs1.map(({ key, title, content }) => (
+              <AccordionItem key={key} aria-label={title} title={title} classNames={{ title: "text-sm font-medium" }}>
+                <div className="text-gray-800 dark:text-gray-400 text-sm leading-relaxed">{content}</div>
+              </AccordionItem>
+            ))}
+          </Accordion>
+          <hr className="shrink-0 bg-divider border-none w-full h-divider"/>
+        </div>
+        <div>
+          <h2 className="text-2xl font-semibold mt-8 mb-2">Shipping</h2>
+          <Accordion className="px-0">
+            {faqs2.map(({ key, title, content }) => (
+              <AccordionItem key={key} aria-label={title} title={title} classNames={{ title: "text-sm font-medium" }}>
+                <div className="text-gray-800 dark:text-gray-400 text-sm leading-relaxed">{content}</div>
+              </AccordionItem>
+            ))}
+          </Accordion>
+          <hr className="shrink-0 bg-divider border-none w-full h-divider"/>
+        </div>
+        <div>
+          <h2 className="text-2xl font-semibold mt-8 mb-2">Returns</h2>
+          <Accordion className="px-0">
+            {faqs3.map(({ key, title, content }) => (
+              <AccordionItem key={key} aria-label={title} title={title} classNames={{ title: "text-sm font-medium" }}>
+                <div className="text-gray-800 dark:text-gray-400 text-sm leading-relaxed">{content}</div>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
       </div>
     </div>
   );

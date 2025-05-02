@@ -81,17 +81,16 @@ function CheckoutResultContent() {
       }
     };
     
-    // Add a small delay before first fetch
-    const timer = setTimeout(() => {
-      fetchOrderDetails();
-    }, 2000);
-    
-    // Clean up function
+    // Better delay using window.setTimeout for cross‑device support
+  let timerId: number;
+    if (typeof window !== 'undefined') {
+      timerId = window.setTimeout(fetchOrderDetails, 2000);
+    }
+    // clean up
     return () => {
-      clearTimeout(timer);
+      if (timerId) window.clearTimeout(timerId);
     };
-    
-  }, []); 
+  }, [paymentIntentId]);
 
   if (loading) {
     return (
