@@ -100,7 +100,7 @@ export default function FaqPage() {
           You can also track your order{' '}
           <a href="/track-order" className="underline">
             here
-          </a>, once you've placed an order.
+          </a>, once you&apos;ve placed an order.
         </>
       ),
     },
@@ -141,7 +141,7 @@ export default function FaqPage() {
       title: "How long do I have to request a return?",
       content: (
         <>
-          We allow up to{' '}<a className="font-bold">14 days</a>{' '}since you received your order, or placed your purchase in-store to request a return.
+          We allow up to{' '}<span className="font-bold">14 days</span>{' '}since you received your order, or placed your purchase in-store to request a return.
         </>
       ),
     },
@@ -165,9 +165,9 @@ export default function FaqPage() {
       content: (
         <>
           Please allow up to{' '}
-          <a className="font-bold">
+          <span className="font-bold">
             14 days
-          </a>{' '}for us to receive and process your return. You will receive an email notification upon the fulfillment of return processing.
+          </span>{' '}for us to receive and process your return. You will receive an email notification upon the fulfillment of return processing.
         </>
       ),
     },

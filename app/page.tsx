@@ -57,7 +57,7 @@ export default function Home() {
         >
           Bottoms
         </button>
-        <div
+        <a
           className="fade-in-section-left relative cursor-pointer image-grow"
           style={{
             backgroundImage: `url('https://res.cloudinary.com/dyujm1mtq/image/upload/v1745163797/TOPS_fcv680.webp')`,
@@ -68,7 +68,7 @@ export default function Home() {
           }}
           onClick={() => router.push("/all?subCategory=hoodies&subCategory=shirts&subCategory=jackets)")}
         />
-        <div
+        <a
           className="fade-in-section-left relative cursor-pointer image-grow"
           style={{
             backgroundImage: `url('https://res.cloudinary.com/dyujm1mtq/image/upload/v1745163798/BOTTOMS__lk5qla.webp')`,

@@ -340,3 +340,28 @@ transform: translateY(0);
   opacity: 1;
   transform: translateX(0);
 }
+
+.fade-in-section-up,
+.fade-in-right,
+.fade-in-image {
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
+.fade-in-section-up {
+  transform: translateY(-20px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.fade-in-right {
+  transform: translateX(20px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.fade-in-image {
+  transform: scale(0.95);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.is-visible {
+  opacity: 1;
+  transform: none;
+}

@@ -7,7 +7,7 @@ import Image from 'next/image';
 export default function AboutPage() {
   useEffect(() => {
     const els = document.querySelectorAll(
-      '.fade-in-section, .fade-in-section-up, .fade-in-left, .fade-in-right, .fade-in-image'
+      '.fade-in-section, .fade-in-section-up, .fade-in-section-left, .fade-in-right, .fade-in-image'
     );
     const obs = new IntersectionObserver(
       (entries, observer) => {
@@ -26,41 +26,6 @@ export default function AboutPage() {
 
   return (
     <>
-      <style jsx global>{`
-        .fade-in-section,
-        .fade-in-section-up,
-        .fade-in-left,
-        .fade-in-right,
-        .fade-in-image {
-          opacity: 0;
-          will-change: opacity, transform;
-        }
-        .fade-in-section {
-          transform: translateY(20px);
-          transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-        }
-        .fade-in-section-up {
-          transform: translateY(-20px);
-          transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-        }
-        .fade-in-left {
-          transform: translateX(-20px);
-          transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-        }
-        .fade-in-right {
-          transform: translateX(20px);
-          transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-        }
-        .fade-in-image {
-          transform: scale(0.95);
-          transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-        }
-        .is-visible {
-          opacity: 1;
-          transform: none;
-        }
-      `}</style>
-
       <main className="overflow-x-hidden">
         {/* 1. Hero */}
         <section className="relative flex flex-col items-center justify-center min-h-[80vh] px-6 pb-20 fade-in-section-up">
@@ -80,7 +45,7 @@ export default function AboutPage() {
         {/* 2. Origin Story */}
         <section className="px-6 md:px-20 lg:px-32 py-24 space-y-10 fade-in-section">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6 fade-in-left">
+            <div className="space-y-6 fade-in-section-left">
               <h2 className="font-semibold text-3xl md:text-4xl">Our Beginning</h2>
               <p className="leading-relaxed">
                 Noir emerged in 2025 from a visionary studio in Virginia, challenging the
@@ -155,7 +120,7 @@ export default function AboutPage() {
 
         {/* 4. Price Breakdown */}
         <section className="px-6 md:px-20 lg:px-32 py-24 space-y-12 fade-in-section">
-          <div className="space-y-6 max-w-3xl fade-in-left">
+          <div className="space-y-6 max-w-3xl fade-in-section-left">
             <h2 className="font-semibold text-3xl md:text-4xl">Redefining Value</h2>
             <p className="leading-relaxed">
               We reject the industry’s tradition of exorbitant markups. By leveraging
