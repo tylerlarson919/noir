@@ -302,3 +302,17 @@ transform: translateY(0);
     transform: translateY(0);
   }
 }
+
+/* Webkit browsers */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;              /* ← your desired width */
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(61, 61, 61, 0.3);
+  border-radius: 9999px;   /* fully rounded */
+}
+/* Firefox */
+.custom-scrollbar {
+  scrollbar-width: thin;   /* makes it about 8px */
+  scrollbar-color: rgba(61, 61, 61, 0.3) transparent;
+}

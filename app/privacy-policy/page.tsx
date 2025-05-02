@@ -1,8 +1,8 @@
 // app/privacy-policy/page.tsx
 export default function PrivacyPolicyPage() {
   return (
-    <div className="mx-4 md:mx-16 mt-28">
-      <h1 className="text-2xl font-medium mb-4 text-center">Privacy Policy</h1>
+    <div className="mx-4 md:mx-16 mt-28 stagger-fadein">
+      <h1 className="text-4xl font-medium mb-6 text-left">Privacy Policy</h1>
 
       <h2 className="text-xl font-medium mb-3">
         SECTION 1 - WHAT DO WE DO WITH YOUR INFORMATION?

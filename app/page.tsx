@@ -21,7 +21,7 @@ export default function Home() {
           className="z-[5] absolute bottom-8 left-8 w-fit py-2 px-6 bg-dark1 dark:bg-white button-grow-subtle text-white dark:text-black transition-color duration-300 rounded-sm"
           onClick={() =>
             router.push(
-              "/all?subCategory=hoodies&subCategory=shirts&subCategory=jackets",
+              "/all?subCategory=hoodies&subCategory=shirts&subCategory=jackets"
             )
           }
         >
@@ -42,6 +42,7 @@ export default function Home() {
             width: "50%",
             height: "100%",
           }}
+          onClick={() => router.push("/all?subCategory=hoodies&subCategory=shirts&subCategory=jackets)")}
         />
         <div
           className="relative cursor-pointer image-grow"
@@ -52,6 +53,7 @@ export default function Home() {
             width: "50%",
             height: "100%",
           }}
+          onClick={() => router.push("/all?subCategory=pants")}
         />
       </div>
       <FeaturedProducts products={denimProducts} title="DENIM" />

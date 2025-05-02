@@ -1,8 +1,8 @@
 // app/terms-of-service/page.tsx
 export default function TermsOfServicePage() {
   return (
-    <div className="mx-4 md:mx-16 mt-28">
-      <h1 className="text-2xl font-medium mb-4 text-center">Terms of Service</h1>
+    <div className="mx-4 md:mx-16 mt-28 stagger-fadein">
+      <h1 className="text-4xl font-medium mb-6 text-left">Terms of Service</h1>
 
       <h2 className="text-xl font-medium mt-6 mb-3">GENERAL INFORMATION</h2>
       <p className="text-gray-800 dark:text-gray-400 mb-4">

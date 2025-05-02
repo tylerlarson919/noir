@@ -1,8 +1,8 @@
 // app/cookie-policy/page.tsx
 export default function CookiePolicy() {
     return (
-        <div className="mx-4 md:mx-16 mt-28">
-        <h1 className="text-2xl font-medium mb-4 text-center">Cookies Policy</h1>
+        <div className="mx-4 md:mx-16 mt-28 stagger-fadein">
+        <h1 className="text-4xl font-medium mb-6 text-left">Cookies Policy</h1>
         <p className="mb-3">
           At Noir, we use cookies to give you the best possible experience on our site.  
           Cookies help us:

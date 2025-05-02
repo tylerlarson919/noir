@@ -80,10 +80,10 @@ export const Navbar = () => {
       isAtTop ? "top-[36px]" : "top-0",
       isScrollingDown && !isAtTop ? "-translate-y-full" : "translate-y-0",
       !isAtTop
-        ? "bg-white dark:bg-noirdark1 shadow-md"
+        ? "bg-[#f5f5f5] dark:bg-noirdark1 shadow-md"
         : isMainPage
-          ? "bg-transparent hover:bg-white dark:hover:bg-noirdark1 text-white hover:text-black dark:hover:text-white"
-          : "bg-transparent hover:bg-white dark:hover:bg-noirdark1"
+          ? "bg-transparent hover:bg-[#f5f5f5] dark:hover:bg-noirdark1 text-white hover:text-black dark:hover:text-white"
+          : "bg-transparent hover:bg-[#f5f5f5] dark:hover:bg-noirdark1"
     );
 
   // Prevent rendering on checkout pages

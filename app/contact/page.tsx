@@ -19,8 +19,8 @@ export default function ContactPage() {
 
   return (
     <div className="flex flex-col justify-center items-center flex-grow min-h-[80vh] sm:min-h-[50vh]">
-      <div className="flex flex-col p-4 w-full max-w-md">
-        <h1 className="text-2xl font-medium mb-4 text-center">Contact Us</h1>
+      <div className="flex flex-col p-4 w-full max-w-md stagger-fadein">
+        <h1 className="text-4xl font-medium mb-6 text-left">Contact Us</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
             name="name"

@@ -281,7 +281,7 @@ export default function CheckoutPage() {
 
         {/* Right column - Summary */}
         <div 
-          className="w-full lg:w-2/5 bg-[#f5f5f5] dark:bg-darkaccent p-6 lg:px-6 lg:pt-10 rounded-sm"
+          className="w-full lg:w-2/5 bg-[#f5f5f5] dark:bg-darkaccent p-6 lg:px-6 lg:pt-10 rounded-sm stagger-fadein"
           style={{ fontFamily: 'Apple System, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}
 
         >

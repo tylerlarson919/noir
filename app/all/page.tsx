@@ -211,7 +211,7 @@ function ProductsPageContent() {
 
   return (
     <div className="mx-4 relative flex flex-col justify-start items-center">
-      <div className="flex flex-col w-full h-full items-start justify-center mt-28 gap-8">
+      <div className="flex flex-col w-full h-full items-start justify-center mt-24 gap-8 stagger-fadein">
         <div
           className="w-full h-full flex flex-col items-start justify-end p-8"
           style={{

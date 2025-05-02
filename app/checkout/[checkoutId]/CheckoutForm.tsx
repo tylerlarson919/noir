@@ -117,7 +117,7 @@ export default function CheckoutForm({
       
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6 stagger-fadein">
       {/* Contact Information */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-2">

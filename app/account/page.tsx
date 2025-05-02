@@ -45,7 +45,7 @@ export default function AccountPage() {
   if (loading || !user) return null;
 
   return (
-    <div className="mx-4 md:mx-16 mt-24 flex flex-col items-center relative">
+    <div className="mx-4 md:mx-16 mt-24 flex flex-col items-center relative stagger-fadein">
       <div className="absolute top-0 left-0">
         <button
           onClick={async () => {
@@ -70,7 +70,7 @@ export default function AccountPage() {
             <div className="flex justify-between items-center mb-4 text-2xl font-medium">
               <h2>Orders</h2>
               <button
-                onClick={() => (window.location.href = "/track")}
+                onClick={() => (window.location.href = "/track-order")}
                 className="w-fit py-2 px-6 bg-dark1 dark:bg-white button-grow-subtle text-white dark:text-black transition-color duration-300 rounded-sm text-sm font-medium"
               >
                 TRACK ORDER

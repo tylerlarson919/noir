@@ -12,7 +12,7 @@ const Footer: React.FC = () => {
   }
 
   return (
-    <footer className="bg-white dark:bg-darkaccent border-b">
+    <footer className="bg-[#f5f5f5] dark:bg-noirdark1">
       <div className="container mx-auto px-4 pt-12 pb-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
@@ -146,6 +146,14 @@ const Footer: React.FC = () => {
               <li>
                 <Link
                   className="text-gray-600 hover:text-black dark:hover:text-white text-xs"
+                  href="/track-order"
+                >
+                  Track an Order
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="text-gray-600 hover:text-black dark:hover:text-white text-xs"
                   href="/shipping-and-returns"
                 >
                   Shipping & Returns
@@ -156,14 +164,14 @@ const Footer: React.FC = () => {
                   className="text-gray-600 hover:text-black dark:hover:text-white text-xs"
                   href="/faq"
                 >
-                  FAQ
+                  FAQs
                 </Link>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-gray-200">
+        <div className="mt-12 pt-8 border-t border-divider">
           <p className="text-gray-500 text-sm text-center">
             © {new Date().getFullYear()} NOIR. All rights reserved.
           </p>

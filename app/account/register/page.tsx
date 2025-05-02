@@ -108,7 +108,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center flex-grow min-h-[80vh] sm:min-h-[50vh]">
+    <div className="flex flex-col justify-center items-center flex-grow min-h-[80vh] sm:min-h-[50vh] stagger-fadein">
       <div className="flex flex-col p-4 w-full max-w-md">
         <h1 className="text-2xl mb-4 text-center">Register</h1>
         <Input

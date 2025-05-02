@@ -232,7 +232,7 @@ export default function ProductDetails({
         isOpen={isSizeChartOpen} 
         onClose={closeSizeChart} 
       />
-      <div className="flex flex-col md:flex-row w-full h-full items-start justify-center mt-28 gap-4">
+      <div className="flex flex-col md:flex-row w-full h-full items-start justify-center mt-28 gap-4 stagger-fadein">
         {/* Product Images */}
         <div className="w-full md:w-2/3 flex flex-col relative">
           <Breadcrumbs className="absolute left-0 -top-5 z-[15]">

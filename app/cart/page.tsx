@@ -34,7 +34,7 @@ export default function CartPage() {
 
   return (
     <div className="mx-4 relative flex flex-col justify-start items-center">
-      <div className="flex flex-col w-full h-full items-center justify-start mt-28 gap-4 max-w-[1200px]">
+      <div className="flex flex-col w-full h-full items-center justify-start mt-28 gap-4 max-w-[1200px] stagger-fadein">
         <h1 className="text-4xl w-full text-left pl-6">Shopping Bag</h1>
         {items.length === 0 ? (
           <div className="py-12 text-center">
@@ -63,6 +63,13 @@ export default function CartPage() {
             </Link>
           </div>
         ) : (
+          <>
+          {/* free‐shipping countdown */}
+          {totalPrice < 100 && (
+              <div className="w-full bg-gray-100 dark:bg-gray-800 text-center py-2 mb-4 rounded-sm text-sm">
+                Add ${ (100 - totalPrice).toFixed(2) } more for free shipping!
+              </div>
+          )}
           <div className="flex flex-col lg:flex-row gap-8 w-full ">
             {/* Cart Items */}
             <div className="lg:w-2/3">
@@ -210,6 +217,7 @@ export default function CartPage() {
               </div>
             </div>
           </div>
+          </>
         )}
       </div>
     </div>
