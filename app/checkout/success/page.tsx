@@ -111,7 +111,7 @@ function CheckoutResultContent() {
   // If there's an error or payment failed
   if (error || (orderDetails && orderDetails.paymentStatus === "failed")) {
     return (
-      <div className="mx-auto flex flex-col items-center max-w-[800px] px-4 py-10">
+      <div className="mx-auto flex flex-col items-center max-w-[800px] px-4 py-10 stagger-fadein">
         <div className="text-red-600 mb-6">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -171,7 +171,7 @@ function CheckoutResultContent() {
 
   // Success case
   return (
-    <div className="mx-auto flex flex-col items-center max-w-[800px] px-4 py-10">
+    <div className="mx-auto flex flex-col items-center max-w-[800px] px-4 py-10 stagger-fadein">
       <div className="text-green-600 mb-6">
         <svg
           xmlns="http://www.w3.org/2000/svg"
