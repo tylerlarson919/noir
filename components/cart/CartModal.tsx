@@ -149,7 +149,7 @@ export default function CartModal() {
                           style={{ width: `${Math.min((totalPrice / 100) * 100, 100)}%` }}
                         />
                       </div>
-                      <span className="text-xs font-medium text-white">
+                      <span className="text-xs font-medium">
                         $100
                       </span>
                     </div>
