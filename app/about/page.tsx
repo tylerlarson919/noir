@@ -38,7 +38,7 @@ export default function AboutPage() {
           />
           <div className="max-w-4xl text-center space-y-6 fade-in-section">
             <h1 className="font-medium text-5xl md:text-7xl tracking-tight">Noir</h1>
-            <p className="md:text-xl tracking-wide">True luxury, honestly priced.</p>
+            <p className="md:text-xl tracking-wide">Made for the misunderstood, the inspired, and the disruptors.</p>
           </div>
         </section>
 
