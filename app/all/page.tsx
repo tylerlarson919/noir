@@ -210,8 +210,8 @@ function ProductsPageContent() {
   ];
 
   return (
-    <div className="mx-4 relative flex flex-col justify-start items-center">
-      <div className="flex flex-col w-full h-full items-start justify-center mt-24 gap-8 stagger-fadein">
+    <div className="relative flex flex-col justify-start items-center">
+      <div className="flex flex-col w-full h-full items-start justify-center gap-8 stagger-fadein overflow-y-hidden">
         <div
           className="w-full h-full flex flex-col items-start justify-end p-8"
           style={{
@@ -229,7 +229,7 @@ function ProductsPageContent() {
             Shop the latest collection.
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 ml-4">
           <button
             className={`tracking-wider px-4 py-2 text-sm border border-1 rounded ${
               isFilterMenuOpen
@@ -256,11 +256,12 @@ function ProductsPageContent() {
             return filterButton(filterType, filter);
           })}
         </div>
-
-        <div className="w-full h-full grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 pb-10">
-          {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+        <div className="px-2">
+          <div className="w-full h-full grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5">
+            {filteredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
         </div>
 
         {filteredProducts.length === 0 && (

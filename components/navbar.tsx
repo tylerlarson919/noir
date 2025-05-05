@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import clsx from "clsx";
 
-import { ThemeSwitch } from "@/components/theme-switch";
 import { useCart } from "@/context/CartContext";
 import { useHeaderModal } from "@/components/HeaderModal";
 
@@ -16,7 +15,8 @@ export const Navbar = () => {
   const [isAtTop, setIsAtTop] = useState(true);
   const [prevScrollY, setPrevScrollY] = useState(0);
   const pathname = usePathname();
-  const isMainPage = pathname === "/";
+  const isMainPageOrAll = pathname === "/" || pathname === "/all";
+  const isProductDetailPage = pathname.startsWith('/all/products/');
 
   useEffect(() => {
     if (isHeaderOpen) {
@@ -75,17 +75,19 @@ export const Navbar = () => {
   }, [prevScrollY]);
 
   // Combine classes conditionally
-    const headerClasses = clsx(
-      "fixed left-0 right-0 z-50 py-6 px-4 flex items-center justify-center w-full transition-all duration-300 ease-in-out group",
-      // when banner is visible, push down 36px; otherwise stick to top
-      isAtTop ? "top-[36px]" : "top-0",
-      isScrollingDown && !isAtTop ? "-translate-y-full" : "translate-y-0",
-      !isAtTop
-        ? "bg-[#f5f5f5] dark:bg-noirdark1 shadow-md"
-        : isMainPage
-          ? "bg-transparent hover:bg-[#f5f5f5] dark:hover:bg-noirdark1 text-white hover:text-black dark:hover:text-white"
-          : "bg-transparent hover:bg-[#f5f5f5] dark:hover:bg-noirdark1"
-    );
+  const headerClasses = clsx(
+    "left-0 right-0 z-50 py-4 px-4 flex items-center justify-center w-full transition-all duration-300 ease-in-out group",
+    // Apply fixed or relative positioning based on the path
+    isProductDetailPage ? "relative border-b border-divider " : "fixed",
+    // when banner is visible, push down 36px; otherwise stick to top
+    isAtTop && !isProductDetailPage ? "top-[36px]" : "top-0",
+    isScrollingDown && !isAtTop && !isProductDetailPage ? "-translate-y-full" : "translate-y-0",
+    !isAtTop
+      ? "bg-[#f5f5f5] dark:bg-noirdark1 shadow-md"
+      : isMainPageOrAll
+        ? "bg-transparent hover:bg-[#f5f5f5] dark:hover:bg-noirdark1 text-white hover:text-black dark:hover:text-white"
+        : "bg-transparent hover:bg-[#f5f5f5] dark:hover:bg-noirdark1"
+  );
 
   // Prevent rendering on checkout pages
   if (pathname.startsWith('/checkout')) {
@@ -122,7 +124,7 @@ export const Navbar = () => {
           <Link aria-label="Noir Home" href="/">
             <Image
               alt="Noir Logo"
-              className={`${isMainPage && isAtTop ? "invert group-hover:invert-0 dark:group-hover:invert" : ""} h-auto dark:invert transition-all duration-300`}
+              className={`${isMainPageOrAll && isAtTop ? "invert group-hover:invert-0 dark:group-hover:invert" : ""} h-auto dark:invert transition-all duration-300`}
               height={32}
               src="/noir-logo-full.svg"
               width={100}
@@ -132,9 +134,6 @@ export const Navbar = () => {
         </div>
 
         <div className="flex flex-row items-center justify-end gap-2 z-[51]">
-          <ThemeSwitch
-            className={`${isMainPage && isAtTop ? "text-white group-hover:text-black dark:group-hover:text-white" : ""} text-black dark:text-white transition-all duration-300`}
-          />
           <Link href="/account" className="">
             <svg
               className="w-8 h-8"

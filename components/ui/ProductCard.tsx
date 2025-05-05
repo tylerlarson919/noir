@@ -26,9 +26,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       : "/images/placeholder.jpg";
 
   return (
-    <div className="group">
+    <div className="group mx-2">
       <Link href={`/all/products/${product.id}`}>
-        <div className="relative overflow-hidden aspect-square rounded-xl mb-2">
+        <div className="relative overflow-hidden aspect-[3/4] rounded">
           <div
             className="relative w-full h-full"
             onMouseEnter={() => setIsHovering(true)}
@@ -38,7 +38,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             <Image
               fill
               alt={product.name}
-              className={`object-contain object-center transition-opacity duration-300 ease-in-out ${isHovering ? "opacity-0" : "opacity-100"}`}
+              className={`object-cover object-center transition-opacity duration-300 ease-in-out ${isHovering ? "opacity-0" : "opacity-100"}`}
               priority={true}
               sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
               src={primaryImageUrl}
@@ -53,7 +53,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             <Image
               fill
               alt={`${product.name} - alternate view`}
-              className={`object-contain object-center transition-opacity duration-300 ease-in-out ${isHovering ? "opacity-100" : "opacity-0"}`}
+              className={`object-cover object-center transition-opacity duration-300 ease-in-out ${isHovering ? "opacity-100" : "opacity-0"}`}
               sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
               src={secondaryImageUrl}
               onError={(e) => {
@@ -64,10 +64,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             />
           </div>
         </div>
-        <div className="flex flex-col justify-center items-start sm:items-center gap-1">
-          <h3 className="text-sm uppercase tracking-wide">{product.name}</h3>
-          <p className="text-gray-800 dark:text-textaccent text-sm">
-            ${product.price.toFixed(2)}
+        <div className="flex flex-col justify-center items-start gap-1 text-xs font-medium">
+          <h3 className="uppercase">{product.name}</h3>
+          <p className="text-gray-800 dark:text-textaccent">
+            ${product.price.toFixed(2)} USD
           </p>
         </div>
       </Link>

@@ -44,7 +44,7 @@ const ColorPicker = ({
     {colors.map((c) => (
       <button
         key={c.name}
-        className={`w-12 h-12 rounded border-1 overflow-hidden transition flex items-center justify-center ${
+        className={`w-12 h-12 rounded border-1 overflow-hidden transition flex items-center justify-center bg-[#f2f2f2] ${
           selected.name === c.name
             ? "border-black dark:border-white"
             : "border-transparent hover:border-gray-400 dark:hover:border-white/20"
@@ -54,8 +54,8 @@ const ColorPicker = ({
         <Image
           src={productImages[c.images[0]]}
           alt={`${c.name} thumbnail`}
-          width={40}
-          height={40}
+          width={35}
+          height={35}
           className="object-cover"
         />
       </button>
@@ -232,28 +232,28 @@ export default function ProductDetails({
         isOpen={isSizeChartOpen} 
         onClose={closeSizeChart} 
       />
-      <div className="flex flex-col md:flex-row w-full h-full items-start justify-center mt-28 gap-4 stagger-fadein">
+      <div className="flex flex-col md:flex-row w-full h-full items-start justify-center mt-10 gap-4 stagger-fadein relative">
         {/* Product Images */}
-        <div className="w-full md:w-2/3 flex flex-col relative">
-          <Breadcrumbs className="absolute left-0 -top-5 z-[15]">
-            <BreadcrumbItem
-              className="capitalize"
-              href={`/all?category=${product.category}`}
-            >
-              {product.category}
-            </BreadcrumbItem>
-            <BreadcrumbItem
-              className="capitalize"
-              href={`/all?subCategory=${product.subCategory}`}
-            >
-              {product.subCategory}
-            </BreadcrumbItem>
-            <BreadcrumbItem className="capitalize">
-              {product.name}
-            </BreadcrumbItem>
-          </Breadcrumbs>
+        <div className="w-full md:w-2/3 flex flex-col absolute relative">
 
           <div className="w-full h-full relative">
+            <Breadcrumbs className="absolute left-0 -top-8 z-[15]">
+              <BreadcrumbItem
+                className="capitalize"
+                href={`/all?category=${product.category}`}
+              >
+                {product.category}
+              </BreadcrumbItem>
+              <BreadcrumbItem
+                className="capitalize"
+                href={`/all?subCategory=${product.subCategory}`}
+              >
+                {product.subCategory}
+              </BreadcrumbItem>
+              <BreadcrumbItem className="capitalize">
+                {product.name}
+              </BreadcrumbItem>
+            </Breadcrumbs>
             {/* Previous color images - positioned absolutely over the current images */}
             {isTransitioning && (
               <div className="w-full h-full grid grid-cols-1 md:grid-cols-2 absolute inset-0 z-10 hidden md:grid">
@@ -277,7 +277,7 @@ export default function ProductDetails({
             )}
 
             {/* Mobile version - Swiper slider (only shows below md breakpoint) */}
-            <div className="w-full md:hidden">
+            <div className="w-screen md:hidden -mx-4 relative">
               <Swiper
                 ref={swiperRef}
                 className="w-full"
@@ -309,11 +309,11 @@ export default function ProductDetails({
                     }}
                     aria-label={`View larger image of ${product.name} in ${selectedColor.name}, view ${index + 1}`}
                   >
-                    <div className="relative aspect-square w-full">
+                    <div className="relative aspect-[3/4] w-full">
                       <Image
                         fill
                         alt={`${product.name} - ${selectedColor.name} - View ${index + 1}`}
-                        className="object-contain"
+                        className="object-cover"
                         loading={index === 0 ? "eager" : "lazy"}
                         priority={index === 0 && index < 2} // Only prioritize the first visible image
                         src={product.images[imageIndex] || "/images/placeholder.jpg"}
@@ -331,7 +331,7 @@ export default function ProductDetails({
               {selectedColor.images.map((imageIndex, index) => (
                 <div
                   key={`current-${index}`}
-                  className="relative aspect-square bg-transparent w-full cursor-zoom-in"
+                  className="relative bg-transparent w-full aspect-[3/4] cursor-zoom-in"
                   onClick={() => {
                     setSlideIndex(index);
                     setOpen(true);
@@ -349,7 +349,7 @@ export default function ProductDetails({
                   <Image
                     fill
                     alt={`${product.name} - ${selectedColor.name} - View ${index + 1}`}
-                    className={`object-contain ${isTransitioning ? "animate-cross-fade-in" : ""}`}
+                    className={`object-cover ${isTransitioning ? "animate-cross-fade-in" : ""}`}
                     loading={index === 0 ? "eager" : "lazy"}
                     priority={index === 0 && index < 2} // Only prioritize the first visible image
                     src={product.images[imageIndex] || "/images/placeholder.jpg"}
@@ -361,17 +361,15 @@ export default function ProductDetails({
           </div>
         </div>
         {/* Product Details */}
-        <div className="w-full md:w-1/3 ">
+        <div className="w-full md:w-1/3 relative sm:sticky top-12">
           <div className="flex flex-col gap-1">
             <h1 className="text-xl font-medium">{product.name}</h1>
             <p className="text-xl">${product.price.toFixed(2)}</p>
-            <p className="text-textaccentdarker dark:text-textaccent text-[14px] pt-2 pb-6">
-              {product.description}
-            </p>
           </div>
 
           <div className="flex flex-col gap-6">
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3 pt-3">
+              <hr className="shrink-0 bg-divider border-none w-full h-divider"/>
               <ColorPicker
                 colors={product.colors}
                 productImages={product.images}
@@ -389,6 +387,9 @@ export default function ProductDetails({
                 onSelect={(s) => setSelectedSize(s)}
               />
               <hr className="shrink-0 bg-divider border-none w-full h-divider"/>
+              <p className="text-textaccentdarker dark:text-textaccent text-[14px]">
+                {product.description}
+              </p>
             </div>
             <button className="text-sm flex items-center gap-2 underline" onClick={openSizeChart}>
               <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">

@@ -65,20 +65,24 @@ export const products: Product[] = [
     subCategory: "pants",
     sizes: ["S", "M", "L", "XL"],
     images: [
-      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1746373342/2_faddpv.png",
-      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1746373377/3_1_nwikkt.png",
-      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1746373385/4_xwigmm.png",
-      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1746373389/5_krzgi2.png",
-      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1746373392/6_jldlv6.png",
-      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1746373396/7_kwg7z1.png",
-      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1746373401/8_qr869b.png",
+      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1746462688/sin_ref.1_1_lbaxja.webp",
+      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1746462690/sin_ref.2_1_m3fgnh.webp",
+      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1746462567/SCUFFERS_ECOM_148853_a5188cd2-241a-4188-9712-3548ba2df0d7_jxsh3e.webp",
+      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1746462571/SCUFFERS_ECOM_148855_f655b937-f43d-412a-bb57-652b86ff17f4_ci079p.webp",
+      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1746462573/SCUFFERS_ECOM_148856_53e3d49d-e371-4f9c-9fdf-b0613bd5b681_kbjw2i.webp",
+      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1746462575/SCUFFERS_ECOM_148859_3db722ef-52c9-4e9c-bbae-5ce12b3f9cc4_v5lijh.webp",
     ],
     sizeChart: "https://res.cloudinary.com/dyujm1mtq/image/upload/v1745956323/ripstop_82b7b2ae-f0c5-407e-9847-981262147de3_li2ghr.webp",
     colors: [
       {
         name: "Blue",
         hex: "#17161b",
-        images: [0, 1, 2, 3, 4, 5, 6],
+        images: [0, 1, 2, 3, 4, 5],
+      },
+      {
+        name: "black",
+        hex: "#17161b",
+        images: [0, 1, 2, 3, 4, 5],
       }
     ],
     featured: true,
@@ -102,20 +106,20 @@ export const products: Product[] = [
     subCategory: "denim",
     sizes: ["S", "M", "L", "XL"],
     images: [
-      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1745005649/1_mz9gi2.png",
-      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1745005652/13_lxx8xq.png",
+      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1746462688/sin_ref.1_1_lbaxja.webp",
+      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1746462688/sin_ref.1_1_lbaxja.webp"
     ],
     sizeChart: "https://res.cloudinary.com/dyujm1mtq/image/upload/v1745956323/ripstop_82b7b2ae-f0c5-407e-9847-981262147de3_li2ghr.webp",
     colors: [
       {
         name: "Charcoal",
         hex: "#000000",
-        images: [0, 1, 2],
+        images: [0, 1],
       },
       {
         name: "Ash Blue",
         hex: "#17161b",
-        images: [0, 1, 2],
+        images: [0, 1],
       },
     ],
     featured: true,
@@ -139,30 +143,30 @@ export const products: Product[] = [
     subCategory: "denim",
     sizes: ["S", "M", "L", "XL"],
     images: [
-      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1745005649/1_mz9gi2.png",
-      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1745005652/13_lxx8xq.png",
+      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1746462688/sin_ref.1_1_lbaxja.webp",
+      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1746462688/sin_ref.1_1_lbaxja.webp"
     ],
     sizeChart: "https://res.cloudinary.com/dyujm1mtq/image/upload/v1745956323/ripstop_82b7b2ae-f0c5-407e-9847-981262147de3_li2ghr.webp",
     colors: [
       {
         name: "Charcoal",
         hex: "#000000",
-        images: [0, 1, 2],
+        images: [0, 1],
       },
       {
         name: "Ash Gray",
         hex: "#000000",
-        images: [0, 1, 2],
+        images: [0, 1],
       },
       {
         name: "Sky Blue",
         hex: "#17161b",
-        images: [0, 1, 2],
+        images: [0, 1],
       },
       {
         name: "Deep Blue",
         hex: "#17161b",
-        images: [0, 1, 2],
+        images: [0, 1],
       },
     ],
     featured: true,
@@ -186,20 +190,20 @@ export const products: Product[] = [
     subCategory: "pants",
     sizes: ["S", "M", "L", "XL"],
     images: [
-      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1745005649/1_mz9gi2.png",
-      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1745005652/13_lxx8xq.png",
+      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1746462688/sin_ref.1_1_lbaxja.webp",
+      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1746462688/sin_ref.1_1_lbaxja.webp"
     ],
     sizeChart: "https://res.cloudinary.com/dyujm1mtq/image/upload/v1745956323/ripstop_82b7b2ae-f0c5-407e-9847-981262147de3_li2ghr.webp",
     colors: [
       {
         name: "Midnight",
         hex: "#000000",
-        images: [0, 1, 2],
+        images: [0, 1],
       },
       {
         name: "Desert",
         hex: "#000000",
-        images: [0, 1, 2],
+        images: [0, 1],
       }
     ],
     featured: true,
@@ -222,20 +226,20 @@ export const products: Product[] = [
     subCategory: "hoodies",
     sizes: ["S", "M", "L", "XL"],
     images: [
-      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1745005649/1_mz9gi2.png",
-      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1745005652/13_lxx8xq.png",
+      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1746462688/sin_ref.1_1_lbaxja.webp",
+      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1746462688/sin_ref.1_1_lbaxja.webp"
     ],
     sizeChart: "https://res.cloudinary.com/dyujm1mtq/image/upload/v1745956323/ripstop_82b7b2ae-f0c5-407e-9847-981262147de3_li2ghr.webp",
     colors: [
       {
         name: "White",
         hex: "#000000",
-        images: [0, 1, 2],
+        images: [0, 1],
       },
       {
         name: "Red",
         hex: "#000000",
-        images: [0, 1, 2],
+        images: [0, 1],
       }
     ],
     featured: true,
@@ -258,15 +262,15 @@ export const products: Product[] = [
     subCategory: "hoodies",
     sizes: ["S", "M", "L", "XL"],
     images: [
-      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1745005649/1_mz9gi2.png",
-      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1745005652/13_lxx8xq.png",
+      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1746462688/sin_ref.1_1_lbaxja.webp",
+      "https://res.cloudinary.com/dyujm1mtq/image/upload/v1746462688/sin_ref.1_1_lbaxja.webp"
     ],
     sizeChart: "https://res.cloudinary.com/dyujm1mtq/image/upload/v1745956323/ripstop_82b7b2ae-f0c5-407e-9847-981262147de3_li2ghr.webp",
     colors: [
       {
         name: "Black",
         hex: "#000000",
-        images: [0, 1, 2],
+        images: [0, 1],
       }
     ],
     featured: true,
