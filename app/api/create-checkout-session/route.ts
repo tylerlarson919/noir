@@ -68,7 +68,15 @@ export async function POST(req: NextRequest) {
     const total = subtotal + SHIPPING_FEE_CENTS;
 
     /* ----- 1) UPDATE existing PaymentIntent ------------------ */
-    if (paymentIntentId) {
+    if (paymentIntentId && customerEmail && !shipping) {
+        // just set the receipt email, leave amount alone
+        await stripe.paymentIntents.update(paymentIntentId, {
+          receipt_email: customerEmail,
+        });
+        return NextResponse.json({ updated: true });
+      }
+
+      if (paymentIntentId) {
       const updateParams: Stripe.PaymentIntentUpdateParams = { 
         amount: total,
         ...(customerEmail ? { receipt_email: customerEmail } : {}),

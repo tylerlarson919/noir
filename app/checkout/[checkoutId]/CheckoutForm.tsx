@@ -77,42 +77,38 @@ export default function CheckoutForm({
   const { user } = useAuth();
   const { clearCart } = useCart();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!stripe || !elements) {
-      return;
-    }
-
+    if (!stripe || !elements) return;
     setIsProcessing(true);
 
-    try {
-        const result = await stripe.confirmPayment({
-            elements,
-            confirmParams: {
-              return_url: `${window.location.origin}/checkout/success?payment_intent={PAYMENT_INTENT_ID}`,
-              receipt_email: email || user?.email || undefined,
-              payment_method_data: {
-                billing_details: {
-                  email: email || user?.email,
-                },
-              }
-            },
-          });
 
-          if (result.error) {
-            setErrorMessage(result.error.message || "Something went wrong with your payment");
-          } else {
-            // This shouldn't execute as confirmPayment with return_url should redirect
-            clearCart();
-          }
-        } catch (err) {
-          console.error("Payment error:", err);
-          setErrorMessage("An unexpected error occurred. Please try again.");
-        } finally {
-          setIsProcessing(false);
-        }
-      };
+    try {
+      // ← NEW: push the guest’s email onto the PI
+      if (email) {
+        await fetch("/api/create-checkout-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ paymentIntentId, customerEmail: email }),
+        });
+      }
+  
+      const result = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `${window.location.origin}/checkout/success?payment_intent={PAYMENT_INTENT_ID}`,
+        },
+      });
+  
+      if (result.error) {
+        setErrorMessage(result.error.message || "Something went wrong");
+      } else {
+        clearCart();
+      }
+    } finally {
+      setIsProcessing(false);
+    }
+  };
     
       
 
