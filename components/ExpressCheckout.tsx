@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ExpressCheckoutElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { useCart } from "@/context/CartContext";
+import type { StripeExpressCheckoutElementConfirmEvent } from "@stripe/stripe-js";
 
 interface ExpressCheckoutProps {
   clientSecret: string;
@@ -19,7 +20,6 @@ export default function ExpressCheckout({
   onReady,
   type,
 }: ExpressCheckoutProps) {
-  const [expressEmail, setExpressEmail] = useState("");
   const stripe   = useStripe();
   const elements = useElements();
   const { totalPrice } = useCart()
@@ -68,13 +68,21 @@ export default function ExpressCheckout({
         buttonType: { applePay: "plain" },
         layout: { maxRows: 2 },
       }}
-      onConfirm={async () => {
-        // 1) push to your PI API
+      onConfirm={async (event: StripeExpressCheckoutElementConfirmEvent) => {
+        const email = event.billingDetails?.email;
+        if (email) {
+          await fetch("/api/create-checkout-session", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ paymentIntentId, customerEmail: email }),
+          });
+        }
         await stripe.confirmPayment({
           elements,
           clientSecret,
           confirmParams: {
             return_url: `${window.location.origin}/checkout/success?payment_intent=${paymentIntentId}`,
+            receipt_email: email,
           },
         });
       }}
