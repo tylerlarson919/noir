@@ -226,7 +226,7 @@ export default function ProductDetails({
   }));
 
   return (
-    <div className="mx-4 relative flex flex-col justify-start items-center">
+    <div className="mx-4 relative flex flex-col justify-start items-center mt-20">
       <SizeChartModal 
         productSizeChart={product.sizeChart}
         isOpen={isSizeChartOpen} 
@@ -246,7 +246,7 @@ export default function ProductDetails({
               </BreadcrumbItem>
               <BreadcrumbItem
                 className="capitalize"
-                href={`/all?subCategory=${product.subCategory}`}
+                href={`/all?subCategory=${product.subCategory}&subCategory=${product.category}`}
               >
                 {product.subCategory}
               </BreadcrumbItem>
@@ -277,7 +277,7 @@ export default function ProductDetails({
             )}
 
             {/* Mobile version - Swiper slider (only shows below md breakpoint) */}
-            <div className="w-screen md:hidden -mx-4 relative">
+            <div className="w-[calc(100%+32px)] md:hidden -ml-4">
               <Swiper
                 ref={swiperRef}
                 className="w-full"
@@ -361,7 +361,7 @@ export default function ProductDetails({
           </div>
         </div>
         {/* Product Details */}
-        <div className="w-full md:w-1/3 relative sm:sticky top-12">
+        <div className="w-full md:w-1/3 relative sm:sticky sm:top-24">
           <div className="flex flex-col gap-1">
             <h1 className="text-xl font-medium">{product.name}</h1>
             <p className="text-xl">${product.price.toFixed(2)}</p>
@@ -507,7 +507,7 @@ export default function ProductDetails({
       </div>
 
       {/* Related Products Section */}
-      <div className="">
+      <div className="mt-10 w-full">
         <FeaturedProducts
           products={featuredProducts}
           title="You May Also Like"

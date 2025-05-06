@@ -52,7 +52,7 @@ export const products: Product[] = [
     sku: "3256805806041347",
     name: "North Star Straight Denim",
     description:
-      "In the maze of fashion, the North Star Straight Denim serves as your guiding light. Designed with deliberate minimalism and purposeful innovation, these jeans whisper of tales yet to unfold. Trust your instinct; I've stitched this narrative for you to explore.",
+      "In the maze of fashion, the North Star Straight Denim serves as your guiding light. Trust your instinct; I've stitched this for you to explore.",
     details: {
       Style: "straight",
       Fit: "loose",

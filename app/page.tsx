@@ -23,7 +23,7 @@ export default function Home() {
           }
         });
       },
-      { threshold: 0.3 }
+      { threshold: 0.2 }
     );
     els.forEach(el => obs.observe(el));
     return () => els.forEach(el => obs.unobserve(el));

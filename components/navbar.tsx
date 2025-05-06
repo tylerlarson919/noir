@@ -11,12 +11,10 @@ import { useHeaderModal } from "@/components/HeaderModal";
 export const Navbar = () => {
   const { openCart, totalItems } = useCart();
   const { openHeaderMenu, isHeaderOpen } = useHeaderModal();
-  const [isScrollingDown, setIsScrollingDown] = useState(false);
-  const [isAtTop, setIsAtTop] = useState(true);
-  const [prevScrollY, setPrevScrollY] = useState(0);
   const pathname = usePathname();
   const isMainPageOrAll = pathname === "/" || pathname === "/all";
   const isProductDetailPage = pathname.startsWith('/all/products/');
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     if (isHeaderOpen) {
@@ -31,64 +29,26 @@ export const Navbar = () => {
   }, [isHeaderOpen]);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-
-      // Determine scroll direction
-        if (currentScrollY > prevScrollY) {
-          setIsScrollingDown(true);
-        } else {
-          setIsScrollingDown(false);
-        }
- 
-
-      // Check if at the top of the page - use a small threshold for mobile
-      setIsAtTop(currentScrollY <= 30); // More forgiving threshold instead of exactly 0
-
-      // Update previous scroll position
-      setPrevScrollY(currentScrollY);
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 30);
     };
-
-    // Ensure initial state is correct
-    setIsAtTop(window.scrollY <= 30);
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-
-    // Add touch events for more reliable mobile detection
-    window.addEventListener("touchmove", handleScroll, { passive: true });
-    window.addEventListener(
-      "touchend",
-      () => {
-        // Force check at the end of touch scroll
-        setTimeout(() => {
-          setIsAtTop(window.scrollY <= 30);
-        }, 100);
-      },
-      { passive: true },
-    );
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("touchmove", handleScroll);
-      window.removeEventListener("touchend", handleScroll);
-    };
-  }, [prevScrollY]);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   // Combine classes conditionally
   const headerClasses = clsx(
-    "left-0 right-0 z-50 py-4 px-4 flex items-center justify-center w-full transition-all duration-300 ease-in-out group",
-    // Apply fixed or relative positioning based on the path
-    isProductDetailPage ? "relative border-b border-divider " : "fixed",
-    // when banner is visible, push down 36px; otherwise stick to top
-    isAtTop && !isProductDetailPage ? "top-[36px]" : "top-0",
-    isScrollingDown && !isAtTop && !isProductDetailPage ? "-translate-y-full" : "translate-y-0",
-    !isAtTop
-      ? "bg-[#f5f5f5] dark:bg-noirdark1 shadow-md"
-      : isMainPageOrAll
-        ? "bg-transparent hover:bg-[#f5f5f5] dark:hover:bg-noirdark1 text-white hover:text-black dark:hover:text-white"
-        : "bg-transparent hover:bg-[#f5f5f5] dark:hover:bg-noirdark1"
+    "fixed top-0 left-0 right-0 z-50 p-4 flex items-center justify-center transition-all duration-500 border-b border-black",
+    !isMainPageOrAll 
+      ? "bg-white text-black border-opacity-20" 
+      : [
+          "group",
+          scrolled 
+            ? "bg-white/90 backdrop-blur-sm shadow border-opacity-20" 
+            : "bg-transparent hover:bg-white/90 text-white hover:text-black border-opacity-0"
+        ]
   );
-
   // Prevent rendering on checkout pages
   if (pathname.startsWith('/checkout')) {
     return null;
@@ -124,7 +84,7 @@ export const Navbar = () => {
           <Link aria-label="Noir Home" href="/">
             <Image
               alt="Noir Logo"
-              className={`${isMainPageOrAll && isAtTop ? "invert group-hover:invert-0 dark:group-hover:invert" : ""} h-auto dark:invert transition-all duration-300`}
+              className={`${!scrolled && isMainPageOrAll ? "invert group-hover:invert-0" : ""} h-auto dark:invert transition-all duration-500`}
               height={32}
               src="/noir-logo-full.svg"
               width={100}

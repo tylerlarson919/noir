@@ -210,7 +210,7 @@ function ProductsPageContent() {
   ];
 
   return (
-    <div className="relative flex flex-col justify-start items-center">
+    <div className="relative flex flex-col justify-start items-center pb-14">
       <div className="flex flex-col w-full h-full items-start justify-center gap-8 stagger-fadein overflow-y-hidden">
         <div
           className="w-full h-full flex flex-col items-start justify-end p-8"

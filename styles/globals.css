@@ -11,6 +11,22 @@ input:-webkit-autofill:active {
   transition: background-color 5000s ease-in-out 0s;
 }
 
+/* For Webkit browsers like Chrome and Safari */
+::-webkit-scrollbar {
+  width: 10px;  /* Width of the scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(214, 214, 214);  /* Background color of the scrollbar track */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #888; /* Color of the scrollbar */
+  border-radius: 10px;    /* Rounded corners for the scrollbar */
+  border: 2px solid rgb(214, 214, 214); /* Adds padding around scrollbar */
+}
+
+
 :root {
   /* Light mode variables */
   --background: #ffffff;
@@ -304,9 +320,7 @@ transform: translateY(0);
 }
 
 /* Webkit browsers */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 8px;              /* ← your desired width */
-}
+
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background-color: rgba(61, 61, 61, 0.3);
   border-radius: 9999px;   /* fully rounded */
