@@ -1,6 +1,5 @@
 // components/WelcomeModules.tsx
 "use client";
-// eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
 import { useState, useEffect, useRef } from "react";
 import {Spinner} from "@heroui/spinner";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -159,20 +158,20 @@ const processReCaptchaSuccess = async (token: string) => {
         </div>
       )}
     {showWelcome && (
-      <div
-        className="…"
-        role="button"
-        tabIndex={0}
-        onClick={setWelcomeSeen}
-        onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && setWelcomeSeen()}
+    <div
+      aria-label="Welcome discount backdrop"
+      role="dialog"
+      aria-modal="true"
+      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 transition-opacity"
       >
-        
-      <div 
-        className="relative bg-white flex flex-col-reverse sm:flex-row overflow-hidden rounded w-full max-w-2xl" 
-        tabIndex={-1}
-        onClick={(e) => e.stopPropagation()}  
-        role="dialog" 
-        aria-modal="true" 
+      <button
+        aria-label="Close welcome modal"
+        className="absolute inset-0 w-full h-full bg-transparent border-none cursor-default"
+        onClick={setWelcomeSeen}
+        onKeyDown={e => e.key === 'Escape' && setWelcomeSeen()}
+      />
+      <div
+        className="relative bg-white flex flex-col-reverse sm:flex-row overflow-hidden rounded w-full max-w-2xl z-60"
         aria-label="Welcome discount modal"
       >
       {/* Close Button */}
