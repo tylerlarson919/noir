@@ -19,7 +19,7 @@ const nextConfig = {
               "default-src 'self'",
               "frame-ancestors 'self' https://www.google.com",
               "frame-src https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://js.stripe.com https://hooks.stripe.com",
-              "script-src 'self' https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://va.vercel-scripts.com https://js.stripe.com 'unsafe-inline' 'unsafe-eval'",
+              "script-src 'self' https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://va.vercel-scripts.com https://js.stripe.com https://apis.google.com 'unsafe-inline' 'unsafe-eval'",
               // Force 'unsafe-inline' for styles and include the existing hashes
               "style-src 'self' 'unsafe-inline'",
               "font-src 'self' data: https://assets.alicdn.com",
