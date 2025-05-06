@@ -1,5 +1,6 @@
 // components/WelcomeModules.tsx
 "use client";
+// eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
 import { useState, useEffect, useRef } from "react";
 import {Spinner} from "@heroui/spinner";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -158,13 +159,17 @@ const processReCaptchaSuccess = async (token: string) => {
         </div>
       )}
     {showWelcome && (
-      <div 
-      className="relative bg-white flex flex-col-reverse sm:flex-row overflow-hidden rounded w-full max-w-2xl" 
-      onClick={setWelcomeSeen}
-      role="presentation" 
-    >
+      <div
+        className="…"
+        role="button"
+        tabIndex={0}
+        onClick={setWelcomeSeen}
+        onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && setWelcomeSeen()}
+      >
+        
       <div 
         className="relative bg-white flex flex-col-reverse sm:flex-row overflow-hidden rounded w-full max-w-2xl" 
+        tabIndex={-1}
         onClick={(e) => e.stopPropagation()}  
         role="dialog" 
         aria-modal="true" 
