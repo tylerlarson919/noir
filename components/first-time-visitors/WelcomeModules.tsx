@@ -166,7 +166,7 @@ const processReCaptchaSuccess = async (token: string) => {
       <div 
         className="relative bg-white flex flex-col-reverse sm:flex-row overflow-hidden rounded w-full max-w-2xl" 
         onClick={(e) => e.stopPropagation()}  
-        role="presentation" 
+        role="dialog" 
         aria-modal="true" 
         aria-label="Welcome discount modal"
       >
