@@ -17,13 +17,13 @@ const nextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              "frame-ancestors 'self' https://www.google.com",
-              "frame-src https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://js.stripe.com https://hooks.stripe.com",
+              "frame-ancestors 'self' https://www.google.com https://*.firebaseapp.com",
+              "frame-src https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://js.stripe.com https://hooks.stripe.com https://*.firebaseapp.com",
               "script-src 'self' https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://va.vercel-scripts.com https://js.stripe.com https://apis.google.com 'unsafe-inline' 'unsafe-eval'",
               // Force 'unsafe-inline' for styles and include the existing hashes
               "style-src 'self' 'unsafe-inline'",
               "font-src 'self' data: https://assets.alicdn.com",
-              "connect-src 'self' https://*.vercel-insights.com https://vitals.vercel-insights.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://*.googleapis.com https://api.stripe.com",
+              "connect-src 'self' https://*.vercel-insights.com https://vitals.vercel-insights.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://*.googleapis.com https://api.stripe.com https://*.firebaseapp.com",
               "img-src 'self' data: https://res.cloudinary.com https://www.gstatic.com"
             ].join("; ")
           }
