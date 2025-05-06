@@ -401,7 +401,7 @@ export default function TrackOrderPage() {
                 <ScrollShadow className="w-full h-[500px] sm:h-[500px]">
                   <div className="space-y-4">
                     {orders.map((order) => (
-                      <div 
+                      <button 
                       key={order.id} 
                       className="border border-gray-200 dark:border-textaccent/40 rounded p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900"
                       onClick={() => handleSelectOrder(order)}
@@ -445,7 +445,7 @@ export default function TrackOrderPage() {
                           </div>
                         ))}
                       </div>
-                    </div>                    
+                    </button>                    
                     ))}
                   </div>
                 </ScrollShadow>
