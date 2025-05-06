@@ -160,7 +160,7 @@ const processReCaptchaSuccess = async (token: string) => {
 
 {showWelcome && (
   <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-2 md:px-0 backdrop-blur-sm" onClick={setWelcomeSeen} role="button" tabIndex={0} aria-label="Close welcome modal">
-    <div className="relative bg-white flex flex-col-reverse sm:flex-row overflow-hidden rounded w-full max-w-2xl" onClick={(e) => e.stopPropagation()}>
+    <div className="relative bg-white flex flex-col-reverse sm:flex-row overflow-hidden rounded w-full max-w-2xl" onClick={(e) => e.stopPropagation()}  role="dialog" aria-modal="true" aria-label="Welcome discount modal">
       {/* Close Button */}
       <button 
         onClick={setWelcomeSeen} 
