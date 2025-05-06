@@ -45,7 +45,7 @@ export default function ContactPage() {
 
   return (
     <div className="mx-4 md:mx-16 mt-20 mb-16 stagger-fadein flex flex-col items-center">
-      <div className="flex flex-col p-4 w-full max-w-[800px] stagger-fadein">
+      <div className="flex flex-col py-4 w-full max-w-[800px] stagger-fadein">
         <h1 className="text-4xl font-medium mb-2 text-left">Contact Us</h1>
         <p className="mb-6">Please, before contacting us, check our FAQs. Find all the answers{' '}<a href="/faq" className="underline">here</a>.</p>
         <form onSubmit={handleSubmit} className="space-y-4">

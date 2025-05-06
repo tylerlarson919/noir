@@ -57,9 +57,9 @@ export default function AccountPage() {
           <span className="mr-2">←</span> LOGOUT
         </button>
       </div>
-      <div className="flex flex-col w-full md:w-[90%] lg:w-2/3 mt-12">
+      <div className="flex flex-col w-full max-w-4xl mt-12">
         <h1 className="text-2xl font-medium mb-4">
-          {user.displayName ? user.displayName.split(" ")[0] : "USER DASHBOARD"}
+          My account
         </h1>
         <p className="text-gray-600 dark:text-textaccent mb-10">
           View all your orders and manage your account information.
@@ -68,7 +68,7 @@ export default function AccountPage() {
         <div className="flex mb-20">
           <div className="w-full">
             <div className="flex justify-between items-center mb-4 text-2xl font-medium">
-              <h2>Orders</h2>
+              <h2 className="font-semibold">{user.displayName ? user.displayName.split(" ")[0] : "USER DASHBOARD"}</h2>
               <button
                 onClick={() => (window.location.href = "/track-order")}
                 className="w-fit py-2 px-6 bg-dark1 dark:bg-white button-grow-subtle text-white dark:text-black transition-color duration-300 rounded-sm text-sm font-medium"

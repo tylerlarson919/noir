@@ -15,8 +15,7 @@ import {
 import { onAuthStateChanged, User } from "firebase/auth";
 import { AnimatePresence, motion } from "framer-motion";
 import {ScrollShadow} from "@heroui/scroll-shadow";
-import { select } from "@heroui/theme";
-
+import Link from "next/link";
 
 interface Order extends DocumentData {
   id: string;
@@ -82,6 +81,17 @@ export default function TrackOrderPage() {
       
       // Get the order data
       const orderData = { id: snap.docs[0].id, ...snap.docs[0].data() } as Order;
+
+      if (!user && orderData.userId && orderData.userId !== 'guest-user') {
+        addToast({
+          title: "Account Order",
+          description: "This order is associated with an account. Please log in or try a different email.",
+          color: "danger",
+        });
+        setSection("email");
+        setLoading(false);
+        return;
+      }
       
       // Set the order and navigate directly to tracking
       setOrders([orderData]);
@@ -196,6 +206,17 @@ export default function TrackOrderPage() {
         id: doc.id, 
         ...doc.data() 
       })) as Order[];
+
+      if (!user && list.some(o => o.userId && o.userId !== 'guest-user')) {
+        addToast({
+          title: "Account Orders Found",
+          description: "These orders are associated with an account. Please log in or try a different email.",
+          color: "danger",
+        });
+        setSection("email");
+        setLoading(false);
+        return;
+      }
       
       console.log('Orders processed:', { 
         count: list.length,
@@ -270,6 +291,15 @@ export default function TrackOrderPage() {
   };
 
   const handleSelectOrder = async (order: Order) => {
+    if (!user && order.userId && order.userId !== 'guest-user') {
+      addToast({
+        title: "Account Order",
+        description: "This order is associated with an account. Please log in or try a different email.",
+        color: "danger",
+      });
+      return;
+    }
+
     // 1) pick order & reset
     setSelectedOrder(order);
     const status = order.shipping.status.toLowerCase();
@@ -328,7 +358,7 @@ export default function TrackOrderPage() {
     }
   };
 
-  const steps = ["Processing", "Preparing", "Shipping", "Delivered"];
+  const steps = ["Processing", "Preparing", "Shipped", "Delivered"];
   const currentStepIndex = selectedOrder?.shipping.status === "processing"
     ? 0
     : selectedOrder?.shipping.status === "preparing"
@@ -345,7 +375,7 @@ export default function TrackOrderPage() {
   }
 
   return (
-    <div className="p-6 h-[600px] max-w-lg mx-auto mt-20 sm:mt-24 relative">
+    <div className="p-6 h-[600px] max-w-4xl mx-auto mt-20 sm:mt-24 relative">
       <AnimatePresence mode="wait">
         {section === "email" && !user && (
           <motion.div
@@ -354,10 +384,16 @@ export default function TrackOrderPage() {
             animate  = {{ x: 0,                  opacity: 1 }}
             exit     = {{ x: -300,  opacity: 0 }}
             transition = {{ type: "tween", duration: 0.3 }}
-            className="absolute inset-2 sm:inset-0"
+            className="absolute inset-2"
           >
-            <div className="absolute inset-2 sm:inset-0">
-              <h1 className="text-xl font-bold mb-3">Track Your Order</h1>
+            <div className="absolute inset-2">
+              <div className="flex items-center justify-between gap-4">
+                <h1 className="text-3xl sm:text-4xl font-medium mb-3 text-left">Track Your Order</h1>
+                <Link href="/account/login?redirect=/track-order" className={`${user ? 'hidden' : 'relative'} text-sm text-blue-600 hover:underline`}>
+                  Log in
+                </Link>
+              </div>
+              <p className="mb-6">Enter the email associated with the order, or log in.</p>
               <form onSubmit={handleSubmitEmail}>
                 <input
                   ref={emailRef}
@@ -373,6 +409,14 @@ export default function TrackOrderPage() {
                     ref={recaptchaRef}
                     sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
                     onChange={onRecaptchaChange}
+                    onExpired={() => {
+                      console.log('reCAPTCHA expired — resetting silently');
+                      recaptchaRef.current?.reset();
+                    }}
+                    onErrored={() => {
+                      console.log('reCAPTCHA error — suppressing and resetting');
+                      recaptchaRef.current?.reset();
+                    }}
                   />
                 ) : (
                   <button className="bg-black text-white py-2 px-4 rounded">
@@ -391,15 +435,15 @@ export default function TrackOrderPage() {
             animate  = {{ x: 0,                  opacity: 1 }}
             exit     = {{ x: -300,  opacity: 0 }}
             transition = {{ type: "tween", duration: 0.3 }}
-            className="absolute inset-2 sm:inset-0"
+            className="absolute inset-2 "
           >
-            <div className="absolute inset-2 sm:inset-0">
-              <h2 className="text-xl font-bold mb-3">Your Orders</h2>
+            <div className="absolute inset-2">
+              <h2 className="text-3xl sm:text-4xl font-medium mb-3 text-left">Your Orders</h2>
               {loading ? (
                 <p>Loading your orders...</p>
               ) : (
                 <ScrollShadow className="w-full h-[500px] sm:h-[500px]">
-                  <div className="space-y-4">
+                  <div className="flex flex-col gap-2">
                     {orders.map((order) => (
                       <button 
                       key={order.id} 
@@ -461,9 +505,9 @@ export default function TrackOrderPage() {
             animate  = {{ x: 0,                  opacity: 1 }}
             exit     = {{ x: 300 ,  opacity: 0 }}
             transition = {{ type: "tween", duration: 0.3 }}
-            className="absolute inset-2 sm:inset-0"
+            className="absolute inset-2"
           >
-            <div className="absolute inset-2 sm:inset-0">
+            <div className="absolute inset-2">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex">
                   <button 
@@ -475,7 +519,7 @@ export default function TrackOrderPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                     </svg>
                   </button>
-                  <h2 className="text-xl font-bold">Order #{selectedOrder.id?.substring(3, 9) ?? 'N/A'}</h2>
+                  <h2 className="text-3xl sm:text-4xl font-medium mb-3 text-left">Order #{selectedOrder.id?.substring(3, 9) ?? 'N/A'}</h2>
                 </div>
                 <div className="py-2">
                   <div className="flex items-center gap-3">

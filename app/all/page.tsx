@@ -219,7 +219,7 @@ function ProductsPageContent() {
             backgroundSize: "cover",
             backgroundPosition: "center",
             width: "100%",
-            height: "300px",
+            height: "325px",
           }}
         >
           <h1 className="text-white font-normal tracking-wide text-4xl">
@@ -256,7 +256,7 @@ function ProductsPageContent() {
             return filterButton(filterType, filter);
           })}
         </div>
-        <div className="px-2">
+        <div className="px-2 w-full">
           <div className="w-full h-full grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5">
             {filteredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />

@@ -11,23 +11,11 @@ import { recoverGuestOrders } from "@/lib/recoverGuestOrders";
 export default function LoginPage() {
   const router = useRouter();
   const { user, login, loginWithGoogle, resetPassword } = useAuth();
-
-
-  useEffect(() => {
-    if (user) {
-      // Check for redirect parameter in URL
-      const params = new URLSearchParams(window.location.search);
-      const redirectPath = params.get('redirect');
-      
-      if (redirectPath) {
-        // Redirect to the specified path (e.g., /checkout)
-        router.push(redirectPath);
-      } else {
-        // Default redirect to account page
-        router.push("/account");
-      }
-    }
-  }, [user, router]);
+  const checkRedirect = () => {
+    const params = new URLSearchParams(window.location.search);
+    const target = params.get('redirect') ?? '/account';
+    router.push(target);
+  };
 
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
@@ -72,11 +60,8 @@ export default function LoginPage() {
         }
       }
       
-      addToast({
-        title: "Log in successful",
-        description: "redirecting to home.",
-        color: "success",
-      });
+      addToast({ title: "Log in successful", color: "success" });
+      checkRedirect();
     } catch (e: any) {
       addToast({
         title: "Login Failed",
@@ -106,11 +91,8 @@ export default function LoginPage() {
         }
       }
       
-      addToast({
-        title: "Log in successful",
-        description: "redirecting to home.",
-        color: "success",
-      });
+      addToast({ title: "Log in successful", color: "success" });
+      checkRedirect();
     } catch (e: any) {
       addToast({
         title: "Login Failed",
@@ -167,13 +149,13 @@ export default function LoginPage() {
         <div className="flex justify-between items-center">
           <Link
             href="/account/forgot-password"
-            className="text-xs text-black/40 dark:text-white/40 hover:text-black hover:dark:text-white transition-color duration-300"
+            className="text-xs font-medium text-black/40 dark:text-white/40 hover:text-black hover:dark:text-white transition-color duration-300"
           >
             Forgot password?
           </Link>
           <Link
             href="/account/register"
-            className="text-xs text-black/40 dark:text-white/40 hover:text-black hover:dark:text-white transition-color duration-300"
+            className="text-xs font-medium text-black/40 dark:text-white/40 hover:text-black hover:dark:text-white transition-color duration-300"
           >
             Register
           </Link>

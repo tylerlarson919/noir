@@ -155,13 +155,13 @@ export default function RegisterPage() {
         <div className="flex justify-between items-center">
           <Link
             href="/account/forgot-password"
-            className="text-xs text-black/40 dark:text-white/40 hover:text-black hover:dark:text-white transition-color duration-300"
+            className="text-xs font-medium text-black/40 dark:text-white/40 hover:text-black hover:dark:text-white transition-color duration-300"
           >
             Forgot password?
           </Link>
           <Link
             href="/account/login"
-            className="text-xs text-black/40 dark:text-white/40 hover:text-black hover:dark:text-white transition-color duration-300"
+            className="text-xs font-medium text-black/40 dark:text-white/40 hover:text-black hover:dark:text-white transition-color duration-300"
           >
             Login
           </Link>

@@ -7,7 +7,7 @@ import { getFeaturedProducts, getProductsBySubCategory } from "@/lib/products";
 
 export default function Home() {
   const featuredProducts = getFeaturedProducts();
-  const denimProducts = getProductsBySubCategory("jeans");
+  const pantsProducts = getProductsBySubCategory("pants");
   const router = useRouter();
 
   useEffect(() => {
@@ -82,7 +82,7 @@ export default function Home() {
       </div>
       {/* 4. DENIM */}
       <div className="fade-in-section">
-        <FeaturedProducts products={denimProducts} title="DENIM" />
+        <FeaturedProducts products={pantsProducts} title="PANTS" />
       </div>
     </div>
   );
