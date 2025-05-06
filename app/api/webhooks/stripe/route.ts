@@ -182,9 +182,8 @@ async function handlePaymentIntentSucceeded(pi: Stripe.PaymentIntent) {
         country: shippingAddress.country || '',
       },
       shipping: {
-        status: "preparing",
+        status: "processing",
         trackingNumber: null,
-        carrier: null,
         updatedAt: new Date().toISOString(),
       },
     };

@@ -94,7 +94,7 @@ export const products: Product[] = [
     name: "StarFall Washed Denim Jeans",
     description:
       "Venture into the cosmic pull of the Starfall Washed Denim Jeans. Made with intention, these loose-fitting jeans whisper tales of Y2K nostalgia and a universe of style. I've woven a vision for you; let these stars guide your journey.",
-    price: 45.00,
+    price: 45.99,
     details: {
       Style: "straight",
       Fit: "loose",

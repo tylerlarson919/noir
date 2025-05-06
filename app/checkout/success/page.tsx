@@ -24,7 +24,6 @@ interface OrderDetails {
   shipping?: {
     status: string;
     trackingNumber?: string;
-    carrier?: string;
     updatedAt?: string;
   };
   amount?: {
@@ -218,7 +217,7 @@ function CheckoutResultContent() {
                   <div>
                     <h3 className="font-medium">{item.name}</h3>
                     <p className="text-sm text-gray-600 dark:text-textaccent">
-                      {item.size} / {item.color ? JSON.stringify(item.color) : ""}
+                      {item.size} / {item.color ? item.color.name : ""} 
                     </p>
                     <p className="text-sm text-gray-600 dark:text-textaccent">Quantity: {item.quantity}</p>
                   </div>
