@@ -93,10 +93,12 @@ export default function CheckoutForm({
         });
       }
   
+      const receiptEmail = (email || user?.email) ?? undefined;
       const result = await stripe.confirmPayment({
         elements,
         confirmParams: {
           return_url: `${window.location.origin}/checkout/success?payment_intent={PAYMENT_INTENT_ID}`,
+          receipt_email: receiptEmail,
         },
       });
   

@@ -1,5 +1,6 @@
 "use client";
 // @ts-ignore
+import { useState } from "react";
 import { ExpressCheckoutElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { useCart } from "@/context/CartContext";
 
@@ -18,10 +19,10 @@ export default function ExpressCheckout({
   onReady,
   type,
 }: ExpressCheckoutProps) {
+  const [expressEmail, setExpressEmail] = useState("");
   const stripe   = useStripe();
   const elements = useElements();
   const { totalPrice } = useCart()
-
   const standardRate = totalPrice > 100 ? 0 : 900;
   const paymentMethods = type === 'productPage'
    ? {
@@ -68,6 +69,7 @@ export default function ExpressCheckout({
         layout: { maxRows: 2 },
       }}
       onConfirm={async () => {
+        // 1) push to your PI API
         await stripe.confirmPayment({
           elements,
           clientSecret,
