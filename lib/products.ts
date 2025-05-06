@@ -94,7 +94,7 @@ export const products: Product[] = [
     name: "StarFall Washed Denim Jeans",
     description:
       "Venture into the cosmic pull of the Starfall Washed Denim Jeans. Made with intention, these loose-fitting jeans whisper tales of Y2K nostalgia and a universe of style. I've woven a vision for you; let these stars guide your journey.",
-    price: 45,
+    price: 45.00,
     details: {
       Style: "straight",
       Fit: "loose",
@@ -131,7 +131,7 @@ export const products: Product[] = [
     name: "Eclipse Straight Denim",
     description:
       "Experience the subtle gravity of the Eclipse Straight Denim. These jeans embrace a loose fit that recalls the elegance of simplicity and whispers under the night sky. Your wardrobe awaits this essential piece; after all, I’ve made it just for you.",
-    price: 45,
+    price: 45.00,
     details: {
       Style: "straight",
       Fit: "loose",
@@ -178,7 +178,7 @@ export const products: Product[] = [
     name: "CAN’T SEE ME Camo Pants",
     description:
       "Experience the subtle gravity of the Eclipse Straight Pants. These jeans embrace a loose fit that recalls the elegance of simplicity and whispers under the night sky. Your wardrobe awaits this essential piece; after all, I’ve made it just for you.",
-    price: 45,
+    price: 45.00,
     details: {
       Style: "straight",
       Fit: "loose",
@@ -215,7 +215,7 @@ export const products: Product[] = [
     name: "Twisted Fate Oversized Hoodie",
     description:
       "Feel the enigma of shadows with the Twisted Fate Oversized Hoodie. A cloak for the bold, this piece shrouds you in timeless black, white and red whispers. My design speaks volumes when words fall silent.",
-    price: 45,
+    price: 45.00,
     details: {
       Style: "oversized",
       Fit: "loose",
@@ -251,7 +251,7 @@ export const products: Product[] = [
     name: "On the Run Oversized Hoodie",
     description:
       "Dive into the shadows with the On the Run Oversized Hoodie. Let its flowing silhouette embrace your form in an understated whisper of nostalgia. You don't seek attention; you own the room. Trust us—you’ll understand.",
-    price: 45,
+    price: 45.00,
     details: {
       Style: "oversized",
       Fit: "loose",
