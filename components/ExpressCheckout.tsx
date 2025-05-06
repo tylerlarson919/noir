@@ -49,6 +49,7 @@ export default function ExpressCheckout({
       options={{
         billingAddressRequired: true,
         shippingAddressRequired: true,
+        emailRequired: true,
         paymentMethods,
         paymentMethodOrder: ["googlePay", "applePay", "link", "klarna", "paypal"],
 

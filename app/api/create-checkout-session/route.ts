@@ -69,7 +69,11 @@ export async function POST(req: NextRequest) {
 
     /* ----- 1) UPDATE existing PaymentIntent ------------------ */
     if (paymentIntentId) {
-      const updateParams: Stripe.PaymentIntentUpdateParams = { amount: total };
+      const updateParams: Stripe.PaymentIntentUpdateParams = { 
+        amount: total,
+        ...(customerEmail ? { receipt_email: customerEmail } : {}),
+      };
+      
 
       await stripe.paymentIntents.update(paymentIntentId, updateParams);
 
