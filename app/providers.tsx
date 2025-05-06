@@ -1,17 +1,14 @@
 "use client";
 
-import type { ThemeProviderProps } from "next-themes";
 import { AuthProvider } from "@/context/AuthContext";
 import * as React from "react";
 import { HeroUIProvider } from "@heroui/system";
 import { useRouter } from "next/navigation";
-import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { ToastProvider } from "@heroui/toast";
 import { CartProvider } from "@/context/CartContext";
 
 export interface ProvidersProps {
   children: React.ReactNode;
-  themeProps?: ThemeProviderProps;
 }
 
 declare module "@react-types/shared" {
@@ -22,7 +19,7 @@ declare module "@react-types/shared" {
   }
 }
 
-export function Providers({ children, themeProps }: ProvidersProps) {
+export function Providers({ children }: ProvidersProps) {
   const router = useRouter();
 
   return (
@@ -30,7 +27,7 @@ export function Providers({ children, themeProps }: ProvidersProps) {
       <ToastProvider placement="bottom-center" />
       <AuthProvider>
         <CartProvider>
-          <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
+          {children}
         </CartProvider>
       </AuthProvider>
     </HeroUIProvider>
