@@ -85,9 +85,9 @@ export const Navbar = () => {
             <Image
               alt="Noir Logo"
               className={`${!scrolled && isMainPageOrAll ? "invert group-hover:invert-0" : ""} h-auto dark:invert transition-all duration-500`}
-              height={32}
-              src="/noir-logo-full.svg"
-              width={100}
+              height={40}
+              src="/n-logo-light.svg"
+              width={40}
               priority={true}
             />
           </Link>
