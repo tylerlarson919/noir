@@ -18,13 +18,20 @@ export const metadata: Metadata = {
     template: `%s - ${siteConfig.name}`,
   },
   description: siteConfig.description,
-  icons: [
-    {
-      url: "/favicon.ico",
-      sizes: "any", // or specify actual size like "16x16"
-      type: "image/x-icon"
-    }
-  ],
+    icons: {
+      icon: [
+      {
+        url: '/favicon-light.ico',
+        media: '(prefers-color-scheme: light)',
+        type: 'image/x-icon', 
+      },
+      {
+        url: '/favicon-dark.png',
+        media: '(prefers-color-scheme: dark)',
+        type: 'image/x-icon', 
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
