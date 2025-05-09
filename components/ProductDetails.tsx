@@ -497,9 +497,42 @@ const lightboxSlides = useMemo(
                 }}
                 title="Details & Care"
               >
-                <p className="text-textaccentdarker dark:text-textaccent text-[12px]">
-                  list items from product here
-                </p>
+              {/* ------- DETAILS & CARE LISTS ------- */}
+              <div className="text-textaccentdarker dark:text-textaccent text-[12px] flex flex-col gap-2">
+
+                {/* Details list */}
+                <ul className="list-disc pl-4 space-y-1 capitalize">
+                  <li>
+                    <span className="font-semibold">Style:</span> {product.details?.Style}
+                  </li>
+                  <li>
+                    <span className="font-semibold">Fit:</span> {product.details?.Fit}
+                  </li>
+                  {product.details?.WaistType && (
+                    <li>
+                      <span className="font-semibold">Waist&nbsp;Type:</span>{" "}
+                      {product.details.WaistType}
+                    </li>
+                  )}
+                  <li>
+                    <span className="font-semibold">Material:</span>{" "}
+                    {product.details?.Material}
+                  </li>
+                </ul>
+
+                {/* Care list */}
+                <p className="font-semibold pt-2">Care</p>
+                <ul className="list-disc pl-4 space-y-1">
+                  {product.details?.Care.split(",").map((item) => {
+                    const txt = item.trim();
+                    return (
+                      <li key={txt}>
+                        {txt.charAt(0).toUpperCase() + txt.slice(1)}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
               </AccordionItem>
               <AccordionItem
                 onPress={openSizeChart}
