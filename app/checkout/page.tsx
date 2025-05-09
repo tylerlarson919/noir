@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
-
+import Loader from "@/components/loading-screen/Loader";
 export default function CheckoutRedirect() {
   const router = useRouter();
 
@@ -14,8 +14,6 @@ export default function CheckoutRedirect() {
   }, [router]);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 text-center">
-      <div className="animate-pulse">Preparing checkout...</div>
-    </div>
+    <Loader/>
   );
 }

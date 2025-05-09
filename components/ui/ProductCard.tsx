@@ -64,7 +64,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             />
           </div>
         </div>
-        <div className="flex flex-col justify-center items-start gap-1 text-xs font-medium">
+        <div className="flex flex-col justify-center items-start gap-1 text-xs font-medium mt-2">
           <h3 className="uppercase">{product.name}</h3>
           <p className="text-gray-800 dark:text-textaccent">
             ${product.price.toFixed(2)} USD

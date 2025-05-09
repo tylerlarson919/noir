@@ -1,3 +1,4 @@
+// layout.tsx
 import "@/styles/globals.css";
 import { Metadata } from "next";
 import clsx from "clsx";
@@ -11,6 +12,7 @@ import CartModal from "@/components/cart/CartModal";
 import HeaderModal, { HeaderModalProvider } from "@/components/HeaderModal";
 import "@/lib/stripeClient";
 import WelcomeModules from "@/components/first-time-visitors/WelcomeModules";
+import ClientLoaderWrapper from "@/components/loading-screen/ClientLoaderWrapper";
 
 export const metadata: Metadata = {
   title: {
@@ -55,6 +57,7 @@ export default function RootLayout({
           fontSans.variable,
         )}
       >
+        <ClientLoaderWrapper>
         <Providers >
           <HeaderModalProvider>
             <WelcomeModules />
@@ -67,6 +70,7 @@ export default function RootLayout({
             </div>
           </HeaderModalProvider>
         </Providers>
+        </ClientLoaderWrapper>
         <SpeedInsights />
       </body>
     </html>

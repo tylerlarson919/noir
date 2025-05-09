@@ -203,9 +203,9 @@ export default function CheckoutPage() {
           <Image
             alt="Noir Logo"
             className="h-auto dark:invert transition-all duration-300"
-            height={32}
-            src="/noir-logo-full.svg"
-            width={100}
+            height={40}
+            src="/n-logo-light.svg"
+            width={40}
             priority={true}
           />
         </Link>
