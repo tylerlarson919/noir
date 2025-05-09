@@ -3,32 +3,22 @@ import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import ProductsClient from './ProductsClient';
 
-/* -------------------------------------------------------------------------- */
-/* 1. Make our local type compatible with what Next.js now expects.           */
-/*    `searchParams` can be either the object itself *or* a Promise of it.    */
-/* -------------------------------------------------------------------------- */
-type SearchParams =
-  | Record<string, string | string[] | undefined>
-  | Promise<Record<string, string | string[] | undefined>>;
-
-type GenerateMetaProps = {
-  searchParams?: SearchParams;
-};
-
-/* -------------------------------------------------------------------------- */
-/* 2. Handle both the plain-object and Promise cases with a single `await`.   */
-/* -------------------------------------------------------------------------- */
+// Type the props for generateMetadata directly inline.
+// Next.js passes an object with `params` and `searchParams` to this function.
+// For a static route like '/all', `params` would be an empty object.
+// `searchParams` will always be an object (possibly empty).
 export async function generateMetadata(
-  { searchParams }: GenerateMetaProps
+  { searchParams }: {
+    // params: { [key: string]: string | string[] }; // Route parameters, uncomment if used. For '/all', it's {}.
+    searchParams: { [key: string]: string | string[] | undefined }; // URL search parameters
+  }
 ): Promise<Metadata> {
-  const params =
-    (await searchParams) ?? ({} as Record<string, string | string[] | undefined>);
-
-  const raw  = params.subCategory ?? [];
+  // `searchParams` is guaranteed to be an object by Next.js.
+  // If `subCategory` is not in the URL, `searchParams.subCategory` will be undefined.
+  const raw = searchParams.subCategory ?? [];
   const subs = Array.isArray(raw) ? raw : [raw];
-
   const readable = subs.length
-    ? subs.map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(', ')
+    ? subs.map(s => s[0].toUpperCase() + s.slice(1)).join(', ')
     : 'All Pieces';
 
   return {
@@ -36,14 +26,11 @@ export async function generateMetadata(
     description: `Explore ${readable.toLowerCase()} crafted from premium fabrics by NOIR Clothing.`,
     alternates: {
       canonical:
-        '/all' + (subs.length ? `?subCategory=${subs.join('&subCategory=')}` : '')
+        `/all` + (subs.length ? `?subCategory=${subs.join('&subCategory=')}` : '')
     }
   };
 }
 
-/* -------------------------------------------------------------------------- */
-/* 3. Page component – unchanged.                                             */
-/* -------------------------------------------------------------------------- */
 export default function ProductsPage() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
