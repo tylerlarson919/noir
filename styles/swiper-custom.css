@@ -23,7 +23,7 @@
 
 .swiper-button-next,
 .swiper-button-prev {
-  top: 40%; 
+  top: 35%; 
   --swiper-navigation-size: 14px;          /* ← real arrow = 14 px    */
   /* circular wrapper */
   width: 34px;                             /* size of circle */

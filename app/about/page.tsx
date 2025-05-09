@@ -160,7 +160,7 @@ export default function AboutPage() {
         {/* 5. Call to Action */}
         <section className="bg-neutral-900 text-white flex items-center justify-center flex-col space-y-8 py-24 fade-in-section-up">
           <h2 className="font-serif text-3xl md:text-5xl text-center fade-in-section">
-            Wear Noir. Own the narrative.
+            Wear Noir. Own your narrative.
           </h2>
           <a
             href="/collections"
