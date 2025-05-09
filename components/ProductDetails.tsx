@@ -244,7 +244,7 @@ const lightboxSlides = useMemo(
       src: product.images[imageIndex] || "/images/placeholder.jpg",
       alt: `${product.name} - ${selectedColor.name}`,
     })),
-  [selectedColor, product.images, product.name],
+  [selectedColor, product.name],
 );
   return (
     <div className="mx-4 relative flex flex-col justify-start items-center mt-20">
@@ -334,7 +334,7 @@ const lightboxSlides = useMemo(
                     <div className="relative aspect-[3/4] w-full">
                       <Image
                         fill
-                        sizes="100vw"
+                        sizes="(max-width:768px) 100vw, 50vw"
                         alt={`${product.name} - ${selectedColor.name} - View ${index + 1}`}
                         className="object-cover"
                         loading={index === 0 ? "eager" : "lazy"}

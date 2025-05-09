@@ -4,10 +4,11 @@ const nextConfig = {
     domains: ["res.cloudinary.com"],
   },
   experimental: {
-    appDir: true,
-    serverComponentsExternalPackages: [],
-    serverActions: true
+    serverActions: {
+      // Enabling server actions as an object; additional config can be added if needed
+    },
   },
+  serverExternalPackages: [],
   async headers() {
     return [
       {

@@ -1,20 +1,18 @@
 // /all/products/[slug]/page.tsx
 
 import { notFound }      from 'next/navigation';
-import type { Metadata } from 'next';              //  <-- OpenGraph import gone
+import type { Metadata } from 'next';
 import ProductDetails    from '@/components/ProductDetails';
 import {
   getProductBySlug,
   getProductsBySubCategory,
 } from '@/lib/products';
 
-type PageProps = { params: { slug: string } };
-
-/* ---------- <head> data ---------- */
+/* -------- <head> data -------- */
 export async function generateMetadata(
-  { params }: { params: { slug: Promise<string> } }
+  { params }: { params: Promise<{ slug: string }> }
 ): Promise<Metadata> {
-  const slug    = await params.slug;                 // <-- await params.slug
+  const { slug } = await params;
   const product = await getProductBySlug(slug);
   if (!product) return { title: 'Product not found' };
 
@@ -29,7 +27,7 @@ export async function generateMetadata(
       'noir clothing',
       'luxury streetwear',
     ],
-    alternates : { canonical: `/all/products/${slug}` },  // <-- use slug
+    alternates : { canonical: `/all/products/${slug}` },
     twitter    : {
       card : 'summary_large_image',
       title: product.name,
@@ -39,9 +37,14 @@ export async function generateMetadata(
   };
 }
 
-/* ---------- page component ---------- */
+/* -------- page component -------- */
+type PageProps = { params: Promise<{ slug: string }> };
+
 export default async function ProductPage({ params }: PageProps) {
-  const product = await getProductBySlug(params.slug);
+  // ✅ Wait for the slug first
+  const { slug } = await params;
+
+  const product = await getProductBySlug(slug);
   if (!product) notFound();
 
   const featuredProducts = (await getProductsBySubCategory(product.subCategory))
@@ -64,7 +67,7 @@ export default async function ProductPage({ params }: PageProps) {
             '@type'   : 'Product',
             name        : product.name,
             description : product.description,
-            image       : product.images,      // <-- .map(i => i.url) removed
+            image       : product.images,
             sku         : product.sku,
             brand       : { '@type': 'Brand', name: 'NOIR Clothing' },
             offers      : {

@@ -4,7 +4,8 @@ import ProductCard from "@/components/ui/ProductCard";
 import { Product } from "@/lib/products";
 import { useRouter } from "next/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
+import { Navigation, Virtual } from "swiper/modules";
+import "swiper/css/virtual";
 import "swiper/css";
 import "swiper/css/navigation";
 import "@/styles/swiper-custom.css";
@@ -29,8 +30,9 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
           </h2>
         </div>
         <Swiper
-          modules={[Navigation]}
+          modules={[Navigation, Virtual]}
           navigation
+          virtual
           spaceBetween={8}
           slidesPerView={2}
           breakpoints={{
@@ -40,8 +42,8 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
           }}
           className="w-full"
         >
-          {products.map((product) => (
-            <SwiperSlide key={product.id} className="flex">
+          {products.map((product, index) => (
+            <SwiperSlide key={product.id} virtualIndex={index} className="flex">
               <ProductCard product={product} />
             </SwiperSlide>
           ))}
