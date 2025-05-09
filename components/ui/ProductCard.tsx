@@ -26,7 +26,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       : "/images/placeholder.jpg";
 
   return (
-    <div className="group mx-2">
+    <div className="group mx-2 z-[30]">
       <Link href={`/all/products/${product.slug}`}>
         <div className="relative overflow-hidden aspect-[3/4] rounded">
           <div

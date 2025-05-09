@@ -23,7 +23,7 @@
 
 .swiper-button-next,
 .swiper-button-prev {
-  /* arrow icon itself */
+  top: 40%; 
   --swiper-navigation-size: 14px;          /* ← real arrow = 14 px    */
   /* circular wrapper */
   width: 34px;                             /* size of circle */
@@ -35,6 +35,7 @@
   justify-content: center;
   color: #fff;                             /* arrow colour           */
   transition: background .25s, transform .25s;
+  z-index: 40;
 }
 
 /* make sure arrow glyph also scales down to 14px */
