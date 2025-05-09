@@ -26,7 +26,6 @@ export default function Loader() {
 
   return (
     <AnimatePresence>
-        /* 1️⃣  overlay: ONLY fades, never scales */
         <motion.div
           key="loader"
           className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-white"
