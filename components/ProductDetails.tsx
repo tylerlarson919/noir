@@ -1,7 +1,7 @@
 //components/ProductDetails.tsx
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import Image from "next/image";
 import { Breadcrumbs, BreadcrumbItem } from "@heroui/breadcrumbs";
 import { Accordion, AccordionItem } from "@heroui/accordion";
@@ -29,7 +29,7 @@ import { memo } from "react";
 
 type Color = { name: string; hex: string; images: number[] };
 
-const ColorPicker = ({
+const ColorPicker = memo(function ColorPicker({
   colors,
   selected,
   onSelect,
@@ -39,31 +39,33 @@ const ColorPicker = ({
   selected: Color;
   onSelect: (c: Color) => void;
   productImages: string[];
-}) => (
-  <div className="flex gap-3">
-    {colors.map((c) => (
-      <button
-        key={c.name}
-        className={`w-12 h-12 rounded border-1 overflow-hidden transition flex items-center justify-center bg-[#f2f2f2] ${
-          selected.name === c.name
-            ? "border-black dark:border-white"
-            : "border-transparent hover:border-gray-400 dark:hover:border-white/20"
-        }`}
-        onClick={() => onSelect(c)}
-      >
-        <Image
-          src={productImages[c.images[0]]}
-          alt={`${c.name} thumbnail`}
-          width={35}
-          height={35}
-          className="object-cover"
-        />
-      </button>
-    ))}
-  </div>
-);
+}) {
+  return (
+    <div className="flex gap-3">
+      {colors.map((c) => (
+        <button
+          key={c.name}
+          className={`w-12 h-12 rounded border-1 overflow-hidden transition flex items-center justify-center bg-[#f2f2f2] ${
+            selected.name === c.name
+              ? "border-black dark:border-white"
+              : "border-transparent hover:border-gray-400 dark:hover:border-white/20"
+          }`}
+          onClick={() => onSelect(c)}
+        >
+          <Image
+            src={productImages[c.images[0]]}
+            alt={`${c.name} thumbnail`}
+            width={35}
+            height={35}
+            className="object-cover"
+          />
+        </button>
+      ))}
+    </div>
+  );
+});
 
-const SizePicker = ({
+const SizePicker = memo(function SizePicker({
   sizes,
   selected,
   onSelect,
@@ -71,23 +73,25 @@ const SizePicker = ({
   sizes: string[];
   selected: string;
   onSelect: (s: string) => void;
-}) => (
-  <div className="flex gap-2 items-center justify-start">
-    {sizes.map((s) => (
-      <button
-        key={s}
-        className={`w-20 border rounded transition-all text-xs w-[50px] h-[45px] ${
-          selected === s
-            ? "border-black dark:border-white bg-black text-white dark:bg-white dark:text-black font-semibold"
-            : "font-semibold border-transparent hover:border-gray-500 dark:hover:border-white/40"
-        }`}
-        onClick={() => onSelect(s)}
-      >
-        {s}
-      </button>
-    ))}
-  </div>
-);
+}) {
+  return (
+    <div className="flex gap-2 items-center justify-start">
+      {sizes.map((s) => (
+        <button
+          key={s}
+          className={`w-20 border rounded transition-all text-xs w-[50px] h-[45px] ${
+            selected === s
+              ? "border-black dark:border-white bg-black text-white dark:bg-white dark:text-black font-semibold"
+              : "font-semibold border-transparent hover:border-gray-500 dark:hover:border-white/40"
+          }`}
+          onClick={() => onSelect(s)}
+        >
+          {s}
+        </button>
+      ))}
+    </div>
+  );
+});
 
 
 const StripeCheckoutShell = memo(function StripeCheckoutShell({
@@ -140,12 +144,10 @@ export default function ProductDetails({
   const [expressLoading, setExpressLoading] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
-    // whenever size/color changes, regen the PI
-    const initExpress = async () => {
-      setExpressLoading(true);
-      const payload = {
-        items: [{
+  const regeneratePaymentIntent = useCallback(async () => {
+    const payload = {
+      items: [
+        {
           id: product.id,
           name: product.name,
           price: product.price,
@@ -153,22 +155,42 @@ export default function ProductDetails({
           size: selectedSize,
           color: { name: selectedColor.name, value: selectedColor.hex },
           image: product.images[selectedColor.images[0]],
-        }],
-        userId: user?.uid || "guest-user",
-        checkoutId: uuidv4(),
-      };
-      const res = await fetch("/api/create-checkout-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const { checkoutSessionClientSecret, paymentIntentId: piId, currency: respCurrency } = await res.json();
-      setClientSecret(checkoutSessionClientSecret);
-      setPaymentIntentId(piId);
-      setCurrency(respCurrency);
+        },
+      ],
+      userId: user?.uid || "guest-user",
+      checkoutId: uuidv4(),
     };
-    initExpress();
-  }, [selectedSize, selectedColor, user]);
+  
+    setExpressLoading(true);
+  
+    const res = await fetch("/api/create-checkout-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const {
+      checkoutSessionClientSecret,
+      paymentIntentId: piId,
+      currency: respCurrency,
+    } = await res.json();
+  
+    setClientSecret(checkoutSessionClientSecret);
+    setPaymentIntentId(piId);
+    setCurrency(respCurrency);
+    setExpressLoading(false);
+  }, [
+    product.id,
+    product.name,
+    product.price,
+    selectedSize,
+    selectedColor,
+    user,
+  ]);
+  
+  useEffect(() => {
+    const t = setTimeout(regeneratePaymentIntent, 300); // 300 ms debounce
+    return () => clearTimeout(t);
+  }, [regeneratePaymentIntent]);
 
   // Add this useEffect to handle transition timing
   useEffect(() => {
@@ -190,13 +212,8 @@ export default function ProductDetails({
     }
   }, [selectedColor]);
 
-  const openSizeChart = () => {
-    setIsSizeChartOpen(true);
-  };
-  
-  const closeSizeChart = () => {
-    setIsSizeChartOpen(false);
-  };
+  const openSizeChart  = useCallback(() => setIsSizeChartOpen(true), []);
+  const closeSizeChart = useCallback(() => setIsSizeChartOpen(false), []);
 
   const addToBagClick = () => {
     if (!selectedSize) {
@@ -221,11 +238,14 @@ export default function ProductDetails({
     });
   };
 
-  const lightboxSlides = selectedColor.images.map((imageIndex) => ({
-    src: product.images[imageIndex] || "/images/placeholder.jpg",
-    alt: `${product.name} - ${selectedColor.name}`,
-  }));
-
+const lightboxSlides = useMemo(
+  () =>
+    selectedColor.images.map((imageIndex) => ({
+      src: product.images[imageIndex] || "/images/placeholder.jpg",
+      alt: `${product.name} - ${selectedColor.name}`,
+    })),
+  [selectedColor, product.images, product.name],
+);
   return (
     <div className="mx-4 relative flex flex-col justify-start items-center mt-20">
       <SizeChartModal 

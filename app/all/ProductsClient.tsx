@@ -2,10 +2,11 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import debounce from "lodash.debounce";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import ProductCard from "@/components/ui/ProductCard";
-import { products, Product } from "@/lib/products";
+import { products } from "@/lib/products";
 import FilterMenu from "@/components/FilterMenu";
 
 /* local icon helper */
@@ -31,15 +32,57 @@ const XIcon = () => {
     const pathname = usePathname();
   
     // Initialize active filters from URL parameters
-    const initialFilters = {
-      category: searchParams.getAll("category"),
-      subCategory: searchParams.getAll("subCategory"),
-      colors: searchParams.getAll("colors"),
-      sizes: searchParams.getAll("sizes"),
-    };
+    const initialFilters = useMemo(
+      () => ({
+        category: searchParams.getAll("category"),
+        subCategory: searchParams.getAll("subCategory"),
+        colors: searchParams.getAll("colors"),
+        sizes: searchParams.getAll("sizes"),
+      }),
+      [searchParams],  
+    );
   
-    const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
     const [activeFilters, setActiveFilters] = useState(initialFilters);
+    // ---------- list derived from filters ----------
+    const filteredProducts = useMemo(() => {
+      let filtered = [...products];
+
+      // category (with ‘featured’ support)
+      if (activeFilters.category.length) {
+        const hasFeatured = activeFilters.category.includes("featured");
+        const regular = activeFilters.category.filter((c) => c !== "featured");
+
+        filtered = filtered.filter(
+          (p) =>
+            (hasFeatured && p.featured) ||
+            (regular.length && regular.includes(p.category)),
+        );
+      }
+
+      // sub-category
+      if (activeFilters.subCategory.length) {
+        filtered = filtered.filter((p) =>
+          activeFilters.subCategory.includes(p.subCategory),
+        );
+      }
+
+      // colors
+      if (activeFilters.colors.length) {
+        filtered = filtered.filter((p) =>
+          p.colors.some((c) => activeFilters.colors.includes(c.name)),
+        );
+      }
+
+      // sizes
+      if (activeFilters.sizes.length) {
+        filtered = filtered.filter((p) =>
+          p.sizes.some((s) => activeFilters.sizes.includes(s)),
+        );
+      }
+
+      return filtered;
+    }, [activeFilters]);
+
     const [isFilterMenuOpen, setIsFilterMenuOpen] = useState<boolean>(false);
   
     useEffect(() => {
@@ -74,44 +117,30 @@ const XIcon = () => {
       });
     }, [searchParams]);
   
-    // Update filters and then apply them
-    useEffect(() => {
-      applyFilters();
-      // Update URL based on active filters
-      updateURL();
-    }, [activeFilters]);
+
   
-    const updateURL = () => {
-      // Build the URL search params based on active filters
-      const params = new URLSearchParams();
+    /* ---------- debounced URL sync ---------- */
+const debouncedReplace = useMemo(
+  () => debounce((url: string) => router.replace(url, { scroll: false }), 300),
+  [router],
+);
+
+const updateURL = useCallback(() => {
+  const params = new URLSearchParams();
+  activeFilters.category.forEach((c) => params.append("category", c));
+  activeFilters.subCategory.forEach((s) => params.append("subCategory", s));
+  activeFilters.colors.forEach((c) => params.append("colors", c));
+  activeFilters.sizes.forEach((s) => params.append("sizes", s));
+
+  const newUrl = `${pathname}?${params.toString()}`;
+  const currentUrl = `${pathname}?${searchParams.toString()}`;
+  if (newUrl !== currentUrl) debouncedReplace(newUrl);
+}, [activeFilters, pathname, searchParams, debouncedReplace]);
+
+useEffect(() => updateURL(), [updateURL]);
+useEffect(() => () => debouncedReplace.cancel(), [debouncedReplace]);
   
-      activeFilters.category.forEach((category) => {
-        params.append("category", category);
-      });
-  
-      activeFilters.subCategory.forEach((subCategory) => {
-        params.append("subCategory", subCategory);
-      });
-  
-      activeFilters.colors.forEach((color) => {
-        params.append("colors", color);
-      });
-  
-      activeFilters.sizes.forEach((size) => {
-        params.append("sizes", size);
-      });
-  
-      const newUrl = `${pathname}?${params.toString()}`;
-      const currentUrl = `${pathname}?${searchParams.toString()}`;
-  
-      // Only update if the URL actually changed
-      if (newUrl !== currentUrl) {
-        // Use replace instead of push to avoid adding to browser history
-        router.replace(newUrl, { scroll: false });
-      }
-    };
-  
-    const toggleFilter = (type: string, value: string) => {
+    const toggleFilter = useCallback((type: string, value: string) => {
       setActiveFilters((prev) => {
         const key = type as keyof typeof prev;
         const currentFilters = [...prev[key]];
@@ -130,56 +159,8 @@ const XIcon = () => {
           };
         }
       });
-    };
-  
-    const applyFilters = () => {
-      let filtered = [...products];
-  
-      // Apply category filters with special handling for 'featured'
-      if (activeFilters.category.length > 0) {
-        filtered = filtered.filter((product) => {
-          // Check if 'featured' is one of the active category filters
-          const hasFeatured = activeFilters.category.includes("featured");
-          // Get the regular categories (excluding 'featured')
-          const regularCategories = activeFilters.category.filter(
-            (cat) => cat !== "featured",
-          );
-  
-          // If 'featured' is selected and product is featured, or if product's category matches any other selected category
-          return (
-            (hasFeatured && product.featured) ||
-            (regularCategories.length > 0 &&
-              regularCategories.includes(product.category))
-          );
-        });
-      }
-  
-      // Apply subCategory filters
-      if (activeFilters.subCategory.length > 0) {
-        filtered = filtered.filter((product) =>
-          activeFilters.subCategory.includes(product.subCategory),
-        );
-      }
-  
-      // Apply color filters
-      if (activeFilters.colors.length > 0) {
-        filtered = filtered.filter((product) =>
-          product.colors.some((color) =>
-            activeFilters.colors.includes(color.name),
-          ),
-        );
-      }
-  
-      // Apply size filters
-      if (activeFilters.sizes.length > 0) {
-        filtered = filtered.filter((product) =>
-          product.sizes.some((size) => activeFilters.sizes.includes(size)),
-        );
-      }
-  
-      setFilteredProducts(filtered);
-    };
-  
+    }, [activeFilters]);
+
     const openFilterMenu = () => {
       setIsFilterMenuOpen((prevState) => !prevState);
     };
