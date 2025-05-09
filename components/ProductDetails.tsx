@@ -552,10 +552,17 @@ const lightboxSlides = useMemo(
                 }}
                 title="Delivery & Returns"
               >
-                <div className="text-textaccentdarker dark:text-textaccent text-[14px] flex flex-col gap-2">
-                  <p>- United Stated Shipping 5-10 working days - UPS</p>
-                  <p>- International Shipping 10-15 working days - UPS</p>
-                  <p>If you have any issues with your order email us at help@noir-clothing.com and we will be there to help you. </p>
+                <div className="text-textaccentdarker dark:text-textaccent text-[12px] flex flex-col gap-2">
+                {/* Delivery & Returns */}
+                <ul className="list-disc pl-4 space-y-1 capitalize">
+                  <li>
+                    <span className="font-semibold">United Stated:</span> Shipping 5-10 working days - UPS
+                  </li>
+                  <li>
+                    <span className="font-semibold">International Shipping:</span> 10-15 working days - UPS
+                  </li>
+                </ul>
+                  <p>If you have any issues with your order email us at help@noir-clothing.com and we will be happy to help. </p>
                   <p>Orders placed after 1PM (EST) will be shipped the following business day. </p>
                 </div>
               </AccordionItem>
