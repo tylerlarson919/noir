@@ -116,7 +116,8 @@ export default function Loader () {
                 <defs>
                   <mask id="n-mask">
                     <motion.circle
-                      cx={500} cy={500} r={0} fill="white"
+                      cx={500} cy={500} r={0} fill="white" // Ensure initial `r` is set to 0
+                      initial={{ r: 0 }}
                       animate={{ r:800 }}
                       transition={{ duration:REVEAL_MS/1000, ease:'easeInOut' }}
                     />
