@@ -14,6 +14,8 @@ export default function WelcomeModules() {
   const [emailError, setEmailError] = useState(false);
   const emailRef = useRef<HTMLInputElement>(null);
   const [recaptchaSuccess, setRecaptchaSuccess] = useState(false);
+  const [hideCookies, setHideCookies]  = useState(true);   // true  = opacity-0 (hidden)
+  const [hideWelcome, setHideWelcome]  = useState(true);   // false = opacity-100 (visible)
 
   useEffect(() => {
     if (!localStorage.getItem("noir_cookies_accepted")) {
@@ -37,20 +39,45 @@ export default function WelcomeModules() {
     };
   }, []);
 
-  const acceptCookies = () => {
-    localStorage.setItem("noir_cookies_accepted", "1");
-    setShowCookies(false);
-  };
-  
-  const rejectCookies = () => {
-    localStorage.setItem("noir_cookies_accepted", "2");
-    setShowCookies(false);
-  };
+  // ⓑ  ── ADD these two useEffects just after the big init useEffect ─
+  useEffect(() => {
+    if (showCookies) requestAnimationFrame(() => setHideCookies(false));   // fade-IN
+  }, [showCookies]);
 
-  const setWelcomeSeen = () => {
-    localStorage.setItem("noir_welcome_model_seen", "1");
-    setShowWelcome(false);
-  };
+  useEffect(() => {
+    if (showWelcome) requestAnimationFrame(() => setHideWelcome(false));   // fade-IN
+  }, [showWelcome]);
+
+// ⓒ  ── REPLACE the three handlers (old versions deleted) ──────────
+const acceptCookies = () => {
+  localStorage.setItem("noir_cookies_accepted", "1");
+  setHideCookies(true);                      // start fade-OUT
+};
+
+const rejectCookies = () => {
+  localStorage.setItem("noir_cookies_accepted", "2");
+  setHideCookies(true);                      // start fade-OUT
+};
+
+const setWelcomeSeen = () => {
+  localStorage.setItem("noir_welcome_model_seen", "1");
+  setHideWelcome(true);                      // start fade-OUT
+};
+
+  // ⓓ  ── ADD two cleanup useEffects anywhere with the other hooks ──
+useEffect(() => {
+  if (hideCookies && showCookies) {
+    const id = setTimeout(() => setShowCookies(false), 300);   // match CSS duration
+    return () => clearTimeout(id);
+  }
+}, [hideCookies, showCookies]);
+
+useEffect(() => {
+  if (hideWelcome && showWelcome) {
+    const id = setTimeout(() => setShowWelcome(false), 300);
+    return () => clearTimeout(id);
+  }
+}, [hideWelcome, showWelcome]);
   
   const handleSubmitEmail = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -128,52 +155,65 @@ const processReCaptchaSuccess = async (token: string) => {
 
   return (
     <>
-      {showCookies && (
-        <div className="fixed bottom-4 inset-x-4 p-4 bg-white/60 dark:bg-noirdark1 border border-gray-300 dark:border-textaccent/40 rounded-lg shadow-lg backdrop-blur-md flex flex-col sm:flex-row gap-4 z-40">
-          <div className="w-full sm:w-2/3 flex items-center gap-3">
-            <svg className="min-w-6 size-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.65692 9.41494h.01M7.27103 13h.01m7.67737 1.9156h.01M10.9999 17h.01m3.178-10.90671c-.8316.38094-1.8475.22903-2.5322-.45571-.3652-.36522-.5789-.82462-.6409-1.30001-.0574-.44-.0189-.98879.1833-1.39423-1.99351.20001-3.93304 1.06362-5.46025 2.59083-3.51472 3.51472-3.51472 9.21323 0 12.72793 3.51471 3.5147 9.21315 3.5147 12.72795 0 1.5601-1.5602 2.4278-3.5507 2.6028-5.5894-.2108.008-.6725.0223-.8328.0157-.635.0644-1.2926-.1466-1.779-.633-.3566-.3566-.5651-.8051-.6257-1.2692-.0561-.4293.0145-.87193.2117-1.26755-.1159.20735-.2619.40237-.4381.57865-1.0283 1.0282-2.6953 1.0282-3.7235 0-1.0282-1.02824-1.0282-2.69531 0-3.72352.0977-.09777.2013-.18625.3095-.26543"/>
-            </svg>
-            <p className="text-sm text-gray-800 dark:text-gray-200 w-full">
-              We use cookies to enhance your experience.
-              <a href="/cookie-policy" className="underline ml-1">
-                Learn more
-              </a>
-            </p>
-          </div>
-          <div className="w-full sm:w-1/3 flex items-center justify-end gap-3">
-            <button
-              onClick={rejectCookies}
-              className="px-4 py-2 dark:bg-noirdark1 bg-white dark:text-white text-black font-medium rounded hover:opacity-70 text-sm transition-colors"
-            >
-              Reject
-            </button>
-            <button
-              onClick={acceptCookies}
-              className="px-4 py-2 bg-black dark:bg-white text-white dark:text-black font-medium rounded hover:opacity-70 text-sm transition-colors"
-            >
-              Accept
-            </button>
-          </div>
-        </div>
-      )}
-    {showWelcome && (
-    <div
-      aria-label="Welcome discount backdrop"
-      role="dialog"
-      aria-modal="true"
-      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 transition-opacity"
-      >
+{showCookies && (
+  <div
+    className={`fixed bottom-4 inset-x-4 p-4 bg-white/60 dark:bg-noirdark1
+                border border-gray-300 dark:border-textaccent/40 rounded-lg shadow-lg
+                backdrop-blur-md flex flex-col sm:flex-row gap-4 z-40
+                transition-opacity duration-300
+                ${hideCookies ? "opacity-0" : "opacity-100"}`}
+  >
+    <div className="w-full sm:w-2/3 flex items-center gap-3">
+      <svg className="min-w-6 size-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.65692 9.41494h.01M7.27103 13h.01m7.67737 1.9156h.01M10.9999 17h.01m3.178-10.90671c-.8316.38094-1.8475.22903-2.5322-.45571-.3652-.36522-.5789-.82462-.6409-1.30001-.0574-.44-.0189-.98879.1833-1.39423-1.99351.20001-3.93304 1.06362-5.46025 2.59083-3.51472 3.51472-3.51472 9.21323 0 12.72793 3.51471 3.5147 9.21315 3.5147 12.72795 0 1.5601-1.5602 2.4278-3.5507 2.6028-5.5894-.2108.008-.6725.0223-.8328.0157-.635.0644-1.2926-.1466-1.779-.633-.3566-.3566-.5651-.8051-.6257-1.2692-.0561-.4293.0145-.87193.2117-1.26755-.1159.20735-.2619.40237-.4381.57865-1.0283 1.0282-2.6953 1.0282-3.7235 0-1.0282-1.02824-1.0282-2.69531 0-3.72352.0977-.09777.2013-.18625.3095-.26543"/>
+      </svg>
+      <p className="text-sm text-gray-800 dark:text-gray-200 w-full">
+        We use cookies to enhance your experience.
+        <a href="/cookie-policy" className="underline ml-1">Learn more</a>
+      </p>
+    </div>
+
+    <div className="w-full sm:w-1/3 flex items-center justify-end gap-3">
       <button
-        aria-label="Close welcome modal"
-        className="absolute inset-0 w-full h-full bg-transparent border-none cursor-default"
-        onClick={setWelcomeSeen}
-        onKeyDown={e => e.key === 'Escape' && setWelcomeSeen()}
-      />
-      <div
-        className="relative bg-white flex flex-col-reverse sm:flex-row overflow-hidden rounded w-full max-w-2xl z-60"
-        aria-label="Welcome discount modal"
+        onClick={rejectCookies}
+        className="px-4 py-2 dark:bg-noirdark1 bg-white dark:text-white text-black font-medium rounded hover:opacity-70 text-sm transition-colors"
       >
+        Reject
+      </button>
+      <button
+        onClick={acceptCookies}
+        className="px-4 py-2 bg-black dark:bg-white text-white dark:text-black font-medium rounded hover:opacity-70 text-sm transition-colors"
+      >
+        Accept
+      </button>
+    </div>
+  </div>
+)}
+
+{showWelcome && (
+  <div
+    aria-label="Welcome discount backdrop"
+    role="dialog"
+    aria-modal="true"
+    className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-50
+                z-50 transition-opacity duration-300
+                ${hideWelcome ? "opacity-0" : "opacity-100"}`}
+  >
+    {/* backdrop click-away */}
+    <button
+      aria-label="Close welcome modal"
+      className="absolute inset-0 w-full h-full bg-transparent border-none cursor-default"
+      onClick={setWelcomeSeen}
+      onKeyDown={e => e.key === "Escape" && setWelcomeSeen()}
+    />
+
+    {/*  keep EVERYTHING that used to be inside the modal (the <div
+         className="relative bg-white …"> all the way down to the
+         image column) exactly the same and place it right here  */}
+    <div
+      className="relative bg-white flex flex-col-reverse sm:flex-row overflow-hidden rounded w-full max-w-2xl z-60"
+      aria-label="Welcome discount modal"
+    >
       {/* Close Button */}
       <button 
         onClick={setWelcomeSeen} 
