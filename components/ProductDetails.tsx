@@ -391,7 +391,7 @@ const lightboxSlides = useMemo(
             <p className="text-xl">${product.price.toFixed(2)}</p>
           </div>
 
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-3">
             <div className="flex flex-col gap-3 pt-3">
               <hr className="shrink-0 bg-divider border-none w-full h-divider"/>
               <ColorPicker
@@ -421,7 +421,7 @@ const lightboxSlides = useMemo(
               </svg>
               <p>What&apos;s my size?</p>
             </button>
-            <div className="w-full flex flex-col gap-4">
+            <div className="w-full flex flex-col gap-3">
               <button
                 className="w-full h-[52px] py-auto px-6 bg-dark1 dark:bg-white text-white dark:text-black transition-color duration-300 rounded-md font-semibold text-lg"
                 onClick={addToBagClick}
