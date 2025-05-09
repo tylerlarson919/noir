@@ -428,11 +428,11 @@ const lightboxSlides = useMemo(
               >
                 Add to cart
               </button>
-              <div className="w-full relative h-[72px] min-h-[72px] max-h-[72px]">
+              <div className="w-full relative h-[62px] min-h-[62px] max-h-[62px]">
                 {clientSecret ? (
                   <StripeCheckoutShell clientSecret={clientSecret}>
                     {expressLoading && (
-                      <div className="absolute inset-0 mt-[5px] mb-[5px] min-h-[42px] w-full bg-gray-200 dark:bg-white/10 animate-pulse rounded-md z-[10]" />
+                      <div className="absolute inset-0 mt-[5px] mb-[5px] min-h-[52px] w-full bg-gray-200 dark:bg-white/10 animate-pulse rounded-md z-[10]" />
                     )}
                     <ExpressCheckout
                       clientSecret={clientSecret}
@@ -443,7 +443,7 @@ const lightboxSlides = useMemo(
                     />
                   </StripeCheckoutShell>
                 ) : (
-                  <div className="mt-[5px] mb-[5px] min-h-[42px] w-full bg-gray-200 dark:bg-white/10 animate-pulse rounded-md" />
+                  <div className="mt-[5px] mb-[5px] min-h-[52px] w-full bg-gray-200 dark:bg-white/10 animate-pulse rounded-md" />
                 )}
               </div>
             </div>
