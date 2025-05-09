@@ -428,7 +428,7 @@ const lightboxSlides = useMemo(
               >
                 Add to cart
               </button>
-              <div className="w-full relative h-[62px] min-h-[62px] max-h-[62px]">
+              <div className="w-full relative h-[72px] min-h-[72px] max-h-[72px]">
                 {clientSecret ? (
                   <StripeCheckoutShell clientSecret={clientSecret}>
                     {expressLoading && (
