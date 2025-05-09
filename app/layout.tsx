@@ -13,6 +13,7 @@ import HeaderModal, { HeaderModalProvider } from "@/components/HeaderModal";
 import "@/lib/stripeClient";
 import WelcomeModules from "@/components/first-time-visitors/WelcomeModules";
 import ClientLoaderWrapper from "@/components/loading-screen/ClientLoaderWrapper";
+import 'framer-motion';
 
 export const metadata: Metadata = {
   title: {

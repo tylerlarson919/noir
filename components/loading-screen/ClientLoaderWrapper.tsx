@@ -8,14 +8,9 @@ import { usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
 
 /* ––––– dynamic imports (no-SSR) –––––––––––––––––––––––––––––––––––––––––– */
-const HomeLoader = dynamic(
-  () => import("@/components/loading-screen/Loader2"),
-  { ssr: false }
-);
-const PageLoader = dynamic(
-  () => import("@/components/loading-screen/Loader"),
-  { ssr: false }
-);
+import { default as HomeLoader } from '@/components/loading-screen/Loader2';   // ✅
+import { default as PageLoader } from '@/components/loading-screen/Loader';   // ✅
+
 
 /* ––––– timing helpers –––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /* (Change only if you change the animation inside Loader2)                  */
