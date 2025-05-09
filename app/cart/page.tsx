@@ -19,12 +19,13 @@ export default function CartPage() {
   // Handle quantity change
   const handleQuantityChange = (
     id: string,
+    slug: string, 
     size: string,
     colorName: string,
     newQuantity: number,
   ) => {
     if (newQuantity < 1) return;
-    updateQuantity(id, size, colorName, newQuantity);
+    updateQuantity(id, slug, size, colorName, newQuantity);
   };
 
     const handleCheckout = () => {
@@ -87,7 +88,7 @@ export default function CartPage() {
                       key={`${item.id}-${item.size}-${item.color.name}-${index}`}
                       className="py-4 flex flex-row gap-2 sm:gap-4 border-b"
                     >
-                        <Link href={`/all/products/${item.id}`} >
+                        <Link href={`/all/products/${item.slug}`} >
                           <div className="relative h-28 w-28 sm:h-32 sm:w-32 flex-shrink-0">
                             <Image
                               fill
@@ -98,7 +99,7 @@ export default function CartPage() {
                           </div>
                         </Link>
                         <div className="flex-grow space-y-1">
-                          <Link className="space-y-1" href={`/all/products/${item.id}`}>
+                          <Link className="space-y-1" href={`/all/products/${item.slug}`}>
                             <div className="flex justify-between items-top gap-2">
                               <h3 className="font-medium text-md">{item.name}</h3>
                                 <p className="font-medium text-md">
@@ -117,6 +118,7 @@ export default function CartPage() {
                                 onClick={(e) =>
                                   handleQuantityChange(
                                     item.id,
+                                    item.slug, 
                                     item.size,
                                     item.color.name,
                                     item.quantity - 1,
@@ -132,6 +134,7 @@ export default function CartPage() {
                                 onClick={() => 
                                   handleQuantityChange(
                                     item.id,
+                                    item.slug, 
                                     item.size,
                                     item.color.name,
                                     item.quantity + 1,
@@ -144,7 +147,7 @@ export default function CartPage() {
                             <button
                               className="text-sm text-red-600/40 hover:text-red-600/60 transition-colors"
                               onClick={(e) => 
-                                removeItem(item.id, item.size, item.color?.name)
+                                removeItem(item.id, item.slug, item.size, item.color?.name)
                               }
                             >
                               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-5">

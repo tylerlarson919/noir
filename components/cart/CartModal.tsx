@@ -97,7 +97,7 @@ export default function CartModal() {
                   className="flex gap-4 py-3 border-b border-gray-200 dark:border-textaccent/40"
                 >
                   <Link
-                    href={`/all/products/${item.id}`}
+                    href={`/all/products/${item.slug}`}
                     className="flex flex-grow cursor-pointer"
                     onClick={handleClose}
                   >
@@ -126,7 +126,7 @@ export default function CartModal() {
                           className="text-sm underline hover:text-red-800 transition-colors"
                           onClick={(e) => {
                             e.preventDefault(); // Prevent the Link from being followed
-                            removeItem(item.id, item.size, item.color.name);
+                            removeItem(item.id, item.slug, item.size, item.color.name);
                           }}
                         >
                           Remove

@@ -27,7 +27,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   return (
     <div className="group mx-2">
-      <Link href={`/all/products/${product.id}`}>
+      <Link href={`/all/products/${product.slug}`}>
         <div className="relative overflow-hidden aspect-[3/4] rounded">
           <div
             className="relative w-full h-full"
@@ -69,6 +69,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <p className="text-gray-800 dark:text-textaccent">
             ${product.price.toFixed(2)} USD
           </p>
+          <div className="flex gap-1 items-center">
+            {product.colors.map((c) => (
+              <span
+                key={c.name}
+                className="w-3 h-3 rounded-full border border-gray-300 dark:border-white/30 shrink-0"
+                style={{ backgroundColor: c.hex }}
+              />
+            ))}
+          </div>
         </div>
       </Link>
     </div>

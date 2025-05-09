@@ -10,6 +10,7 @@ import {
 
 export type CartItem = {
   id: string;
+  slug: string;
   name: string;
   price: number;
   quantity: number;
@@ -24,9 +25,10 @@ type CartContextType = {
   totalItems: number;
   totalPrice: number;
   addItem: (item: CartItem) => void;
-  removeItem: (id: string, size: string, color: string) => void;
+  removeItem: (id: string, slug: string, size: string, color: string) => void;
   updateQuantity: (
     id: string,
+    slug: string,
     size: string,
     color: string,
     quantity: number,
@@ -73,6 +75,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       const existingItemIndex = prevItems.findIndex(
         (item) =>
           item.id === newItem.id &&
+          item.slug === newItem.slug &&
           item.size === newItem.size &&
           item.color.name === newItem.color.name,
       );
@@ -94,12 +97,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setIsOpen(true);
   };
 
-  const removeItem = (id: string, size: string, colorName: string) => {
+  const removeItem = (id: string, slug: string, size: string, colorName: string) => {
     setItems(
       items.filter(
         (item) =>
           !(
             item.id === id &&
+            item.slug === slug &&
             item.size === size &&
             item.color.name === colorName
           ),
@@ -109,6 +113,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const updateQuantity = (
     id: string,
+    slug: string,
     size: string,
     colorName: string,
     quantity: number,
@@ -117,6 +122,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       items.map((item) => {
         if (
           item.id === id &&
+          item.slug === slug &&
           item.size === size &&
           item.color.name === colorName
         ) {

@@ -208,6 +208,7 @@ export default function ProductDetails({
     // Add item to cart
     addItem({
       id: product.id,
+      slug: product.slug,
       name: product.name,
       price: product.price,
       quantity: 1,
@@ -264,6 +265,7 @@ export default function ProductDetails({
                   >
                     <Image
                       fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
                       alt={`${product.name} - ${previousColor.name} - View ${index + 1}`}
                       className="object-contain animate-fade-out"
                       priority={index === 0}
@@ -312,6 +314,7 @@ export default function ProductDetails({
                     <div className="relative aspect-[3/4] w-full">
                       <Image
                         fill
+                        sizes="100vw"
                         alt={`${product.name} - ${selectedColor.name} - View ${index + 1}`}
                         className="object-cover"
                         loading={index === 0 ? "eager" : "lazy"}
@@ -348,6 +351,7 @@ export default function ProductDetails({
                 >
                   <Image
                     fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
                     alt={`${product.name} - ${selectedColor.name} - View ${index + 1}`}
                     className={`object-cover ${isTransitioning ? "animate-cross-fade-in" : ""}`}
                     loading={index === 0 ? "eager" : "lazy"}
@@ -397,31 +401,31 @@ export default function ProductDetails({
               </svg>
               <p>What&apos;s my size?</p>
             </button>
-            <div className="w-full">
+            <div className="w-full flex flex-col gap-4">
               <button
-                className="w-full h-[42px] py-auto px-6 bg-dark1 dark:bg-white text-white dark:text-black transition-color duration-300 rounded-md font-semibold text-lg"
+                className="w-full h-[52px] py-auto px-6 bg-dark1 dark:bg-white text-white dark:text-black transition-color duration-300 rounded-md font-semibold text-lg"
                 onClick={addToBagClick}
               >
                 Add to cart
               </button>
-            </div>
-            <div className="w-full relative h-[52px] min-h-[52px] max-h-[52px]">
-              {clientSecret ? (
-                <StripeCheckoutShell clientSecret={clientSecret}>
-                  {expressLoading && (
-                    <div className="absolute inset-0 mt-[5px] mb-[5px] min-h-[42px] w-full bg-gray-200 dark:bg-white/10 animate-pulse rounded-md z-[10]" />
-                  )}
-                  <ExpressCheckout
-                    clientSecret={clientSecret}
-                    currency={currency}
-                    paymentIntentId={paymentIntentId}
-                    type="productPage"
-                    onReady={() => setExpressLoading(false)}
-                  />
-                </StripeCheckoutShell>
-              ) : (
-                <div className="mt-[5px] mb-[5px] min-h-[42px] w-full bg-gray-200 dark:bg-white/10 animate-pulse rounded-md" />
-              )}
+              <div className="w-full relative h-[62px] min-h-[62px] max-h-[62px]">
+                {clientSecret ? (
+                  <StripeCheckoutShell clientSecret={clientSecret}>
+                    {expressLoading && (
+                      <div className="absolute inset-0 mt-[5px] mb-[5px] min-h-[42px] w-full bg-gray-200 dark:bg-white/10 animate-pulse rounded-md z-[10]" />
+                    )}
+                    <ExpressCheckout
+                      clientSecret={clientSecret}
+                      currency={currency}
+                      paymentIntentId={paymentIntentId}
+                      type="productPage"
+                      onReady={() => setExpressLoading(false)}
+                    />
+                  </StripeCheckoutShell>
+                ) : (
+                  <div className="mt-[5px] mb-[5px] min-h-[42px] w-full bg-gray-200 dark:bg-white/10 animate-pulse rounded-md" />
+                )}
+              </div>
             </div>
             <button
               className="text-sm text-textaccentdarker dark:text-textaccent underline"
@@ -432,6 +436,7 @@ export default function ProductDetails({
                 }
                 addItem({
                   id: product.id,
+                  slug: product.slug,
                   name: product.name,
                   price: product.price,
                   quantity: 1,

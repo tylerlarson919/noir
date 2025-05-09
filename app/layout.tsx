@@ -16,11 +16,59 @@ import ClientLoaderWrapper from "@/components/loading-screen/ClientLoaderWrapper
 import 'framer-motion';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://noir-clothing.com'),
+
   title: {
     default: siteConfig.name,
     template: `%s - ${siteConfig.name}`,
   },
   description: siteConfig.description,
+    /* 3️⃣ Focus keywords (not a ranking factor but good for organisation tools) */
+    keywords: [
+      'luxury streetwear',
+      'premium clothing',
+      'designer hoodies',
+      'monochrome fashion',
+      'noir clothing brand',
+      'japanese denim pants',
+    ],
+  
+    /* 4️⃣ Robots */
+    robots: { index: true, follow: true },
+  
+    /* 5️⃣ Canonical fallback */
+    alternates: { canonical: '/' },
+  
+    /* 6️⃣ Open Graph  */
+    openGraph: {
+      type: 'website',
+      locale: 'en_US',
+      url: '/',
+      siteName: 'NOIR Clothing',
+      title: 'NOIR Clothing | Luxury Streetwear',
+      description:
+        'Elevate your wardrobe with premium monochrome garments by NOIR Clothing.',
+      images: [
+        {
+          url: '/og/default.jpg', // 1200×630  <— put this in /public/og/
+          width: 1200,
+          height: 630,
+          alt: 'NOIR Clothing — Luxury Streetwear',
+        },
+      ],
+    },
+  
+    /* 7️⃣ Twitter */
+    twitter: {
+      card: 'summary_large_image',
+      site: '@NoirClothing',
+      creator: '@NoirClothing',
+      title: 'NOIR Clothing | Luxury Streetwear',
+      description:
+        'Premium monochrome fashion crafted from the finest materials.',
+      images: ['/og/default.jpg'],
+    },
+
     icons: {
       icon: [
       {
@@ -50,6 +98,24 @@ export default function RootLayout({
         <link rel="preconnect"    href="https://js.stripe.com"  crossOrigin="" />
         <link rel="preconnect"    href="https://m.stripe.com"   crossOrigin="" />
         <link rel="preconnect"    href="https://api.stripe.com" crossOrigin="" />
+        {/* ----------------------------------------------------------- */}
+        <script
+          key="ld-org"                 /* prevent “duplicate key” warnings */
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Organization',
+              name: 'NOIR Clothing',
+              url: 'https://noir-clothing.com',
+              logo: 'https://noir-clothing.com/n-logo-light.svg',
+              sameAs: [
+                'https://www.instagram.com/noirclothing',
+                'https://twitter.com/NoirClothing',
+              ],
+            }),
+          }}
+        />
         {/* ----------------------------------------------------------- */}
       </head>
       <body

@@ -3,6 +3,11 @@ import React from "react";
 import ProductCard from "@/components/ui/ProductCard";
 import { Product } from "@/lib/products";
 import { useRouter } from "next/navigation";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "@/styles/swiper-custom.css";
 
 interface FeaturedProductsProps {
   products: Product[];
@@ -14,21 +19,33 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
   title,
 }) => {
   const router = useRouter();
-  const displayed = products.slice(0, 4);
 
   return (
-    <section className="py-10">
+    <section className="py-10 px-2">
       <div className="w-full flex flex-col gap-6 items-center justify-center">
         <div className="flex justify-center items-center">
           <h2 className="text-2xl md:text-2xl font-medium tracking-wider">
             {title}
           </h2>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 w-full">
-          {displayed.map((product) => (
-            <ProductCard key={product.id} product={product} />
+        <Swiper
+          modules={[Navigation]}
+          navigation
+          spaceBetween={8}
+          slidesPerView={2}
+          breakpoints={{
+            640: { slidesPerView: 2 },
+            768: { slidesPerView: 3 },
+            1024: { slidesPerView: 4 },
+          }}
+          className="w-full"
+        >
+          {products.map((product) => (
+            <SwiperSlide key={product.id} className="flex">
+              <ProductCard product={product} />
+            </SwiperSlide>
           ))}
-        </div>
+        </Swiper>
         <button
           className="w-fit py-2 px-6 bg-dark1 dark:bg-white button-grow-subtle text-white dark:text-black transition-color duration-300 rounded-sm"
           onClick={() => router.push("/all")}

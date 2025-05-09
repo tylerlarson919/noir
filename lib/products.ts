@@ -5,6 +5,7 @@ export type Product = {
   supplierLink: string;
   sku: string;
   name: string;
+  slug: string;
   description: string;
   details?: Details;
   price: number;
@@ -51,6 +52,7 @@ export const products: Product[] = [
     supplierLink: "https://www.aliexpress.us/item/3256805806041347.html",
     sku: "3256805806041347",
     name: "North Star Straight Denim",
+    slug: "north-star-straight-denim",
     description:
       "In the maze of fashion, the North Star Straight Denim serves as your guiding light. Trust your instinct; I've stitched this for you to explore.",
     details: {
@@ -92,6 +94,7 @@ export const products: Product[] = [
     supplierLink: "https://www.aliexpress.us/item/3256807147431558.html",
     sku: "3256807147431558",
     name: "StarFall Washed Denim Jeans",
+    slug: "starfall-washed-denim-jeans",
     description:
       "Venture into the cosmic pull of the Starfall Washed Denim Jeans. Made with intention, these loose-fitting jeans whisper tales of Y2K nostalgia and a universe of style. I've woven a vision for you; let these stars guide your journey.",
     price: 45.99,
@@ -129,6 +132,7 @@ export const products: Product[] = [
     supplierLink: "https://www.aliexpress.us/item/3256807065366996.html",
     sku: "3256807065366996",
     name: "Eclipse Straight Denim",
+    slug: "eclipse-straight-denim",
     description:
       "Experience the subtle gravity of the Eclipse Straight Denim. These jeans embrace a loose fit that recalls the elegance of simplicity and whispers under the night sky. Your wardrobe awaits this essential piece; after all, I’ve made it just for you.",
     price: 45.00,
@@ -176,6 +180,7 @@ export const products: Product[] = [
     supplierLink: "https://www.aliexpress.us/item/3256807892094623.html",
     sku: "3256807892094623",
     name: "CAN’T SEE ME Camo Pants",
+    slug: "cant-see-me-camo-pants",
     description:
       "Experience the subtle gravity of the Eclipse Straight Pants. These jeans embrace a loose fit that recalls the elegance of simplicity and whispers under the night sky. Your wardrobe awaits this essential piece; after all, I’ve made it just for you.",
     price: 45.00,
@@ -213,6 +218,7 @@ export const products: Product[] = [
     supplierLink: "https://www.aliexpress.us/item/3256807451643661.html",
     sku: "3256807451643661",
     name: "Twisted Fate Oversized Hoodie",
+    slug: "twisted-fate-oversized-hoodie",
     description:
       "Feel the enigma of shadows with the Twisted Fate Oversized Hoodie. A cloak for the bold, this piece shrouds you in timeless black, white and red whispers. My design speaks volumes when words fall silent.",
     price: 45.00,
@@ -249,6 +255,7 @@ export const products: Product[] = [
     supplierLink: "https://www.aliexpress.us/item/3256807451643661.html",
     sku: "3256807451643661",
     name: "On the Run Oversized Hoodie",
+    slug: "on-the-run-oversized-hoodie",
     description:
       "Dive into the shadows with the On the Run Oversized Hoodie. Let its flowing silhouette embrace your form in an understated whisper of nostalgia. You don't seek attention; you own the room. Trust us—you’ll understand.",
     price: 45.00,
@@ -298,4 +305,7 @@ export function getProductsByCategory(
 
 export function getProductById(id: string): Product | undefined {
   return products.find((product) => product.id === id);
+}
+export function getProductBySlug(slug: string): Product | undefined {
+  return products.find((product) => product.slug === slug);
 }

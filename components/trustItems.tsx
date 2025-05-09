@@ -4,8 +4,8 @@ export default function TrustItems() {
     return (
         <div className="w-full felx flex-col border-1 border-color text-[13px] font-medium px-2 mt-4 dark:border-textaccent/40">
             <div className="px-2 py-2 border-b flex gap-2 items-center dark:border-textaccent/40">
-                <div className="w-2 h-2 rounded-full bg-green-600 ring-green-600 ring-1 ring-offset-4 ml-2 mr-2"/>
-                BUY NOW - <p className="text-green-600">Order shipped within 1-2 days.</p>
+                <div className="w-2 h-2 rounded-full bg-green-600 ring-green-600 ring-[1.5px] ring-offset-[5px] ml-2 mr-2"/>
+                <p className="whitespace-nowrap">BUY&nbsp;NOW&nbsp;-</p><p className="text-green-600">Order ships in 1-2 days.</p>
             </div>
             <div className="px-2 py-2 border-b flex gap-2 items-center dark:border-textaccent/40">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">

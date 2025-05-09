@@ -19,3 +19,43 @@
 .dark .swiper-pagination-bullet-active {
   background-color: #fff;
 }
+
+
+.swiper-button-next,
+.swiper-button-prev {
+  /* arrow icon itself */
+  --swiper-navigation-size: 14px;          /* ← real arrow = 14 px    */
+  /* circular wrapper */
+  width: 34px;                             /* size of circle */
+  height: 34px;
+  border-radius: 9999px;                   /* full-round */
+  background: rgba(0, 0, 0, 0.5);          /* 50 %-opaque black */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;                             /* arrow colour           */
+  transition: background .25s, transform .25s;
+}
+
+/* make sure arrow glyph also scales down to 14px */
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  font-size: 14px;                         /* matches variable above */
+}
+
+/* hover / focus */
+.swiper-button-next:hover,
+.swiper-button-prev:hover,
+.swiper-button-next:focus-visible,
+.swiper-button-prev:focus-visible {
+  background: rgba(0, 0, 0, 0.6);
+  transform: scale(1.1);
+}
+
+/* disabled state */
+.swiper-button-disabled {
+  opacity: 0.25 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  transform: none !important;
+}
