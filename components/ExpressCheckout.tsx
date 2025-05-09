@@ -52,7 +52,7 @@ export default function ExpressCheckout({
         shippingAddressRequired: true,
         emailRequired: true,
         paymentMethods,
-        buttonHeight: 55,
+        buttonHeight: 54,
         paymentMethodOrder: ["googlePay", "applePay", "link", "klarna", "paypal"],
 
         shippingRates: [                              // <- single placeholder
